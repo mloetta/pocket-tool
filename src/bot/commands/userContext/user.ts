@@ -69,6 +69,16 @@ export default {
       }
     }
 
+    const hasNitro =
+      !!user.banner ||
+      user.avatar?.startsWith('a_') ||
+      !!(user as any).display_name_styles ||
+      (member && (member.avatar?.startsWith('a_') || member.banner));
+
+    if (hasNitro) {
+      badges.push(Emoji.Nitro);
+    }
+
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -79,7 +89,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${icon(Emoji.Mention)} ${member?.nick ?? user.username} (${pill(user.id)})\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                  content: `${icon(Emoji.Mention)} ${member?.nick ?? user.username} ${pill(user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
                 },
               ],
               accessory: {

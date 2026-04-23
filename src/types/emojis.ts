@@ -23,4 +23,5 @@ export enum Emoji {
   HypesquadBravery = '<:hypesquad_bravery:1496959535099940924>',
   HypesquadBalance = '<:hypesquad_balance:1496959545619255486>',
   CertifiedModerator = '<:certified_moderator:1496959886502924328>',
+  Nitro = '<:nitro:1496973911244411081>',
 }

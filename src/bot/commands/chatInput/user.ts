@@ -1,5 +1,4 @@
 import {
-  APIGuildMember,
   APIInteractionDataResolvedGuildMember,
   APIUser,
   ApplicationCommandOptionType,
@@ -117,6 +116,16 @@ export default {
       }
     }
 
+    const hasNitro =
+      !!target.user.banner ||
+      target.user.avatar?.startsWith('a_') ||
+      !!(target.user as any).display_name_styles ||
+      (target.member && (target.member.avatar?.startsWith('a_') || target.member.banner));
+
+    if (hasNitro) {
+      badges.push(Emoji.Nitro);
+    }
+
     if (scope === 'global') {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -128,7 +137,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${target.user.username} (${pill(target.user.id)})\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} ${target.user.username} ${pill(target.user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
                   },
                 ],
                 accessory: {
@@ -163,7 +172,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${target.member.nick ?? target.user.username} (${pill(target.user.id)})\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} ${target.member.nick ?? target.user.username} ${pill(target.user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
                   },
                 ],
                 accessory: {
