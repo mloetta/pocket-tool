@@ -9,6 +9,8 @@ import {
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
+import { icon } from '../../../utils/markdown.js';
+import { Emoji } from '../../../types/emojis.js';
 
 type Options = {
   prompt: string;
@@ -69,11 +71,29 @@ export default {
   async run(interaction, options, client) {
     const { prompt, model } = options;
 
+    const groqApiKey = env.get('groq_api_key', true).toString();
+    if (!groqApiKey) {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} Groq API key not set.`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
     const req = await makeRequest('https://api.groq.com/openai/v1/chat/completions', {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: {
-        Authorization: `Bearer ${env.get('groq_api_key', true).toString()}`,
+        Authorization: `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
       body: {

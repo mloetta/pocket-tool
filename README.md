@@ -10,12 +10,13 @@
 
 Pocket Tool is a **lightweight, fast, and versatile Discord bot** designed to be your all-in-one utility companion. Whether you're looking to enhance productivity, moderate your server, or add fun features, Pocket Tool has you covered.
 
-> *You can also try [Pocket Tool Canary](https://discord.com/discovery/applications/1489363092071518324) to access the latest features early. Note that it may be unstable and occasionally offline.*
+> _You can also try [Pocket Tool Canary](https://discord.com/discovery/applications/1489363092071518324) to access the latest features early. Note that it may be unstable and occasionally offline._
 
 ## How do I self-host Pocket Tool?
 
 - [Node.js](https://nodejs.org/) (v18+ recommended)
 - A Discord bot token (set as `TOKEN` environment variable)
+
 ```bash
 npm install
 npm start

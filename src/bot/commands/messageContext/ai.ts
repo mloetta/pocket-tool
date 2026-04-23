@@ -22,6 +22,24 @@ export default {
   },
   acknowledge: true,
   async run(interaction, client) {
+    const groqApiKey = env.get('groq_api_key', true).toString();
+    if (!groqApiKey) {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} Groq API key not set.`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
@@ -71,7 +89,7 @@ export default {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: {
-        Authorization: `Bearer ${env.get('groq_api_key', true).toString()}`,
+        Authorization: `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
       body: {

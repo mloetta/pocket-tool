@@ -62,9 +62,25 @@ export default {
   async run(interaction, options, client) {
     const { text, gender } = options;
 
-    const elevenlabs = new ElevenLabsClient({
-      apiKey: env.get('eleven_labs_api_key', true).toString(),
-    });
+    const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
+    if (!elevenLabsApiKey) {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set.`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
+    const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps(gender ?? 'bIHbv24MWmeRgasZH58o', {
       text,

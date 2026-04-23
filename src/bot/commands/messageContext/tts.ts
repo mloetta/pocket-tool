@@ -25,6 +25,24 @@ export default {
   },
   acknowledge: true,
   async run(interaction, client) {
+    const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
+    if (!elevenLabsApiKey) {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set.`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
@@ -46,9 +64,7 @@ export default {
       return;
     }
 
-    const elevenlabs = new ElevenLabsClient({
-      apiKey: env.get('eleven_labs_api_key', true).toString(),
-    });
+    const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps('bIHbv24MWmeRgasZH58o', {
       text: content,
