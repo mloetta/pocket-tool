@@ -18,7 +18,6 @@ import {
   InteractionContextType,
   LocalizationMap,
   Snowflake,
-  ToEventProps,
 } from '@discordjs/core';
 import { Permissions } from './permissions.js';
 

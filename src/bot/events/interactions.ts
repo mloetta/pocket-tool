@@ -392,7 +392,7 @@ async function handleApplicationCommand(
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error. Please try again later.\n-# If the issue persists, please report it to the developers by using </'help':'1494455586631188562'>.`,
+            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error. Please try again later.\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>.`,
           },
           {
             type: ComponentType.Separator,
@@ -405,7 +405,7 @@ async function handleApplicationCommand(
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error. Please try again later.\n-# If the issue persists, please report it to the developers by using </'help':'1494455586631188562'>.`,
+            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error. Please try again later.\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>.`,
           },
           {
             type: ComponentType.Separator,
