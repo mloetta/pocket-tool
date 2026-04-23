@@ -1,0 +1,28 @@
+{
+  "name": "pocket-tool",
+  "module": "src/bot/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "if exist dist rmdir /s /q dist && tsc",
+    "start": "node dist/bot/index.js",
+    "register": "node dist/bot/register.js",
+    "format": "prettier . --write"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@discordjs/collection": "^2.1.1",
+    "@discordjs/core": "^2.4.0",
+    "@discordjs/rest": "^2.6.1",
+    "@discordjs/ws": "^2.0.4",
+    "@elevenlabs/elevenlabs-js": "^2.43.0",
+    "ioredis": "^5.10.1",
+    "opusscript": "^0.0.8",
+    "prism-media": "^1.3.5",
+    "sharp": "^0.34.5"
+  }
+}
