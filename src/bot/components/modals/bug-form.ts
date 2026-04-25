@@ -5,7 +5,7 @@ import { Emoji } from '../../../types/emojis.js';
 
 export default {
   type: InteractableComponentType.Modal,
-  customId: 'bug-form',
+  custom_id: 'bug-form',
   async run(interaction, args, client) {
     const components = interaction.data?.components;
 

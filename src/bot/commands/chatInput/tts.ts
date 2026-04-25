@@ -12,12 +12,25 @@ import prism from 'prism-media';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import OpusScript from 'opusscript';
 import { Readable } from 'stream';
-import { icon } from '../../../utils/markdown.js';
+import { icon, pill } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import {
+  AudioPlayerStatus,
+  createAudioPlayer,
+  createAudioResource,
+  entersState,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
+  StreamType,
+  VoiceConnectionStatus,
+} from '@discordjs/voice';
+import { createAdapter, hasPermission } from '../../../utils/utils.js';
+import { Permissions } from '../../../types/permissions.js';
 
 type Options = {
   text: string;
-  gender?: string;
+  voice?: string;
+  play?: boolean;
 };
 
 export default {
@@ -35,8 +48,8 @@ export default {
     },
     {
       type: ApplicationCommandOptionType.String,
-      name: 'gender',
-      description: 'The gender of the voice to use for TTS',
+      name: 'voice',
+      description: 'The voice to use for TTS',
       required: false,
       choices: [
         {
@@ -53,6 +66,12 @@ export default {
         },
       ],
     },
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      name: 'play',
+      description: 'Whether to join the voice channel and play the audio immediately',
+      required: false,
+    },
   ],
   rate_limit: {
     type: RateLimitType.User,
@@ -60,7 +79,7 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    const { text, gender } = options;
+    const { text, voice, play } = options;
 
     const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
     if (!elevenLabsApiKey) {
@@ -82,7 +101,7 @@ export default {
 
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
-    const audio = await elevenlabs.textToSpeech.convertWithTimestamps(gender ?? 'bIHbv24MWmeRgasZH58o', {
+    const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'bIHbv24MWmeRgasZH58o', {
       text,
       modelId: 'eleven_v3',
       outputFormat: 'opus_48000_32',
@@ -151,6 +170,107 @@ export default {
           ],
           flags: MessageFlags.IsVoiceMessage,
         });
+
+        if (play === true) {
+          if (!interaction.guild_id) {
+            await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+              components: [
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `${icon(Emoji.Exclamation)} You must use this command in a valid guild.`,
+                },
+                {
+                  type: ComponentType.Separator,
+                },
+              ],
+              flags: MessageFlags.IsComponentsV2,
+            });
+
+            return;
+          }
+
+          const member = await client.api.guilds.getMember(
+            interaction.guild_id,
+            (interaction.user?.id ?? interaction.member?.user.id)!,
+          );
+
+          const voiceState = await client.api.voice.getUserVoiceState(interaction.guild_id, member.user.id);
+
+          if (!voiceState?.channel_id) {
+            await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+              components: [
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `${icon(Emoji.Exclamation)} You must be in a voice channel to use this command.`,
+                },
+                {
+                  type: ComponentType.Separator,
+                },
+              ],
+              flags: MessageFlags.IsComponentsV2,
+            });
+
+            return;
+          }
+
+          if (
+            !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.CONNECT)) ||
+            !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SPEAK))
+          ) {
+            await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+              components: [
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `${icon(Emoji.Wrong)} I don't have enough permissions to play TTS. I need the following permissions in this channel: ${pill('Connect')} and ${pill('Speak')}`,
+                },
+                {
+                  type: ComponentType.Separator,
+                },
+              ],
+              flags: MessageFlags.IsComponentsV2,
+            });
+
+            return;
+          }
+
+          const connection = joinVoiceChannel({
+            channelId: voiceState.channel_id,
+            guildId: interaction.guild_id,
+            adapterCreator: createAdapter(interaction.guild_id, client.gateway, await client.gateway.getShardCount()),
+          });
+
+          try {
+            await entersState(connection, VoiceConnectionStatus.Ready, 20_000);
+          } catch {
+            connection.destroy();
+            return;
+          }
+
+          const player = createAudioPlayer({
+            behaviors: {
+              noSubscriber: NoSubscriberBehavior.Play,
+            },
+          });
+
+          connection.subscribe(player);
+
+          const stream = Readable.from(opusBuffer);
+
+          const demuxer =
+            opusBuffer.subarray(0, 4).toString() === 'OggS'
+              ? new prism.opus.OggDemuxer()
+              : new prism.opus.WebmDemuxer();
+
+          const resource = createAudioResource(stream.pipe(demuxer), {
+            inputType: StreamType.Opus,
+          });
+
+          player.play(resource);
+
+          player.on(AudioPlayerStatus.Idle, () => {
+            connection.destroy();
+          });
+        }
       })
       .on('error', async () => {
         await client.api.interactions.editReply(interaction.application_id, interaction.token, {

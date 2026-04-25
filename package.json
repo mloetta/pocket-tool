@@ -18,6 +18,7 @@
     "@discordjs/collection": "^2.1.1",
     "@discordjs/core": "^2.4.0",
     "@discordjs/rest": "^2.6.1",
+    "@discordjs/voice": "^0.19.2",
     "@discordjs/ws": "^2.0.4",
     "@elevenlabs/elevenlabs-js": "^2.43.0",
     "ioredis": "^5.10.1",

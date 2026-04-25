@@ -3,7 +3,7 @@ import { Component, InteractableComponentType } from '../../../types/types.js';
 
 export default {
   type: InteractableComponentType.Button,
-  customId: 'report-bugs',
+  custom_id: 'report-bugs',
   async run(interaction, args, client) {
     await client.api.interactions.createModal(interaction.id, interaction.token, {
       custom_id: 'bug-form',

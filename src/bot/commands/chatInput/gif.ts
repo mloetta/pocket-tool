@@ -14,7 +14,7 @@ import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
 
 type Options = {
-  attachment: APIAttachment;
+  image: APIAttachment;
 };
 
 export default {
@@ -37,9 +37,9 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    const { attachment } = options;
+    const { image } = options;
 
-    if (!attachment || !attachment.content_type?.startsWith('image/')) {
+    if (!image || !image.content_type?.startsWith('image/')) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -56,7 +56,7 @@ export default {
       return;
     }
 
-    const buffer = await makeRequest(attachment.url, {
+    const buffer = await makeRequest(image.url, {
       method: RequestMethod.GET,
       response: ResponseType.BUFFER,
     });

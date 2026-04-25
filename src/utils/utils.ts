@@ -1,6 +1,14 @@
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
+import { Gateway, Snowflake } from '@discordjs/core';
+import { WebSocketManager } from '@discordjs/ws';
+import {
+  DiscordGatewayAdapterCreator,
+  DiscordGatewayAdapterImplementerMethods,
+  DiscordGatewayAdapterLibraryMethods,
+} from '@discordjs/voice';
+import { Collection } from '@discordjs/collection';
 
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   const files = await readdir(folder, { recursive: true });
@@ -32,3 +40,26 @@ export async function readDirectory<Type>(folder: string): Promise<Type[]> {
 }
 
 export const hasPermission = (permissions: bigint, permission: bigint) => (permissions & permission) === permission;
+
+export function getShardId(guildId: string, totalShards: number) {
+  return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
+}
+
+export const adapters = new Collection<Snowflake, DiscordGatewayAdapterLibraryMethods>();
+
+export function createAdapter(guildId: Snowflake, gateway: Gateway, shardCount: number): DiscordGatewayAdapterCreator {
+  return (methods) => {
+    adapters.set(guildId, methods);
+
+    return {
+      sendPayload(payload) {
+        const shardId = getShardId(guildId, shardCount);
+        gateway.send(shardId, payload);
+        return true;
+      },
+      destroy() {
+        adapters.delete(guildId);
+      },
+    };
+  };
+}

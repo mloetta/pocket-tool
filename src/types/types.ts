@@ -158,7 +158,7 @@ export interface Component<
   Args extends readonly string[] = readonly string[],
 > {
   type: Type;
-  customId: Snowflake;
+  custom_id: Snowflake;
   args?: Args;
   acknowledge?: boolean;
   run: (interaction: ComponentInteraction[Type], args: Record<Args[number], string>, client: Client) => Promise<void>;

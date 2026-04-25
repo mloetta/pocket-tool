@@ -467,6 +467,6 @@ async function handleComponent(
       await component.run(interaction as APIModalSubmitInteraction, parseComponentArgs(component, args), client);
     }
   } catch (e) {
-    console.error(`Component ${component.customId} encountered an error:`, e);
+    console.error(`Component ${component.custom_id} encountered an error:`, e);
   }
 }

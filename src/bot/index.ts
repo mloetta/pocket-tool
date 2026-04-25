@@ -1,6 +1,6 @@
 import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
-import { WebSocketManager, WorkerShardingStrategy } from '@discordjs/ws';
+import { WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
@@ -8,12 +8,13 @@ import {
   ApplicationCommandType,
   Client,
   ComponentType,
+  GatewayDispatchEvents,
   GatewayIntentBits,
   InteractionType,
   MessageFlags,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
-import { readDirectory } from '../utils/utils.js';
+import { adapters, readDirectory } from '../utils/utils.js';
 import path from 'path';
 import { Collection } from '@discordjs/collection';
 import fs from 'fs';
@@ -22,13 +23,36 @@ const rest = new REST().setToken(env.get('token', true).toString());
 
 const gateway = new WebSocketManager({
   token: env.get('token', true).toString(),
-  intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
+  intents:
+    GatewayIntentBits.Guilds |
+    GatewayIntentBits.GuildMessages |
+    GatewayIntentBits.MessageContent |
+    GatewayIntentBits.GuildVoiceStates,
   shardCount: null,
   rest,
   buildStrategy: (manager) => new WorkerShardingStrategy(manager, { shardsPerWorker: 4 }),
 });
 
 const client = new Client({ rest, gateway });
+
+client.gateway.on(WebSocketShardEvents.Dispatch, (payload) => {
+  const { t: type, d: data } = payload;
+
+  if (!data || !('guild_id' in data) || !data.guild_id) return;
+
+  const adapter = adapters.get(data.guild_id);
+  if (!adapter) return;
+
+  switch (type) {
+    case GatewayDispatchEvents.VoiceStateUpdate:
+      adapter.onVoiceStateUpdate(data);
+      break;
+
+    case GatewayDispatchEvents.VoiceServerUpdate:
+      adapter.onVoiceServerUpdate(data);
+      break;
+  }
+});
 
 client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
@@ -46,7 +70,7 @@ client.events = new Collection<string, GatewayEvent>();
   if (fs.existsSync(path.join(process.cwd(), 'dist', 'bot', 'components'))) {
     const components = await readDirectory<Component>(path.join(process.cwd(), 'dist', 'bot', 'components'));
     for (const component of components) {
-      client.components.set(component.customId, component);
+      client.components.set(component.custom_id, component);
     }
   }
 
@@ -70,10 +94,11 @@ client.events = new Collection<string, GatewayEvent>();
   }
 })();
 
+gateway.connect();
+
+// Error handling
 process.on('uncaughtException', console.error);
 process.on('unhandledRejection', console.error);
-
-gateway.connect();
 
 // helper function to localize an application command for use with the Discord API
 export function localizeCommand(command: ApplicationCommand): any {
@@ -140,17 +165,12 @@ export function localizeCommand(command: ApplicationCommand): any {
  * @param options The options to parse, defaults to the interaction's options
  * @returns A record of option names to values
  */
-export function parseCommandOptions(
-  interaction: APIChatInputApplicationCommandInteraction,
-  options?: APIApplicationCommandInteractionDataOption<InteractionType.ApplicationCommand>[],
-): Record<string, unknown> {
+export function parseCommandOptions(interaction: APIChatInputApplicationCommandInteraction): Record<string, unknown> {
   if (!interaction.data) {
     return {};
   }
 
-  if (!options) {
-    options = interaction.data.options ?? [];
-  }
+  const options = interaction.data.options ?? [];
 
   const args: Record<string, unknown> = {};
 
@@ -158,7 +178,7 @@ export function parseCommandOptions(
     switch (option.type) {
       case ApplicationCommandOptionType.SubcommandGroup:
       case ApplicationCommandOptionType.Subcommand:
-        args[option.name] = parseCommandOptions(interaction, option.options ?? []);
+        args[option.name] = parseCommandOptions(interaction);
         break;
       case ApplicationCommandOptionType.Channel:
         args[option.name] = interaction.data.resolved?.channels?.[option.value];
