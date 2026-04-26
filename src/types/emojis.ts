@@ -11,6 +11,8 @@ export enum Emoji {
   Mention = '<:mention:1496952772082270379>',
   Leaf = '<:leaf:1496955616952844319>',
   Wumpus = '<:wumpus:1496955716043276338>',
+  Home = '<:home:1497641039018594374>',
+  Owner = '<:owner:1497643520100405358>',
   // Badges
   Staff = '<:staff:1496959179108126780>',
   Partner = '<:partner:1496959123747766363>',

@@ -1,7 +1,8 @@
 import { ApplicationCommandType, ComponentType, MessageFlags, UserFlags } from '@discordjs/core';
 import { RateLimitType, TimestampStyle, UserContextMenuCommand } from '../../../types/types.js';
-import { icon, pill, timestamp } from '../../../utils/markdown.js';
+import { cdn, icon, pill, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
 export default {
   type: ApplicationCommandType.User,
@@ -95,11 +96,13 @@ export default {
               accessory: {
                 type: ComponentType.Thumbnail,
                 media: {
-                  url: member?.avatar
-                    ? `https://cdn.discordapp.com/guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}.${member.avatar.startsWith('a_') ? 'gif' : 'png'}`
-                    : user.avatar
-                      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
-                      : `https://cdn.discordapp.com/embed/avatars/${Number(user.id) % 5}.png`,
+                  url:
+                    cdn(
+                      `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member?.avatar}`,
+                      4096,
+                      'webp',
+                      true,
+                    ) ?? cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                 },
               },
             },
@@ -108,7 +111,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Wumpus)} **Created:**\n${timestamp(Number(BigInt(user.id) >> 22n) + 1420070400000, TimestampStyle.LongDate)}${member ? `\n${icon(Emoji.Leaf)} **Joined:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}` : ''}`,
+              content: `${icon(Emoji.Wumpus)} **Created:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}${member ? `\n${icon(Emoji.Leaf)} **Joined:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}` : ''}`,
             },
           ],
         },

@@ -41,8 +41,13 @@ export async function readDirectory<Type>(folder: string): Promise<Type[]> {
 
 export const hasPermission = (permissions: bigint, permission: bigint) => (permissions & permission) === permission;
 
-export function getShardId(guildId: string, totalShards: number) {
+export function getShardIdFromGuildId(guildId: string, totalShards: number) {
   return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
+}
+
+export function getTimestampFromSnowflake(snowflake: Snowflake): number {
+  // 1420070400000 is the Discord epoch
+  return Number(BigInt(snowflake) >> 22n) + 1420070400000;
 }
 
 export const adapters = new Collection<Snowflake, DiscordGatewayAdapterLibraryMethods>();
@@ -53,7 +58,7 @@ export function createAdapter(guildId: Snowflake, gateway: Gateway, shardCount: 
 
     return {
       sendPayload(payload) {
-        const shardId = getShardId(guildId, shardCount);
+        const shardId = getShardIdFromGuildId(guildId, shardCount);
         gateway.send(shardId, payload);
         return true;
       },

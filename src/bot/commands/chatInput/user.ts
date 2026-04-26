@@ -10,8 +10,9 @@ import {
   UserFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { icon, pill, timestamp } from '../../../utils/markdown.js';
+import { cdn, icon, pill, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
 type Options = {
   target?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
@@ -59,11 +60,13 @@ export default {
       target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };
     }
 
+    const { user, member } = target;
+
     if (!scope) {
       scope = 'global';
     }
 
-    if (!target.user) {
+    if (!user) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -82,8 +85,8 @@ export default {
 
     let badges: Emoji[] = [];
 
-    if (target.user.public_flags) {
-      const flags = target.user.public_flags;
+    if (user.public_flags) {
+      const flags = user.public_flags;
       if (flags & UserFlags.Staff) {
         badges.push(Emoji.Staff);
       }
@@ -117,10 +120,10 @@ export default {
     }
 
     const hasNitro =
-      !!target.user.banner ||
-      target.user.avatar?.startsWith('a_') ||
-      !!(target.user as any).display_name_styles ||
-      (target.member && (target.member.avatar?.startsWith('a_') || target.member.banner));
+      !!user.banner ||
+      user.avatar?.startsWith('a_') ||
+      !!(user as any).display_name_styles ||
+      (member && (member.avatar?.startsWith('a_') || member.banner));
 
     if (hasNitro) {
       badges.push(Emoji.Nitro);
@@ -137,15 +140,13 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${target.user.username} ${pill(target.user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} ${user.username} ${pill(user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
                   },
                 ],
                 accessory: {
                   type: ComponentType.Thumbnail,
                   media: {
-                    url: target.user.avatar
-                      ? `https://cdn.discordapp.com/avatars/${target.user.id}/${target.user.avatar}.${target.user.avatar?.startsWith('a_') ? 'gif' : 'png'}`
-                      : `https://cdn.discordapp.com/embed/avatars/${Number(target.user.id) % 5}.png`,
+                    url: cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                   },
                 },
               },
@@ -154,14 +155,14 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created:**\n${timestamp(Number(BigInt(target.user.id) >> 22n) + 1420070400000, TimestampStyle.LongDate)}`,
+                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
               },
             ],
           },
         ],
         flags: MessageFlags.IsComponentsV2,
       });
-    } else if (scope === 'guild' && target.member) {
+    } else if (scope === 'guild' && member) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -172,17 +173,19 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${target.member.nick ?? target.user.username} ${pill(target.user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} ${member.nick ?? user.username} ${pill(user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
                   },
                 ],
                 accessory: {
                   type: ComponentType.Thumbnail,
                   media: {
-                    url: target.member?.avatar
-                      ? `https://cdn.discordapp.com/guilds/${interaction.guild_id}/users/${target.user.id}/avatars/${target.member.avatar}.${target.member.avatar.startsWith('a_') ? 'gif' : 'png'}`
-                      : target.user.avatar
-                        ? `https://cdn.discordapp.com/avatars/${target.user.id}/${target.user.avatar}.${target.user.avatar.startsWith('a_') ? 'gif' : 'png'}`
-                        : `https://cdn.discordapp.com/embed/avatars/${Number(target.user.id) % 5}.png`,
+                    url:
+                      cdn(
+                        `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
+                        4096,
+                        'webp',
+                        true,
+                      ) ?? cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                   },
                 },
               },
@@ -191,7 +194,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created:**\n${timestamp(Number(BigInt(target.user.id) >> 22n) + 1420070400000, TimestampStyle.LongDate)}\n${icon(Emoji.Leaf)} **Joined:**\n${timestamp(new Date(target.member.joined_at!).getTime(), TimestampStyle.LongDate)}`,
+                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n${icon(Emoji.Leaf)} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}`,
               },
             ],
           },

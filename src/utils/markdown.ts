@@ -261,3 +261,16 @@ export function inline(cols: string[][], options?: { spacing?: number }) {
 export function favicon(url: string, size: number = 256): string {
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=${size}`;
 }
+
+/** Returns a CDN URL for the given route.
+ *
+ * @param route The route to get the CDN URL for.
+ * @param size The size of the image.
+ * @param format The format of the image.
+ * @param animated Whether the image is animated.
+ */
+export function cdn(route: string, size: number = 4096, format: string = 'webp', animated: boolean = false): string {
+  const CDN = 'https://cdn.discordapp.com';
+
+  return `${CDN}${route}.${format}?size=${size}&animated=${animated}`;
+}
