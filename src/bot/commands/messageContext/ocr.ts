@@ -6,13 +6,14 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
-import { makeRequest } from '../../../utils/request.js';
-import { icon } from '../../../utils/markdown.js';
+import env from '../../../utils/env.js';
+import { codeblock, icon } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import { makeRequest } from '../../../utils/request.js';
 
 export default {
   type: ApplicationCommandType.Message,
-  name: 'Translate',
+  name: 'OCR',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   rate_limit: {
@@ -21,16 +22,13 @@ export default {
   },
   acknowledge: true,
   async run(interaction, client) {
-    const messageId = interaction.data.target_id;
-    const message = interaction.data.resolved.messages[messageId];
-
-    const content = message.content;
-    if (!content) {
+    const ocrSpaceApiKey = env.get('ocr_space_api_key', true).toString();
+    if (!ocrSpaceApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid message to translate.`,
+            content: `${icon(Emoji.Exclamation)} OCR Space API key not set.`,
           },
           {
             type: ComponentType.Separator,
@@ -42,15 +40,35 @@ export default {
       return;
     }
 
-    const res = await makeRequest('https://translate.googleapis.com/translate_a/single', {
+    const messageId = interaction.data.target_id;
+    const message = interaction.data.resolved.messages[messageId];
+
+    const attachment = message.attachments[0];
+    if (!attachment) {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} Please select a valid message to OCR.`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
+    const res = await makeRequest('https://api.ocr.space/parse/ImageUrl', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        client: 'gtx',
-        sl: 'auto',
-        tl: interaction.locale,
-        dt: 't',
-        q: content,
+        apikey: ocrSpaceApiKey,
+        url: attachment.url,
+        language: 'auto',
+        OCREngine: '2',
       },
     });
 
@@ -61,7 +79,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
+              content: codeblock('ansi', res.ParsedResults?.[0]?.ParsedText),
             },
           ],
         },

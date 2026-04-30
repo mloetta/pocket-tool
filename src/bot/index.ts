@@ -2,16 +2,12 @@ import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
 import { WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
-  APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
-  ComponentType,
   GatewayDispatchEvents,
   GatewayIntentBits,
-  InteractionType,
-  MessageFlags,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { adapters, readDirectory } from '../utils/utils.js';
@@ -47,7 +43,6 @@ client.gateway.on(WebSocketShardEvents.Dispatch, (payload) => {
     case GatewayDispatchEvents.VoiceStateUpdate:
       adapter.onVoiceStateUpdate(data);
       break;
-
     case GatewayDispatchEvents.VoiceServerUpdate:
       adapter.onVoiceServerUpdate(data);
       break;
@@ -162,7 +157,6 @@ export function localizeCommand(command: ApplicationCommand): any {
 /**
  * Chat Input Command option parser to make it easier to access option values
  * @param interaction The interaction to parse
- * @param options The options to parse, defaults to the interaction's options
  * @returns A record of option names to values
  */
 export function parseCommandOptions(interaction: APIChatInputApplicationCommandInteraction): Record<string, unknown> {
@@ -239,81 +233,3 @@ export function parseComponentArgs<Args extends readonly string[]>(
 
   return result;
 }
-
-// Override interaction methods to only send responses with cv2
-
-const reply = client.api.interactions.reply.bind(client.api.interactions);
-
-// @ts-expect-error - for some ungodly reason, the return type of reply can be undefined, but we know it will never be undefined in our case
-client.api.interactions.reply = async (interactionId, interactionToken, body, options) => {
-  const flags = body.flags ?? 0;
-  const isComponentsV2 = Boolean(flags & MessageFlags.IsComponentsV2);
-
-  if (!isComponentsV2 && body.content) {
-    const content = body.content;
-
-    if (!body.components) {
-      body.components = [];
-    }
-
-    body.components.push({
-      type: ComponentType.TextDisplay,
-      content,
-    });
-
-    body.flags = flags | MessageFlags.IsComponentsV2;
-    delete body.content;
-  }
-
-  return reply(interactionId, interactionToken, body, options);
-};
-
-const editReply = client.api.interactions.editReply.bind(client.api.interactions);
-
-client.api.interactions.editReply = async (applicationId, interactionToken, callbackData, messageId, options) => {
-  const flags = callbackData.flags ?? 0;
-  const isComponentsV2 = Boolean(flags & MessageFlags.IsComponentsV2);
-
-  if (!isComponentsV2 && callbackData.content) {
-    const content = callbackData.content;
-
-    if (!callbackData.components) {
-      callbackData.components = [];
-    }
-
-    callbackData.components.push({
-      type: ComponentType.TextDisplay,
-      content,
-    });
-
-    callbackData.flags = flags | MessageFlags.IsComponentsV2;
-    delete callbackData.content;
-  }
-
-  return editReply(applicationId, interactionToken, callbackData, messageId, options);
-};
-
-const followUp = client.api.interactions.followUp.bind(client.api.interactions);
-
-client.api.interactions.followUp = async (applicationId, interactionToken, body, options) => {
-  const flags = body.flags ?? 0;
-  const isComponentsV2 = Boolean(flags & MessageFlags.IsComponentsV2);
-
-  if (!isComponentsV2 && body.content) {
-    const content = body.content;
-
-    if (!body.components) {
-      body.components = [];
-    }
-
-    body.components.push({
-      type: ComponentType.TextDisplay,
-      content,
-    });
-
-    body.flags = flags | MessageFlags.IsComponentsV2;
-    delete body.content;
-  }
-
-  return followUp(applicationId, interactionToken, body, options);
-};

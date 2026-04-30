@@ -29,10 +29,11 @@ export default {
     const guildIcon = cdn(`/icons/${guild.id}/${guild.icon}`, 4096, 'webp', true);
     const name = guild.name;
     const members = guild.approximate_member_count;
-    const roles = guild.roles.length ?? 0;
-    const channels = (await client.api.guilds.getChannels(guild.id)).length ?? 0;
-    const emojis = guild.emojis.length ?? 0;
-    const stickers = guild.stickers?.length ?? 0;
+    const roles = guild.roles.length;
+    const channels = (await client.api.guilds.getChannels(guild.id)).length;
+    const emojis = guild.emojis.length;
+    const stickers = guild.stickers?.length;
+    const boosts = guild.premium_subscription_count;
     const ownerId = guild.owner_id;
     const guildId = guild.id;
     const createdAt = getTimestampFromSnowflake(guild.id);
@@ -64,7 +65,7 @@ export default {
               type: ComponentType.TextDisplay,
               content: codeblock(
                 'py',
-                `Members:   ${String(members).padEnd(3, ' ')}\nRoles:     ${String(roles).padEnd(3, ' ')}\nChannels:  ${String(channels).padEnd(3, ' ')}\nEmojis:    ${String(emojis).padEnd(3, ' ')}\nStickers:  ${String(stickers).padEnd(3, ' ')}`,
+                `Members:   ${String(members).padEnd(3, ' ')}\nRoles:     ${String(roles).padEnd(3, ' ')}\nChannels:  ${String(channels).padEnd(3, ' ')}\nEmojis:    ${String(emojis).padEnd(3, ' ')}\nStickers:  ${String(stickers).padEnd(3, ' ')}\nBoosts:    ${String(boosts).padEnd(3, ' ')}`,
               ),
             },
             {

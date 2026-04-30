@@ -2,12 +2,7 @@ import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
 import { Gateway, Snowflake } from '@discordjs/core';
-import { WebSocketManager } from '@discordjs/ws';
-import {
-  DiscordGatewayAdapterCreator,
-  DiscordGatewayAdapterImplementerMethods,
-  DiscordGatewayAdapterLibraryMethods,
-} from '@discordjs/voice';
+import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '@discordjs/voice';
 import { Collection } from '@discordjs/collection';
 
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
@@ -46,23 +41,42 @@ export function getShardIdFromGuildId(guildId: string, totalShards: number) {
 }
 
 export function getTimestampFromSnowflake(snowflake: Snowflake): number {
-  // 1420070400000 is the Discord epoch
-  return Number(BigInt(snowflake) >> 22n) + 1420070400000;
+  // Discord timestamp epoch
+  const EPOCH = 1420070400000;
+
+  return Number(BigInt(snowflake) >> 22n) + EPOCH;
 }
 
 export const adapters = new Collection<Snowflake, DiscordGatewayAdapterLibraryMethods>();
 
 export function createAdapter(guildId: Snowflake, gateway: Gateway, shardCount: number): DiscordGatewayAdapterCreator {
   return (methods) => {
+    if (adapters.has(guildId)) {
+      adapters.get(guildId)?.destroy();
+    }
+
     adapters.set(guildId, methods);
+
+    let destroyed = false;
 
     return {
       sendPayload(payload) {
-        const shardId = getShardIdFromGuildId(guildId, shardCount);
-        gateway.send(shardId, payload);
-        return true;
+        if (destroyed) return false;
+
+        try {
+          const shardId = getShardIdFromGuildId(guildId, shardCount);
+          gateway.send(shardId, payload);
+
+          return true;
+        } catch {
+          return false;
+        }
       },
+
       destroy() {
+        if (destroyed) return;
+
+        destroyed = true;
         adapters.delete(guildId);
       },
     };

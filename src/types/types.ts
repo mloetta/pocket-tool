@@ -191,10 +191,10 @@ export enum ResponseType {
 }
 
 export type RequestOptions<Type extends ResponseType> = {
-  body?: any;
-  method?: RequestMethod;
+  method: RequestMethod;
   response?: Type;
   params?: { [key: string]: any };
+  body?: any;
   headers?: { [key: string]: any };
   timeout?: number;
 };

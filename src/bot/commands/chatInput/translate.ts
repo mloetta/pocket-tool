@@ -51,7 +51,7 @@ export default {
   async run(interaction, options, client) {
     const { text, from, to } = options;
 
-    const req = await makeRequest('https://translate.googleapis.com/translate_a/single', {
+    const res = await makeRequest('https://translate.googleapis.com/translate_a/single', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
@@ -63,8 +63,6 @@ export default {
       },
     });
 
-    const translated = req[0][0][0];
-
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -72,7 +70,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${icon(Emoji.Translator)} Translated from **${req[2]}** to **${to ?? interaction.locale}**\n${translated}\n-# Translation may be inaccurate.`,
+              content: `-# ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${to ?? interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
             },
           ],
         },

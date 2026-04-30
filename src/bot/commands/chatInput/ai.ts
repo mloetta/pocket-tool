@@ -9,12 +9,11 @@ import {
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
-import { icon } from '../../../utils/markdown.js';
+import { icon, stringwrapPreserveWords } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 
 type Options = {
   prompt: string;
-  model?: string;
 };
 
 export default {
@@ -30,38 +29,6 @@ export default {
       description: 'The prompt to send to the AI',
       required: true,
     },
-    {
-      type: ApplicationCommandOptionType.String,
-      name: 'model',
-      description: 'The model to use for the AI',
-      required: false,
-      choices: [
-        {
-          name: 'llama-3.1-8b-instant',
-          value: 'llama-3.1-8b-instant',
-        },
-        {
-          name: 'llama-3.3-70b-versatile',
-          value: 'llama-3.3-70b-versatile',
-        },
-        {
-          name: 'meta-llama/llama-4-scout-17b-16e-instruct',
-          value: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        },
-        {
-          name: 'openai/gpt-oss-120b',
-          value: 'openai/gpt-oss-120b',
-        },
-        {
-          name: 'openai/gpt-oss-20b',
-          value: 'openai/gpt-oss-20b',
-        },
-        {
-          name: 'qwen/qwen3-32b',
-          value: 'qwen/qwen3-32b',
-        },
-      ],
-    },
   ],
   rate_limit: {
     type: RateLimitType.User,
@@ -69,15 +36,15 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    const { prompt, model } = options;
+    const { prompt } = options;
 
-    const groqApiKey = env.get('groq_api_key', true).toString();
-    if (!groqApiKey) {
+    const openRouterApiKey = env.get('open_router_api_key', true).toString();
+    if (!openRouterApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Groq API key not set.`,
+            content: `${icon(Emoji.Exclamation)} OpenRouter API key not set.`,
           },
           {
             type: ComponentType.Separator,
@@ -89,15 +56,17 @@ export default {
       return;
     }
 
-    const req = await makeRequest('https://api.groq.com/openai/v1/chat/completions', {
+    const start = performance.now();
+
+    const res = await makeRequest('https://openrouter.ai/api/v1/chat/completions', {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: {
-        Authorization: `Bearer ${groqApiKey}`,
+        Authorization: `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
       },
       body: {
-        model: model ?? 'llama-3.1-8b-instant',
+        model: 'openrouter/auto',
         messages: [
           {
             role: 'system',
@@ -108,18 +77,26 @@ export default {
             content: prompt,
           },
         ],
-        max_tokens: 4000,
+        max_completions_tokens: 2000,
       },
     });
+
+    const end = performance.now();
+    const elapsed = end - start;
 
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${req.choices[0].message.content}\n-# **${req.model}** - Response may be inaccurate or incomplete.`,
+          content: `${stringwrapPreserveWords(res.choices[0].message.content, 2000)}\n-# **${res.model}** - Response may be inaccurate or incomplete - Took **${formatPretty(elapsed)}**`,
         },
       ],
       flags: MessageFlags.IsComponentsV2,
     });
   },
 } satisfies ChatInputCommand<Options>;
+
+function formatPretty(ms: number): string {
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  return `~${(ms / 1000).toFixed(1)}s`;
+}

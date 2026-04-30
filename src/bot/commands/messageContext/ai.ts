@@ -8,7 +8,7 @@ import {
 import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
-import { icon } from '../../../utils/markdown.js';
+import { icon, stringwrapPreserveWords } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 
 export default {
@@ -22,13 +22,13 @@ export default {
   },
   acknowledge: true,
   async run(interaction, client) {
-    const groqApiKey = env.get('groq_api_key', true).toString();
-    if (!groqApiKey) {
+    const openRouterApiKey = env.get('open_router_api_key', true).toString();
+    if (!openRouterApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Groq API key not set.`,
+            content: `${icon(Emoji.Exclamation)} OpenRouter API key not set.`,
           },
           {
             type: ComponentType.Separator,
@@ -43,8 +43,8 @@ export default {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
-    let content = message.content;
-    if (!content) {
+    let prompt = message.content;
+    if (!prompt) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -68,56 +68,53 @@ export default {
           message.message_reference.message_id!,
         );
 
-        content = `message replied to:\n${referenced.content}\noriginal message:\n${message.content}`;
+        prompt = `message replied to:\n${referenced.content}\noriginal message:\n${message.content}`;
       } catch (e) {
-        content = message.content;
+        prompt = message.content;
       }
     }
 
-    const models = [
-      'llama-3.1-8b-instant',
-      'llama-3.3-70b-versatile',
-      'meta-llama/llama-4-scout-17b-16e-instruct',
-      'openai/gpt-oss-120b',
-      'openai/gpt-oss-20b',
-      'qwen/qwen3-32b',
-    ];
+    const start = performance.now();
 
-    const model = models[Math.floor(Math.random() * models.length)];
-
-    const req = await makeRequest('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await makeRequest('https://openrouter.ai/api/v1/chat/completions', {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: {
-        Authorization: `Bearer ${groqApiKey}`,
+        Authorization: `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
       },
       body: {
-        model: model,
+        model: 'openrouter/auto',
         messages: [
           {
             role: 'system',
-            content: `You are a friendly chat bot, called Pocket Tool, designed to help people.\n- Today\'s date is ${new Date().toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n- You should always use gender neutral pronouns when possible.\n- When answering a question, be concise and to the point.\n- Try to answer with short responses. This does not apply to subjects that require more exhaustive or in-depth explanation.\n- Respond in a natural way, using Discord's supported markdown formatting.`,
+            content: `You are a friendly Discord chat bot, called Pocket Tool, designed to help people.\n- Today\'s date is ${new Date().toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n- You should always use gender neutral pronouns when possible.\n- When answering a question, be concise and to the point.\n- Try to answer with short responses. This does not apply to subjects that require more exhaustive or in-depth explanation.\n- Respond in a natural way, using Discord's supported markdown formatting.`,
           },
           {
             role: 'user',
-            content: content,
+            content: prompt,
           },
         ],
-        max_tokens: 4000,
+        max_completions_tokens: 2000,
       },
     });
 
-    console.log(req);
+    const end = performance.now();
+    const elapsed = end - start;
 
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${req.choices[0].message.content}\n-# **${req.model}** - Response may be inaccurate or incomplete.`,
+          content: `${stringwrapPreserveWords(res.choices[0].message.content, 2000)}\n-# **${res.model}** - Response may be inaccurate or incomplete. - Took **${formatPretty(elapsed)}**`,
         },
       ],
       flags: MessageFlags.IsComponentsV2,
     });
   },
 } satisfies MessageContextMenuCommand;
+
+function formatPretty(ms: number): string {
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  return `~${(ms / 1000).toFixed(1)}s`;
+}
