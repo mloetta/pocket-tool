@@ -22,7 +22,7 @@ type Options = {
 export default {
   type: ApplicationCommandType.ChatInput,
   name: 'user',
-  description: 'views information about a user or yourself',
+  description: 'Views information about an user or yourself',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   options: [

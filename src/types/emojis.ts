@@ -13,6 +13,11 @@ export enum Emoji {
   Wumpus = '<:wumpus:1496955716043276338>',
   Home = '<:home:1497641039018594374>',
   Owner = '<:owner:1497643520100405358>',
+  CallConnect = '<:call_connect:1499536653155438825>',
+  Expression = '<:expression:1499803321408684163>',
+  Boost = '<:boost:1499809441359462490>',
+  Members = '<:members:1499809673338159144>',
+  Channel = '<:channel:1499809699648897235>',
   // Badges
   Staff = '<:staff:1496959179108126780>',
   Partner = '<:partner:1496959123747766363>',

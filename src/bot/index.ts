@@ -96,62 +96,50 @@ process.on('uncaughtException', console.error);
 process.on('unhandledRejection', console.error);
 
 // helper function to localize an application command for use with the Discord API
-export function localizeCommand(command: ApplicationCommand): any {
-  function resolveLocalization(loc: Localization) {
-    if (typeof loc === 'string') {
-      return { value: loc, localizations: undefined };
-    }
-
-    const { global, ...rest } = loc;
-
-    return {
-      value: global,
-      localizations: Object.keys(rest).length ? rest : undefined,
-    };
+function resolveLocalization(loc: Localization) {
+  if (typeof loc === 'string') {
+    return { value: loc, localizations: undefined };
   }
 
-  function resolveOption(option: ChatInputOption): any {
-    const name = resolveLocalization(option.name);
-    const description = resolveLocalization(option.description);
+  const { global, ...rest } = loc;
 
-    const base = {
-      ...option,
-      name: name.value,
-      description: description.value,
-      name_localizations: name.localizations,
-      description_localizations: description.localizations,
-    };
-
-    if ('options' in option && option.options) {
-      return {
-        ...base,
-        options: option.options.map(resolveOption),
-      };
-    }
-
-    return base;
-  }
-
-  const name = resolveLocalization(command.name);
-
-  const base = {
-    ...command,
-    name: name.value,
-    name_localizations: name.localizations,
+  return {
+    value: global,
+    localizations: Object.keys(rest).length ? rest : undefined,
   };
+}
 
+function resolveOption(option: ChatInputOption): any {
+  const name = resolveLocalization(option.name);
+  const description = resolveLocalization(option.description);
+
+  return {
+    ...option,
+    name: name.value,
+    description: description.value,
+    name_localizations: name.localizations,
+    description_localizations: description.localizations,
+    ...('options' in option && option.options ? { options: option.options.map(resolveOption) } : {}),
+  };
+}
+
+export function localizeCommand(command: ApplicationCommand): any {
   if (command.type === ApplicationCommandType.ChatInput) {
     const description = resolveLocalization(command.description);
 
     return {
-      ...base,
+      ...command,
+      ...resolveLocalization(command.name),
       description: description.value,
       description_localizations: description.localizations,
       options: command.options?.map(resolveOption),
     };
   }
 
-  return base;
+  return {
+    ...command,
+    ...resolveLocalization(command.name),
+  };
 }
 
 /**

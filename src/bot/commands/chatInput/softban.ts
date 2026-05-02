@@ -63,8 +63,7 @@ export default {
       return;
     }
 
-    const normalize = (input: string) => input.replace(/[<@!>]/g, '');
-    const userIds = users.split(', ').map((userId) => normalize(userId));
+    const userIds = (users.match(/<@!?(\d+)>|\b\d{15,25}\b/g) || []).map((u) => u.replace(/[<@!>]/g, ''));
 
     if (
       userIds.length > 1 &&
