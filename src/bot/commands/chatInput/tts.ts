@@ -29,7 +29,7 @@ export default {
       type: ApplicationCommandOptionType.String,
       name: 'text',
       description: 'The text to convert to speech',
-      max_length: 1000,
+      max_length: 500,
       required: true,
     },
     {
@@ -55,7 +55,7 @@ export default {
   ],
   rate_limit: {
     type: RateLimitType.User,
-    cooldown: 5,
+    cooldown: 10,
   },
   acknowledge: true,
   async run(interaction, options, client) {
@@ -102,14 +102,14 @@ export default {
       useAmount = 0;
     }
 
-    if (useAmount >= 10) {
+    if (useAmount >= 15) {
       const resetTime = (lastReset ?? now) + msIn24h;
 
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(10)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,
@@ -125,7 +125,7 @@ export default {
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
       text,
-      modelId: 'eleven_v3',
+      modelId: 'eleven_flash_v2_5',
       outputFormat: 'opus_48000_192',
     });
 
@@ -136,8 +136,8 @@ export default {
         {
           id: 0,
           filename: 'tts.opus',
-          waveform: 'AAAAAA==', // discord automatically sets that
-          duration_secs: 1, // discord also sets that
+          waveform: 'AAAAAA==', // anything that starts w a base64 works
+          duration_secs: 1, // discord automatically sets this
         },
       ],
       files: [

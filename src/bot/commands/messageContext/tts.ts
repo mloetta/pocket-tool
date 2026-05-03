@@ -19,7 +19,7 @@ export default {
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   rate_limit: {
     type: RateLimitType.User,
-    cooldown: 5,
+    cooldown: 10,
   },
   acknowledge: true,
   async run(interaction, client) {
@@ -86,14 +86,14 @@ export default {
       useAmount = 0;
     }
 
-    if (useAmount >= 10) {
+    if (useAmount >= 15) {
       const resetTime = (lastReset ?? now) + msIn24h;
 
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(10)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,
@@ -108,8 +108,8 @@ export default {
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps('M563YhMmA0S8vEYwkgYa', {
-      text: stringwrapPreserveWords(content, 1000),
-      modelId: 'eleven_v3',
+      text: stringwrapPreserveWords(content, 500),
+      modelId: 'eleven_flash_v2_5',
       outputFormat: 'opus_48000_192',
     });
 
@@ -120,8 +120,8 @@ export default {
         {
           id: 0,
           filename: 'tts.opus',
-          waveform: 'AAAAAA==', // discord automatically sets that
-          duration_secs: 1, // discord also sets that
+          waveform: 'AAAAAA==', // anything that starts w a base64 works
+          duration_secs: 1, // discord automatically sets this
         },
       ],
       files: [
