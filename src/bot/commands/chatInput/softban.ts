@@ -128,13 +128,13 @@ export default {
         )
         .catch(() => null);
 
-      const bannedUserIds = bulkBanResult?.banned_users?.map((userId) => String(userId)) ?? [];
-      const bulkFailedUserIds = bulkBanResult?.failed_users?.map((userId) => String(userId)) ?? [];
+      const bulkSuccesfullUserIds = (bulkBanResult?.banned_users ?? []).map(String);
+      const bulkFailedUserIds = (bulkBanResult?.failed_users ?? []).map(String);
 
       failedBans.push(...bulkFailedUserIds);
 
       const unbanResults = await Promise.allSettled(
-        bannedUserIds.map((userId) =>
+        bulkSuccesfullUserIds.map((userId) =>
           client.api.guilds.unbanUser(interaction.guild!.id, userId, {
             reason: `Softban command ran by ${interaction.member?.user.username}`,
           }),
@@ -142,7 +142,7 @@ export default {
       );
 
       unbanResults.forEach((result, index) => {
-        const userId = bannedUserIds[index]!;
+        const userId = bulkSuccesfullUserIds[index]!;
         if (result.status === 'fulfilled') {
           successfulBans.push(userId);
         } else {

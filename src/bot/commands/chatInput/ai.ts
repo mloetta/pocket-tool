@@ -39,6 +39,7 @@ export default {
     const { prompt } = options;
 
     const openRouterApiKey = env.get('open_router_api_key', true).toString();
+
     if (!openRouterApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [

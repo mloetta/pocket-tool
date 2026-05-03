@@ -6,30 +6,16 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import env from '../../../utils/env.js';
-import prism from 'prism-media';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { Readable } from 'stream';
-import { icon, pill } from '../../../utils/markdown.js';
+import { icon, pill, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
-import {
-  AudioPlayerStatus,
-  createAudioPlayer,
-  createAudioResource,
-  entersState,
-  joinVoiceChannel,
-  NoSubscriberBehavior,
-  StreamType,
-  VoiceConnectionStatus,
-} from '@discordjs/voice';
-import { createAdapter, hasPermission } from '../../../utils/utils.js';
-import { Permissions } from '../../../types/permissions.js';
+import { supabase } from '../../../utils/supabase.js';
 
 type Options = {
   text: string;
   voice?: string;
-  play?: boolean;
 };
 
 export default {
@@ -63,21 +49,7 @@ export default {
           name: 'Neutral',
           value: 'M563YhMmA0S8vEYwkgYa',
         },
-        {
-          name: 'h',
-          value: 'S0o3L7a2j0fXPOSqqHkq',
-        },
-        {
-          name: 'Mommy',
-          value: '5BX0dyTd6iq3fuD6Kuf1',
-        },
       ],
-    },
-    {
-      type: ApplicationCommandOptionType.Boolean,
-      name: 'play',
-      description: 'Whether to join the voice channel and play the audio immediately',
-      required: false,
     },
   ],
   rate_limit: {
@@ -86,9 +58,10 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    const { text, voice, play } = options;
+    const { text, voice } = options;
 
     const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
+
     if (!elevenLabsApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -106,10 +79,51 @@ export default {
       return;
     }
 
+    const { data, error } = await supabase
+      .from('tts')
+      .select('*')
+      .eq('user_id', (interaction.user?.id ?? interaction.member?.user.id)!)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    const now = Date.now();
+    const msIn24h = 24 * 60 * 60 * 1000;
+
+    let useAmount = data?.use_amount ?? 0;
+
+    const lastReset = data?.last_used ? new Date(data.last_used).getTime() : null;
+    const within24h = lastReset !== null && now - lastReset < msIn24h;
+
+    if (!within24h) {
+      useAmount = 0;
+    }
+
+    if (useAmount >= 10) {
+      const resetTime = (lastReset ?? now) + msIn24h;
+
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(10)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
-      text,
+      text: stringwrapPreserveWords(text, 1000),
       modelId: 'eleven_v3',
       outputFormat: 'opus_48000_192',
     });
@@ -134,103 +148,10 @@ export default {
       flags: MessageFlags.IsVoiceMessage,
     });
 
-    if (play === true) {
-      if (!interaction.guild_id) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
-          components: [
-            {
-              type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} You must use this command in a valid guild.`,
-            },
-            {
-              type: ComponentType.Separator,
-            },
-          ],
-          flags: MessageFlags.IsComponentsV2,
-        });
-
-        return;
-      }
-
-      const member = await client.api.guilds.getMember(
-        interaction.guild_id,
-        (interaction.user?.id ?? interaction.member?.user.id)!,
-      );
-
-      const voiceState = await client.api.voice.getUserVoiceState(interaction.guild_id, member.user.id);
-
-      if (!voiceState?.channel_id) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
-          components: [
-            {
-              type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} You must be in a voice channel to use this command.`,
-            },
-            {
-              type: ComponentType.Separator,
-            },
-          ],
-          flags: MessageFlags.IsComponentsV2,
-        });
-
-        return;
-      }
-
-      if (
-        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.CONNECT)) ||
-        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SPEAK))
-      ) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
-          components: [
-            {
-              type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Wrong)} I don't have enough permissions to play TTS. I need the following permissions in this channel: ${pill('Connect')} and ${pill('Speak')}`,
-            },
-            {
-              type: ComponentType.Separator,
-            },
-          ],
-          flags: MessageFlags.IsComponentsV2,
-        });
-
-        return;
-      }
-
-      const connection = joinVoiceChannel({
-        channelId: voiceState.channel_id,
-        guildId: interaction.guild_id,
-        adapterCreator: createAdapter(interaction.guild_id, client.gateway, await client.gateway.getShardCount()),
-      });
-
-      try {
-        await entersState(connection, VoiceConnectionStatus.Ready, 20_000);
-      } catch {
-        connection.destroy();
-        return;
-      }
-
-      const player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Play,
-        },
-      });
-
-      connection.subscribe(player);
-
-      const stream = Readable.from(buffer);
-
-      const demuxer =
-        buffer.subarray(0, 4).toString() === 'OggS' ? new prism.opus.OggDemuxer() : new prism.opus.WebmDemuxer();
-
-      const resource = createAudioResource(stream.pipe(demuxer), {
-        inputType: StreamType.Opus,
-      });
-
-      player.play(resource);
-
-      player.on(AudioPlayerStatus.Idle, () => {
-        connection.destroy();
-      });
-    }
+    await supabase.from('tts').upsert({
+      user_id: interaction.user?.id ?? interaction.member?.user.id,
+      use_amount: useAmount + 1,
+      last_used: new Date().toISOString(),
+    });
   },
 } satisfies ChatInputCommand<Options>;

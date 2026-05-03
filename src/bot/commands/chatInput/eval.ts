@@ -35,6 +35,7 @@ export default {
     const { code } = options;
 
     let result;
+
     try {
       result = eval(code);
     } catch (e) {

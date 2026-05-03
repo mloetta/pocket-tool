@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
-import { Gateway, Snowflake } from '@discordjs/core';
+import { APIGuildMember, APIRole, Gateway, Snowflake } from '@discordjs/core';
 import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '@discordjs/voice';
 import { Collection } from '@discordjs/collection';
 

@@ -23,6 +23,7 @@ export default {
   acknowledge: true,
   async run(interaction, client) {
     const openRouterApiKey = env.get('open_router_api_key', true).toString();
+
     if (!openRouterApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -44,6 +45,7 @@ export default {
     const message = interaction.data.resolved.messages[messageId];
 
     let prompt = message.content;
+
     if (!prompt) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [

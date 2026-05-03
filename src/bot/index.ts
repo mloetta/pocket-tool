@@ -2,12 +2,15 @@ import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
 import { WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
   GatewayDispatchEvents,
   GatewayIntentBits,
+  InteractionType,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { adapters, readDirectory } from '../utils/utils.js';
@@ -147,12 +150,17 @@ export function localizeCommand(command: ApplicationCommand): any {
  * @param interaction The interaction to parse
  * @returns A record of option names to values
  */
-export function parseCommandOptions(interaction: APIChatInputApplicationCommandInteraction): Record<string, unknown> {
+export function parseCommandOptions(
+  interaction: APIChatInputApplicationCommandInteraction,
+  options?: APIApplicationCommandInteractionDataOption<InteractionType.ApplicationCommand>[],
+): Record<string, unknown> {
   if (!interaction.data) {
     return {};
   }
 
-  const options = interaction.data.options ?? [];
+  if (!options) {
+    options = interaction.data.options ?? [];
+  }
 
   const args: Record<string, unknown> = {};
 
@@ -160,7 +168,7 @@ export function parseCommandOptions(interaction: APIChatInputApplicationCommandI
     switch (option.type) {
       case ApplicationCommandOptionType.SubcommandGroup:
       case ApplicationCommandOptionType.Subcommand:
-        args[option.name] = parseCommandOptions(interaction);
+        args[option.name] = parseCommandOptions(interaction, option.options);
         break;
       case ApplicationCommandOptionType.Channel:
         args[option.name] = interaction.data.resolved?.channels?.[option.value];

@@ -56,6 +56,7 @@ export default {
   acknowledge: true,
   async run(interaction, options, client) {
     let { target, scope } = options;
+
     if (!target) {
       target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };
     }

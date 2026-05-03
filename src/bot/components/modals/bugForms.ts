@@ -147,5 +147,18 @@ export default {
         ],
       },
     });
+
+    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      components: [
+        {
+          type: ComponentType.TextDisplay,
+          content: `${icon(Emoji.Correct)} Successfully submitted bug report.`,
+        },
+        {
+          type: ComponentType.Separator,
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+    });
   },
 } satisfies Component<InteractableComponentType.Modal>;

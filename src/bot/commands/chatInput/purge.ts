@@ -69,6 +69,7 @@ export default {
       interaction.application_id,
       interaction.token,
     );
+
     const messages = await client.api.channels.getMessages(interaction.channel.id, { limit: amount + 1 });
 
     let deleteIds: Snowflake[] = [];

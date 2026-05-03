@@ -85,6 +85,7 @@ async function handleApplicationCommand(
   }
 
   let command = client.commands.get(interaction.data.name) as ApplicationCommand;
+
   if (!command) {
     await client.api.interactions.reply(interaction.id, interaction.token, {
       components: [
@@ -123,6 +124,7 @@ async function handleApplicationCommand(
             switch (command.rate_limit.type) {
               case RateLimitType.Channel: {
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -143,6 +145,7 @@ async function handleApplicationCommand(
               }
               case RateLimitType.Guild: {
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -167,6 +170,7 @@ async function handleApplicationCommand(
                   interaction.data.name,
                   command.rate_limit,
                 );
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -214,6 +218,7 @@ async function handleApplicationCommand(
             switch (command.rate_limit.type) {
               case RateLimitType.Channel: {
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -234,6 +239,7 @@ async function handleApplicationCommand(
               }
               case RateLimitType.Guild: {
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -258,6 +264,7 @@ async function handleApplicationCommand(
                   interaction.data.name,
                   command.rate_limit,
                 );
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -295,6 +302,7 @@ async function handleApplicationCommand(
             switch (command.rate_limit.type) {
               case RateLimitType.Channel: {
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -315,6 +323,7 @@ async function handleApplicationCommand(
               }
               case RateLimitType.Guild: {
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -339,6 +348,7 @@ async function handleApplicationCommand(
                   interaction.data.name,
                   command.rate_limit,
                 );
+
                 if (!result.executable) {
                   await client.api.interactions.reply(interaction.id, interaction.token, {
                     components: [
@@ -427,11 +437,13 @@ async function handleComponent(
 
   const args = interaction.data.custom_id?.split('_') ?? [];
   const customId = args.shift();
+
   if (!customId) {
     return;
   }
 
   let component = client.components.get(customId);
+
   if (!component) {
     return;
   }
@@ -468,5 +480,10 @@ async function handleComponent(
     }
   } catch (e) {
     console.error(`Component ${component.custom_id} encountered an error:`, e);
+
+    await client.api.interactions.reply(interaction.id, interaction.token, {
+      content: `${icon(Emoji.Wrong)} The component ${component.custom_id} encountered an error. Please try again later.\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>.`,
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+    });
   }
 }
