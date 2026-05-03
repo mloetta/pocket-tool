@@ -29,6 +29,7 @@ export default {
       type: ApplicationCommandOptionType.String,
       name: 'text',
       description: 'The text to convert to speech',
+      max_length: 1000,
       required: true,
     },
     {
@@ -123,7 +124,7 @@ export default {
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
-      text: stringwrapPreserveWords(text, 1000),
+      text,
       modelId: 'eleven_v3',
       outputFormat: 'opus_48000_192',
     });

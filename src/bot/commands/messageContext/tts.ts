@@ -8,7 +8,7 @@ import {
 import { MessageContextMenuCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
-import { icon, pill, timestamp } from '../../../utils/markdown.js';
+import { icon, pill, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
 
@@ -108,7 +108,7 @@ export default {
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps('M563YhMmA0S8vEYwkgYa', {
-      text: content,
+      text: stringwrapPreserveWords(content, 1000),
       modelId: 'eleven_v3',
       outputFormat: 'opus_48000_192',
     });
