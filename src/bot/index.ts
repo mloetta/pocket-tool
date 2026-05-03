@@ -3,7 +3,6 @@ import env from '../utils/env.js';
 import { WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
-  APIApplicationCommandOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
