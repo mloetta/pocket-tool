@@ -1,18 +1,17 @@
 import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
-import { CompressionMethod, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
+import { CompressionMethod, WebSocketManager, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
-  GatewayDispatchEvents,
   GatewayIntentBits,
   InteractionType,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
-import { adapters, readDirectory } from '../utils/utils.js';
+import { readDirectory } from '../utils/utils.js';
 import path from 'path';
 import { Collection } from '@discordjs/collection';
 import fs from 'fs';
@@ -29,24 +28,6 @@ const gateway = new WebSocketManager({
 });
 
 const client = new Client({ rest, gateway });
-
-client.gateway.on(WebSocketShardEvents.Dispatch, (payload) => {
-  const { t: type, d: data } = payload;
-
-  if (!data || !('guild_id' in data) || !data.guild_id) return;
-
-  const adapter = adapters.get(data.guild_id);
-  if (!adapter) return;
-
-  switch (type) {
-    case GatewayDispatchEvents.VoiceStateUpdate:
-      adapter.onVoiceStateUpdate(data);
-      break;
-    case GatewayDispatchEvents.VoiceServerUpdate:
-      adapter.onVoiceServerUpdate(data);
-      break;
-  }
-});
 
 client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
