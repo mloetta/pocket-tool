@@ -11,6 +11,7 @@ import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
 import { icon, stringwrapPreserveWords } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import { msToApproxTime } from '../../../utils/utils.js';
 
 type Options = {
   prompt: string;
@@ -89,15 +90,10 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${stringwrapPreserveWords(res.choices[0].message.content, 2000)}\n-# **${res.model}** - Response may be inaccurate or incomplete - Took **${formatPretty(elapsed)}**`,
+          content: `${stringwrapPreserveWords(res.choices[0].message.content, 2000)}\n-# **${res.model}** - Response may be inaccurate or incomplete - Took **${msToApproxTime(elapsed)}**`,
         },
       ],
       flags: MessageFlags.IsComponentsV2,
     });
   },
 } satisfies ChatInputCommand<Options>;
-
-function formatPretty(ms: number): string {
-  if (ms < 1000) return `${Math.round(ms)}ms`;
-  return `~${(ms / 1000).toFixed(1)}s`;
-}

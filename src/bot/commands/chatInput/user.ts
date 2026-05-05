@@ -15,7 +15,7 @@ import { Emoji } from '../../../types/emojis.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
 type Options = {
-  target?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
+  user?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
   scope?: string;
 };
 
@@ -28,7 +28,7 @@ export default {
   options: [
     {
       type: ApplicationCommandOptionType.User,
-      name: 'target',
+      name: 'user',
       description: 'the user to view information about',
       required: false,
     },
@@ -55,7 +55,7 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    let { target, scope } = options;
+    let { user: target, scope } = options;
 
     if (!target) {
       target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };

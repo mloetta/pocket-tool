@@ -1,6 +1,6 @@
 import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
-import { WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
+import { CompressionMethod, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
@@ -21,13 +21,10 @@ const rest = new REST().setToken(env.get('token', true).toString());
 
 const gateway = new WebSocketManager({
   token: env.get('token', true).toString(),
-  intents:
-    GatewayIntentBits.Guilds |
-    GatewayIntentBits.GuildMessages |
-    GatewayIntentBits.MessageContent |
-    GatewayIntentBits.GuildVoiceStates,
+  intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
   shardCount: null,
   rest,
+  compression: CompressionMethod.ZlibSync,
   buildStrategy: (manager) => new WorkerShardingStrategy(manager, { shardsPerWorker: 4 }),
 });
 

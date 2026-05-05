@@ -70,7 +70,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${to ?? interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
+              content: `> ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${to ?? interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
             },
           ],
         },

@@ -9,7 +9,7 @@ import {
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { icon, pill, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
+import { icon, pill, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
 
@@ -36,7 +36,6 @@ export default {
       type: ApplicationCommandOptionType.String,
       name: 'voice',
       description: 'The voice to use for TTS',
-      required: false,
       choices: [
         {
           name: 'Male',
@@ -51,6 +50,7 @@ export default {
           value: 'M563YhMmA0S8vEYwkgYa',
         },
       ],
+      required: false,
     },
   ],
   rate_limit: {
@@ -83,7 +83,7 @@ export default {
     const { data, error } = await supabase
       .from('tts')
       .select('*')
-      .eq('user_id', (interaction.user?.id ?? interaction.member?.user.id)!)
+      .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
       .maybeSingle();
 
     if (error) {
@@ -152,7 +152,7 @@ export default {
     await supabase.from('tts').upsert({
       user_id: interaction.user?.id ?? interaction.member?.user.id,
       use_amount: useAmount + 1,
-      last_used: new Date().toISOString(),
+      last_used: new Date(),
     });
   },
 } satisfies ChatInputCommand<Options>;

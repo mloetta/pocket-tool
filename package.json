@@ -22,7 +22,9 @@
     "@discordjs/ws": "^2.0.4",
     "@elevenlabs/elevenlabs-js": "^2.45.0",
     "@supabase/supabase-js": "^2.104.1",
+    "bufferutil": "^4.1.0",
     "ioredis": "^5.10.1",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "zlib-sync": "^0.1.10"
   }
 }

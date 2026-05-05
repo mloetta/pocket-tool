@@ -67,7 +67,7 @@ export default {
     const { data, error } = await supabase
       .from('tts')
       .select('*')
-      .eq('user_id', (interaction.user?.id ?? interaction.member?.user.id)!)
+      .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
       .maybeSingle();
 
     if (error) {
@@ -136,7 +136,7 @@ export default {
     await supabase.from('tts').upsert({
       user_id: interaction.user?.id ?? interaction.member?.user.id,
       use_amount: useAmount + 1,
-      last_used: new Date().toISOString(),
+      last_used: new Date(),
     });
   },
 } satisfies MessageContextMenuCommand;
