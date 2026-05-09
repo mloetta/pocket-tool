@@ -23,7 +23,7 @@ const gateway = new WebSocketManager({
   intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
   shardCount: null,
   rest,
-  compression: CompressionMethod.ZlibSync,
+  compression: CompressionMethod.ZlibNative,
   buildStrategy: (manager) => new WorkerShardingStrategy(manager, { shardsPerWorker: 4 }),
 });
 

@@ -165,14 +165,23 @@ export interface Component<
 }
 
 export enum TimestampStyle {
+  /**	16:20 */
   ShortTime = 't',
+  /**	16:20:30 */
   MediumTime = 'T',
+  /**	20/04/2021 */
   ShortDate = 'd',
+  /**	April 20, 2021 */
   LongDate = 'D',
+  /**	April 20, 2021 at 16:20 */
   LongDateShortTime = 'f',
+  /**	Tuesday, April 20, 2021 at 16:20 */
   FullDateShortTime = 'F',
+  /**	20/04/2021, 16:20 */
   ShortDateShortTime = 's',
+  /**	20/04/2021, 16:20:30 */
   ShortDateMediumTime = 'S',
+  /**	4 years ago */
   RelativeTime = 'R',
 }
 
