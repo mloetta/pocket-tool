@@ -8,7 +8,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
-import { icon, pill } from '../../../utils/markdown.js';
+import { highlight, icon } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { hasPermission } from '../../../utils/utils.js';
 
@@ -51,7 +51,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} I don't have enough permissions to softban users. I need the following permissions in this channel: ${pill('Ban Members')}`,
+            content: `${icon(Emoji.Wrong)} I don't have enough permissions to softban users. I need the following permissions in this channel: ${highlight('Ban Members')}`,
           },
           {
             type: ComponentType.Separator,
@@ -73,7 +73,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} You don't have enough permissions to softban multiple users. You need the following permissions in this channel: ${pill('Manage Guild')}`,
+            content: `${icon(Emoji.Wrong)} You don't have enough permissions to softban multiple users. You need the following permissions in this channel: ${highlight('Manage Guild')}`,
           },
           {
             type: ComponentType.Separator,

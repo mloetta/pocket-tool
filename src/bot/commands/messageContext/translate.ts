@@ -54,6 +54,10 @@ export default {
       },
     });
 
+    const languages = new Intl.DisplayNames([interaction.locale], {
+      type: 'language',
+    });
+
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -61,7 +65,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
+              content: `> ${icon(Emoji.Translator)} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
             },
           ],
         },

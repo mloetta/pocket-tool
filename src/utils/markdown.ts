@@ -32,19 +32,19 @@ export function codeblock(type: string, content: any): string {
   return '```' + type + '\n' + _escapeCodeblock(content.join('\n')) + '```';
 }
 
-/** Returns a default bold inline pill for Discord.
+/** Returns a default bold inline highlight for Discord.
  *
- * @param content The content to wrap in a pill.
+ * @param content The content to highlight.
  */
-export function pill(content: any): string {
+export function highlight(content: any): string {
   return '**` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `**';
 }
 
-/** Returns a small inline pill for Discord.
+/** Returns a small inline highlight for Discord.
  *
- * @param content The content to wrap in a small pill.
+ * @param content The content to highlight.
  */
-export function smallPill(content: any): string {
+export function smallHighlight(content: any): string {
   return '` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `';
 }
 
@@ -75,24 +75,6 @@ export function iconAsEmoji(icon: Emoji): {
   };
 }
 
-/** Returns a bold inline pill with an icon.
- *
- * @param icon The icon to resolve.
- * @param content The content to wrap in a pill.
- */
-export function iconPill(icon: Emoji, content: any): string {
-  return _icon(icon) + '**` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `**';
-}
-
-/** Returns a small inline pill with an icon.
- *
- * @param icon The icon to resolve.
- * @param content The content to wrap in a small pill.
- */
-export function smallIconPill(icon: Emoji, content: any): string {
-  return _icon(icon) + '` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `';
-}
-
 /** Returns a formatted Discord markdown link.
  *
  * @param url The URL to link to.
@@ -116,44 +98,6 @@ export function link(url: string, masked: string, tooltip: string = '', embed: b
   return url;
 }
 
-/** Returns a link wrapped in a Discord pill.
- *
- * @param url The URL to link to.
- * @param content The content to wrap in a pill.
- * @param tooltip The tooltip to display when hovering over the link.
- * @param embed Whether to embed the link.
- */
-export function linkPill(url: string, content: any = '', tooltip: string = ''): string {
-  if (tooltip.length) {
-    tooltip = ` '${tooltip}'`;
-  }
-
-  if (content) {
-    return `[**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
-  }
-
-  return url;
-}
-
-/** Returns a pill link with an icon.
- *
- * @param icon The icon to display.
- * @param url The URL to link to.
- * @param content The content to wrap in a pill.
- * @param tooltip The tooltip to display when hovering over the link.
- */
-export function iconLinkPill(icon: Emoji, url: string, content: any = '', tooltip: string = ''): string {
-  if (tooltip.length) {
-    tooltip = ` '${tooltip}'`;
-  }
-
-  if (content) {
-    return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
-  }
-
-  return url;
-}
-
 /** Returns a Discord timestamp markdown.
  *
  * @param time The time, in milliseconds, to format.
@@ -163,29 +107,8 @@ export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.Sh
   return `<t:${Math.floor(time / 1000)}:${flag}>`;
 }
 
-/** Trims a string to a specified maximum length, optionally replacing newlines with spaces.
- *
- * @param content The string to trim.
- * @param length The maximum length of the string.
- * @param newlines Whether to replace newlines with spaces.
- */
-export function stringwrap(content = '', length: number, newlines: boolean = true): string {
-  if (!newlines) {
-    content = content.replace(/\n/g, ' ');
-  }
-
-  if (content.length > length) {
-    let c = content.slice(0, length) + '...';
-    while (c.endsWith(' ...')) c = c.slice(0, -4) + '...';
-    return c;
-  }
-
-  return content;
-}
-
 /**
  * Trims a string to the specified maximum length without breaking words, optionally replacing newlines with spaces.
- * Alternative to {@link stringwrap}.
  *
  * @param content The string to trim.
  * @param length The maximum length of the string.
@@ -208,59 +131,7 @@ export function stringwrapPreserveWords(content = '', length: number, newLines: 
   return c.join(' ') + '...';
 }
 
-/** Returns a citation superscript optionally linking to a URL.
- *
- * @param number The citation number.
- * @param url The URL to link to.
- * @param tooltip The tooltip to display on hover.
- */
-export function citation(number = 1, url: string, tooltip: string = ''): string {
-  const Superscript = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-
-  let formatted = '';
-  for (const n of number.toString().split('')) {
-    formatted += Superscript[parseInt(n)];
-  }
-
-  if (url) {
-    if (tooltip.length) {
-      if (tooltip.endsWith(' ')) {
-        tooltip = tooltip.slice(0, -1);
-      }
-
-      tooltip = ` '${tooltip.replace(/["*]/g, '')}'`;
-    }
-
-    return `[⁽${formatted}⁾](${url.replace(/\)/g, '\\)')}${tooltip})`;
-  }
-
-  return `⁽${formatted}⁾`;
-}
-
-/** Attemps to format multiple columns into inline Discord fields.
- *
- * @param cols The columns to format.
- * @param options The formatting options.
- */
-export function inline(cols: string[][], options?: { spacing?: number }) {
-  options = options ?? {};
-  const spacing = Math.max(options.spacing ?? 1);
-
-  const lengths = cols[0]!.map((_, colIndex) => Math.max(...cols.map((row) => (row[colIndex] ?? '').length)));
-
-  let lines = cols.map((row) => row.map((cell, i) => (cell ?? '').padEnd(lengths[i]! + spacing, ' ')).join(''));
-
-  return lines;
-}
-
-/** Returns a favicon URL.
- *
- * @param url The URL to get the favicon for.
- * @param size The size of the favicon.
- */
-export function favicon(url: string, size: number = 256): string {
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=${size}`;
-}
+const CDN = 'https://cdn.discordapp.com';
 
 /** Returns a CDN URL for the given route.
  *
@@ -270,7 +141,5 @@ export function favicon(url: string, size: number = 256): string {
  * @param animated Whether the image is animated.
  */
 export function cdn(route: string, size: number = 4096, format: string = 'webp', animated: boolean = false): string {
-  const CDN = 'https://cdn.discordapp.com';
-
   return `${CDN}${route}.${format}?size=${size}&animated=${animated}`;
 }

@@ -6,9 +6,10 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { cdn, icon, pill } from '../../../utils/markdown.js';
+import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { cdn, icon, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
 type Options = {
   emoji: string;
@@ -69,13 +70,18 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: emojis.map((e) => `${icon(Emoji.Expression)} ${e.name} ${pill(e.id)}`).join('\n'),
+              content: emojis
+                .map(
+                  (emoji) =>
+                    `${icon(Emoji.Expression)} **${emoji.name}**\n-# ${emoji.id}\n\n${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(emoji.id), TimestampStyle.LongDate)}`,
+                )
+                .join('\n'),
             },
             {
               type: ComponentType.MediaGallery,
-              items: emojis.map((e) => ({
+              items: emojis.map((emoji) => ({
                 media: {
-                  url: cdn(`/emojis/${e.id}`, 1024, e.animated ? 'gif' : 'webp', true),
+                  url: cdn(`/emojis/${emoji.id}`, 1024, emoji.animated ? 'gif' : 'webp', true),
                 },
               })),
             },

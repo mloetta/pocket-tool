@@ -9,7 +9,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
-import { icon, pill, smallPill } from '../../../utils/markdown.js';
+import { highlight, icon, smallHighlight } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { hasPermission } from '../../../utils/utils.js';
 
@@ -53,7 +53,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} I don't have enough permissions to purge messages. I need the following permissions in this channel: ${pill('Manage Messages')}`,
+            content: `${icon(Emoji.Wrong)} I don't have enough permissions to purge messages. I need the following permissions in this channel: ${highlight('Manage Messages')}`,
           },
           {
             type: ComponentType.Separator,
@@ -122,7 +122,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Correct)} Successfully purged ${pill(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${smallPill(content)}` : ''}.`,
+              content: `${icon(Emoji.Correct)} Successfully purged ${highlight(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${smallHighlight(content)}` : ''}.`,
             },
           ],
         },

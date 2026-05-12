@@ -10,7 +10,7 @@ import {
   UserFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, icon, pill, timestamp } from '../../../utils/markdown.js';
+import { cdn, icon, smallHighlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
@@ -141,7 +141,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${user.username} ${pill(user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
@@ -174,19 +174,20 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} ${member.nick ?? user.username} ${pill(user.id)}\n${badges.length > 0 ? badges.map(icon).join(' ') : ''}`,
+                    content: `${icon(Emoji.Mention)} **${member.nick ?? user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
                   type: ComponentType.Thumbnail,
                   media: {
-                    url:
-                      cdn(
-                        `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
-                        4096,
-                        'webp',
-                        true,
-                      ) ?? cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
+                    url: member.avatar
+                      ? cdn(
+                          `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
+                          4096,
+                          'webp',
+                          true,
+                        )
+                      : cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                   },
                 },
               },
@@ -195,11 +196,21 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n${icon(Emoji.Leaf)} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}`,
+                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${icon(Emoji.Leaf)} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                  member.roles.length > 0
+                    ? `\n\n${icon(Emoji.Roles)} **Roles:**\n${member.roles
+                        .slice(0, 5)
+                        .map((role) => `<@&${role}>`)
+                        .join(', ')}`
+                    : ''
+                }${member.roles.length > 5 ? ` ${smallHighlight(`+${(member.roles.length - 5).toLocaleString('en-US')}`)}` : ``}`,
               },
             ],
           },
         ],
+        allowed_mentions: {
+          parse: [],
+        },
         flags: MessageFlags.IsComponentsV2,
       });
     }

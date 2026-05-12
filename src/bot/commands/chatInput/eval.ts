@@ -8,7 +8,7 @@ import {
 } from '@discordjs/core';
 import util from 'util';
 import { ChatInputCommand } from '../../../types/types.js';
-import { codeblock, stringwrap } from '../../../utils/markdown.js';
+import { codeblock, stringwrapPreserveWords } from '../../../utils/markdown.js';
 
 type Options = {
   code: string;
@@ -61,7 +61,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: codeblock('ts', stringwrap(formatted, 1985)),
+              content: codeblock('ts', stringwrapPreserveWords(formatted, 1985)),
             },
           ],
         },

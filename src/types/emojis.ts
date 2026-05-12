@@ -18,6 +18,13 @@ export enum Emoji {
   Boost = '<:boost:1499809441359462490>',
   Members = '<:members:1499809673338159144>',
   Channel = '<:channel:1499809699648897235>',
+  Roles = '<:roles:1503562877519270099>',
+  // Twitter
+  Verified = '<:verified_twitter:1503135030778531860>',
+  Reply = '<:reply_twitter:1503135047996412104>',
+  Repost = '<:repost_twitter:1503135078237343915>',
+  Like = '<:like_twitter:1503135088882352401>',
+  Bookmark = '<:bookmark_twitter:1503135100718682313>',
   // Badges
   Staff = '<:staff:1496959179108126780>',
   Partner = '<:partner:1496959123747766363>',

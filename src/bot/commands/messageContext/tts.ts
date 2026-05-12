@@ -8,7 +8,7 @@ import {
 import { MessageContextMenuCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
-import { icon, pill, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
+import { highlight, icon, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
 
@@ -93,7 +93,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,

@@ -28,7 +28,7 @@ import {
   UserContextMenuCommand,
 } from '../../types/types.js';
 import { parseCommandOptions, parseComponentArgs } from '../index.js';
-import { icon, pill, timestamp } from '../../utils/markdown.js';
+import { highlight, icon, timestamp } from '../../utils/markdown.js';
 import { Emoji } from '../../types/emojis.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
@@ -91,7 +91,7 @@ async function handleApplicationCommand(
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${icon(Emoji.Exclamation)} The command: ${pill(interaction.data.name)} was not found.`,
+          content: `${icon(Emoji.Exclamation)} The command: ${highlight(interaction.data.name)} was not found.`,
         },
         {
           type: ComponentType.Separator,

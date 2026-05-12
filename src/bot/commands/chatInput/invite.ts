@@ -2,13 +2,12 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
-  ButtonStyle,
   ComponentType,
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, icon, iconPill, pill, timestamp } from '../../../utils/markdown.js';
+import { cdn, highlight, icon, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
@@ -95,7 +94,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${icon(Emoji.Home)} ${name} ${pill(guildId)}\n${timestamp(createdAt, TimestampStyle.LongDate)}\n${iconPill(Emoji.Members, members)} ${iconPill(Emoji.Channel, channels)} ${iconPill(Emoji.Boost, boosts)}`,
+                  content: `${icon(Emoji.Home)} **${name}**\n-# ${guildId}`,
                 },
               ],
               accessory: {
@@ -104,6 +103,13 @@ export default {
                   url: guildIcon,
                 },
               },
+            },
+            {
+              type: ComponentType.Separator,
+            },
+            {
+              type: ComponentType.TextDisplay,
+              content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${icon(Emoji.Members)} ${highlight(members)}   ${icon(Emoji.Channel)} ${highlight(channels)}   ${icon(Emoji.Boost)} ${highlight(boosts)}`,
             },
           ],
         },

@@ -9,7 +9,7 @@ import {
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { icon, pill, timestamp } from '../../../utils/markdown.js';
+import { highlight, icon, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
 
@@ -117,7 +117,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${pill(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,

@@ -4,6 +4,7 @@ import {
   ApplicationIntegrationType,
   ComponentType,
   InteractionContextType,
+  Locale,
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
@@ -33,14 +34,16 @@ export default {
     {
       type: ApplicationCommandOptionType.String,
       name: 'from',
-      description: 'The language to translate from (2 letter language code)',
+      description: 'The language to translate from',
       required: false,
+      autocomplete: true,
     },
     {
       type: ApplicationCommandOptionType.String,
       name: 'to',
-      description: 'The language to translate to (2 letter language code)',
+      description: 'The language to translate to',
       required: false,
+      autocomplete: true,
     },
   ],
   rate_limit: {
@@ -48,6 +51,45 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
+  async autocomplete(interaction, client) {
+    const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
+
+    switch (option?.name) {
+      case 'from': {
+        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
+
+        const choices = [
+          {
+            name: 'Auto',
+            value: 'auto',
+          },
+          ...Object.entries(Locale).map(([key, value]) => ({
+            name: key,
+            value,
+          })),
+        ]
+          .filter((c) => c.name.toLowerCase().includes(focused))
+          .slice(0, 25);
+
+        await client.api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
+        break;
+      }
+      case 'to': {
+        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
+
+        const choices = Object.entries(Locale)
+          .map(([key, value]) => ({
+            name: key,
+            value,
+          }))
+          .filter((c) => c.name.toLowerCase().includes(focused))
+          .slice(0, 25);
+
+        await client.api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
+        break;
+      }
+    }
+  },
   async run(interaction, options, client) {
     const { text, from, to } = options;
 
@@ -63,6 +105,10 @@ export default {
       },
     });
 
+    const languages = new Intl.DisplayNames([interaction.locale], {
+      type: 'language',
+    });
+
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -70,7 +116,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${icon(Emoji.Translator)} Translated from **${res[2]}** to **${to ?? interaction.locale}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
+              content: `> ${icon(Emoji.Translator)} Translated from **${languages.of(res[2])}** to **${languages.of(to ?? interaction.locale.split('-')[0])}**\n${res[0][0][0]}\n-# Translation may be inaccurate.`,
             },
           ],
         },

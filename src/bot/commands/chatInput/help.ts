@@ -8,7 +8,7 @@ import {
   SeparatorSpacingSize,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { icon, iconAsEmoji, link, pill } from '../../../utils/markdown.js';
+import { highlight, icon, iconAsEmoji, link } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 
 export default {
@@ -34,7 +34,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `You can view all the available slash commands by typing ${pill('/')}.\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user.`,
+              content: `You can view all the available slash commands by typing ${highlight('/')}.\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user.`,
             },
             {
               type: ComponentType.Separator,
