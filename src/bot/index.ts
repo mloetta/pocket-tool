@@ -1,12 +1,13 @@
 import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
-import { CompressionMethod, WebSocketManager, WorkerShardingStrategy } from '@discordjs/ws';
+import { CompressionMethod, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
+  GatewayDispatchEvents,
   GatewayIntentBits,
   InteractionType,
 } from '@discordjs/core';
@@ -33,43 +34,14 @@ client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
 client.events = new Collection<string, GatewayEvent>();
 
-// Load commands, events and components
-(async () => {
-  if (fs.existsSync(path.join(process.cwd(), 'dist', 'bot', 'commands'))) {
-    const commands = await readDirectory<ApplicationCommand>(path.join(process.cwd(), 'dist', 'bot', 'commands'));
-    for (const command of commands) {
-      client.commands.set((command.name as any).global ?? command.name, command);
-    }
-  }
+// Load commands, events and components and then connect to the gateway
+loadModules().then(() => gateway.connect());
 
-  if (fs.existsSync(path.join(process.cwd(), 'dist', 'bot', 'components'))) {
-    const components = await readDirectory<Component>(path.join(process.cwd(), 'dist', 'bot', 'components'));
-    for (const component of components) {
-      client.components.set(component.custom_id, component);
-    }
-  }
+export const shardLatency = new Collection<number, number>();
 
-  if (fs.existsSync(path.join(process.cwd(), 'dist', 'bot', 'events'))) {
-    const events = await readDirectory<GatewayEvent>(path.join(process.cwd(), 'dist', 'bot', 'events'));
-    for (const event of events) {
-      client.events.set(event.name, event);
-    }
-  }
-
-  for (const event of client.events.values()) {
-    console.log(`Binding event: ${event.name}`);
-
-    client.on(event.name, async (payload: any) => {
-      try {
-        await event.run(payload.data, client);
-      } catch (e) {
-        console.log(`An error occurred while running event ${event.name}:`, e);
-      }
-    });
-  }
-})();
-
-gateway.connect();
+gateway.on(WebSocketShardEvents.HeartbeatComplete, (payload, shardId) => {
+  shardLatency.set(shardId, payload.latency);
+});
 
 // Error handling
 process.on('uncaughtException', console.error);
@@ -205,4 +177,42 @@ export function parseComponentArgs<Args extends readonly string[]>(
   }
 
   return result;
+}
+
+async function loadModules() {
+  const basePath = path.join(process.cwd(), 'dist', 'bot');
+
+  if (fs.existsSync(path.join(basePath, 'commands'))) {
+    const commands = await readDirectory<ApplicationCommand>(path.join(basePath, 'commands'));
+
+    for (const command of commands) {
+      client.commands.set((command.name as any).global ?? command.name, command);
+    }
+  }
+
+  if (fs.existsSync(path.join(basePath, 'components'))) {
+    const components = await readDirectory<Component>(path.join(basePath, 'components'));
+
+    for (const component of components) {
+      client.components.set(component.custom_id, component);
+    }
+  }
+
+  if (fs.existsSync(path.join(basePath, 'events'))) {
+    const events = await readDirectory<GatewayEvent>(path.join(basePath, 'events'));
+
+    for (const event of events) {
+      client.events.set(event.name, event);
+
+      console.log(`Binding event: ${event.name}`);
+
+      client.on(event.name, async (payload: any) => {
+        try {
+          await event.run(payload.data, client);
+        } catch (e) {
+          console.log(`An error occurred while running event ${event.name}:`, e);
+        }
+      });
+    }
+  }
 }
