@@ -1,7 +1,6 @@
 export enum Emoji {
   Correct = '<:correct:1495789102430289970>',
   Wrong = '<:wrong:1495789120075599912>',
-  Ping = '<:ping:1495789139176591401>',
   List = '<:list:1495789151830671392>',
   Link = '<:link:1495789163574988921>',
   Exclamation = '<:exclamation:1495789177214861342>',
@@ -13,12 +12,12 @@ export enum Emoji {
   Wumpus = '<:wumpus:1496955716043276338>',
   Home = '<:home:1497641039018594374>',
   Owner = '<:owner:1497643520100405358>',
-  CallConnect = '<:call_connect:1499536653155438825>',
   Expression = '<:expression:1499803321408684163>',
   Boost = '<:boost:1499809441359462490>',
   Members = '<:members:1499809673338159144>',
   Channel = '<:channel:1499809699648897235>',
   Roles = '<:roles:1503562877519270099>',
+  Clock = '<:clock:1504583944077574296>',
   // Twitter
   Verified = '<:verified_twitter:1503135030778531860>',
   Reply = '<:reply_twitter:1503135047996412104>',
