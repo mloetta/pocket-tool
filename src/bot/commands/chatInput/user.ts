@@ -4,13 +4,14 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
+  ButtonStyle,
   ComponentType,
   InteractionContextType,
   MessageFlags,
   UserFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, icon, smallHighlight, timestamp } from '../../../utils/markdown.js';
+import { cdn, icon, iconAsEmoji, smallHighlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
@@ -152,6 +153,18 @@ export default {
                 },
               },
               {
+                type: ComponentType.ActionRow,
+                components: [
+                  {
+                    type: ComponentType.Button,
+                    url: `discord://-/users/${user.id}`,
+                    label: 'View User',
+                    emoji: iconAsEmoji(Emoji.User),
+                    style: ButtonStyle.Link,
+                  },
+                ],
+              },
+              {
                 type: ComponentType.Separator,
               },
               {
@@ -190,6 +203,18 @@ export default {
                       : cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                   },
                 },
+              },
+              {
+                type: ComponentType.ActionRow,
+                components: [
+                  {
+                    type: ComponentType.Button,
+                    url: `discord://-/users/${user.id}`,
+                    label: 'View User',
+                    emoji: iconAsEmoji(Emoji.User),
+                    style: ButtonStyle.Link,
+                  },
+                ],
               },
               {
                 type: ComponentType.Separator,

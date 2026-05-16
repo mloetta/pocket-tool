@@ -18,6 +18,7 @@ export enum Emoji {
   Channel = '<:channel:1499809699648897235>',
   Roles = '<:roles:1503562877519270099>',
   Clock = '<:clock:1504583944077574296>',
+  User = '<:user:1505002623214813224>',
   // Twitter
   Verified = '<:verified_twitter:1503135030778531860>',
   Reply = '<:reply_twitter:1503135047996412104>',
