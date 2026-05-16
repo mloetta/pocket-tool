@@ -131,52 +131,7 @@ export default {
       badges.push(Emoji.Nitro);
     }
 
-    if (scope === 'global') {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
-        components: [
-          {
-            type: ComponentType.Container,
-            components: [
-              {
-                type: ComponentType.Section,
-                components: [
-                  {
-                    type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
-                  },
-                ],
-                accessory: {
-                  type: ComponentType.Thumbnail,
-                  media: {
-                    url: cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
-                  },
-                },
-              },
-              {
-                type: ComponentType.ActionRow,
-                components: [
-                  {
-                    type: ComponentType.Button,
-                    url: `discord://-/users/${user.id}`,
-                    label: 'View User',
-                    emoji: iconAsEmoji(Emoji.User),
-                    style: ButtonStyle.Link,
-                  },
-                ],
-              },
-              {
-                type: ComponentType.Separator,
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
-              },
-            ],
-          },
-        ],
-        flags: MessageFlags.IsComponentsV2,
-      });
-    } else if (scope === 'guild' && member) {
+    if (scope === 'guild' && member) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -229,6 +184,51 @@ export default {
                         .join(', ')}`
                     : ''
                 }${member.roles.length > 5 ? ` ${smallHighlight(`+${(member.roles.length - 5).toLocaleString('en-US')}`)}` : ``}`,
+              },
+            ],
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+    } else {
+      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.Container,
+            components: [
+              {
+                type: ComponentType.Section,
+                components: [
+                  {
+                    type: ComponentType.TextDisplay,
+                    content: `${icon(Emoji.Mention)} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
+                  },
+                ],
+                accessory: {
+                  type: ComponentType.Thumbnail,
+                  media: {
+                    url: cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
+                  },
+                },
+              },
+              {
+                type: ComponentType.ActionRow,
+                components: [
+                  {
+                    type: ComponentType.Button,
+                    url: `discord://-/users/${user.id}`,
+                    label: 'View User',
+                    emoji: iconAsEmoji(Emoji.User),
+                    style: ButtonStyle.Link,
+                  },
+                ],
+              },
+              {
+                type: ComponentType.Separator,
+              },
+              {
+                type: ComponentType.TextDisplay,
+                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
               },
             ],
           },
