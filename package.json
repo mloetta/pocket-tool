@@ -24,6 +24,7 @@
     "@supabase/supabase-js": "^2.104.1",
     "bufferutil": "^4.1.0",
     "luxon": "^3.7.2",
+    "openai": "^6.38.0",
     "sharp": "^0.34.5"
   }
 }

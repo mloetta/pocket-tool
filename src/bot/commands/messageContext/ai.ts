@@ -5,12 +5,13 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
-import { makeRequest } from '../../../utils/request.js';
+import { MessageContextMenuCommand, RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { icon, stringwrapPreserveWords } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import { msToApproxTime } from '../../../utils/utils.js';
+import OpenAI from 'openai';
+import { ChatCompletionContentPart } from 'openai/resources';
 
 export default {
   type: ApplicationCommandType.Message,
@@ -23,14 +24,14 @@ export default {
   },
   acknowledge: true,
   async run(interaction, client) {
-    const openRouterApiKey = env.get('open_router_api_key', true).toString();
+    const nvidiaApiKey = env.get('nvidia_api_key', true).toString();
 
-    if (!openRouterApiKey) {
+    if (!nvidiaApiKey) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} OpenRouter API key not set.`,
+            content: `${icon(Emoji.Exclamation)} NVIDIA API key not set.`,
           },
           {
             type: ComponentType.Separator,
@@ -45,9 +46,9 @@ export default {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
-    let prompt = message.content;
+    let prompt;
 
-    if (!prompt) {
+    if (!message.content && !message.attachments) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
@@ -62,9 +63,9 @@ export default {
       });
 
       return;
-    }
-
-    if (message.message_reference) {
+    } else if (message.content) {
+      prompt = message.content;
+    } else if (message.message_reference) {
       try {
         const referenced = await client.api.channels.getMessage(
           message.message_reference.channel_id,
@@ -79,27 +80,36 @@ export default {
 
     const start = performance.now();
 
-    const res = await makeRequest('https://openrouter.ai/api/v1/chat/completions', {
-      method: RequestMethod.POST,
-      response: ResponseType.JSON,
-      headers: {
-        Authorization: `Bearer ${openRouterApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: {
-        model: 'openrouter/auto',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a friendly Discord chat bot, called Pocket Tool, designed to help people.\n- Today\'s date is ${new Date().toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n- You should always use gender neutral pronouns when possible.\n- When answering a question, be concise and to the point.\n- Try to answer with short responses. This does not apply to subjects that require more exhaustive or in-depth explanation.\n- Respond in a natural way, using Discord's supported markdown formatting.`,
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        max_completions_tokens: 2000,
-      },
+    const openai = new OpenAI({ apiKey: nvidiaApiKey, baseURL: 'https://integrate.api.nvidia.com/v1' });
+
+    let model;
+
+    if (message.attachments.length > 0) {
+      model = 'meta/llama-3.2-90b-vision-instruct';
+    } else {
+      model = 'meta/llama-3.3-70b-instruct';
+    }
+
+    const completion = await openai.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: 'system',
+          content: `You are a friendly Discord chat bot, called Pocket Tool, designed to help people.\n- Today\'s date is ${new Date().toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n- You should always use gender neutral pronouns when possible.\n- When answering a question, be concise and to the point.\n- Try to answer with short responses. This does not apply to subjects that require more exhaustive or in-depth explanation.\n- Respond in a natural way, using Discord's supported markdown formatting.`,
+        },
+        {
+          role: 'user',
+          content: [
+            ...(prompt ? ([{ type: 'text', text: prompt }] satisfies ChatCompletionContentPart[]) : []),
+            ...(message.attachments && model === 'meta/llama-3.2-90b-vision-instruct'
+              ? ([
+                  { type: 'image_url', image_url: { url: message.attachments[0].url } },
+                ] satisfies ChatCompletionContentPart[])
+              : []),
+          ],
+        },
+      ],
+      max_completion_tokens: 2000,
     });
 
     const end = performance.now();
@@ -109,7 +119,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${stringwrapPreserveWords(res.choices[0].message.content, 2000)}\n-# **${res.model}** - Response may be inaccurate or incomplete. - Took **${msToApproxTime(elapsed)}**`,
+          content: `${stringwrapPreserveWords(completion.choices[0].message.content!, 2000)}\n-# **${completion.model}** - Response may be inaccurate or incomplete. - Took **${msToApproxTime(elapsed)}**`,
         },
       ],
       flags: MessageFlags.IsComponentsV2,
