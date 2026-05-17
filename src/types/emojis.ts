@@ -19,6 +19,7 @@ export enum Emoji {
   Roles = '<:roles:1503562877519270099>',
   Clock = '<:clock:1504583944077574296>',
   User = '<:user:1505002623214813224>',
+  Currency = '<:currency:1505381671640498269>',
   // Twitter
   Verified = '<:verified_twitter:1503135030778531860>',
   Reply = '<:reply_twitter:1503135047996412104>',

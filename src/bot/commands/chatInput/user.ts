@@ -62,11 +62,11 @@ export default {
       target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };
     }
 
-    const { user, member } = target;
-
     if (!scope) {
       scope = 'global';
     }
+
+    const { user, member } = target;
 
     if (!user) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
