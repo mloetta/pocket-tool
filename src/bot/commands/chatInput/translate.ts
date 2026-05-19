@@ -123,7 +123,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${res[0][0][0]}${to === undefined ? "\n-# Target language was selected based on the user's locale." : ''}`,
+              content: `${res[0][0][0]}${to === undefined ? "\n-# Target language was selected based on the user's locale" : ''}`,
             },
           ],
         },

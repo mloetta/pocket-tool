@@ -72,7 +72,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid user to view their banner.`,
+            content: `${icon(Emoji.Exclamation)} Please select a valid user to view their banner`,
           },
           {
             type: ComponentType.Separator,
@@ -97,7 +97,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This member doesn't has a banner.`,
+              content: `${icon(Emoji.Exclamation)} This member doesn't has a banner`,
             },
             {
               type: ComponentType.Separator,
@@ -176,7 +176,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This user doesn't has a banner.`,
+              content: `${icon(Emoji.Exclamation)} This user doesn't has a banner`,
             },
             {
               type: ComponentType.Separator,

@@ -77,7 +77,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: 'Click the button on the right to view the guild features.',
+                  content: 'Click the button on the right to view the guild features',
                 },
               ],
               accessory: {

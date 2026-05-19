@@ -76,7 +76,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set.`,
+            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -117,7 +117,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests. Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,

@@ -53,7 +53,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} I don't have enough permissions to purge messages. I need the following permissions in this channel: ${highlight('Manage Messages')}`,
+            content: `${icon(Emoji.Wrong)} I don't have enough permissions to purge messages\n-# I need the following permissions in this channel: ${highlight('Manage Messages')}`,
           },
           {
             type: ComponentType.Separator,

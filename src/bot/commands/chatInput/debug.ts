@@ -5,24 +5,35 @@ import {
   ComponentType,
   InteractionContextType,
   MessageFlags,
-  SeparatorSpacingSize,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { highlight, icon, iconAsEmoji, link } from '../../../utils/markdown.js';
+import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
+import { iconAsEmoji, link, timestamp } from '../../../utils/markdown.js';
+import { getShardIdFromGuildId } from '../../../utils/utils.js';
+import os from 'os';
+import { shardLatency } from '../../index.js';
 import { Emoji } from '../../../types/emojis.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
-  name: 'help',
-  description: 'Learn more about me and what I can do',
+  name: 'debug',
+  description: 'View some informations about the bot',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
-  rate_limit: {
-    type: RateLimitType.User,
-    cooldown: 3,
-  },
   acknowledge: true,
   async run(interaction, options, client) {
+    const shardId = interaction.guild_id
+      ? getShardIdFromGuildId(interaction.guild_id, await client.gateway.getShardCount())
+      : 0;
+    const latency = shardLatency.get(shardId)?.toLocaleString('en-US');
+    const uptime = timestamp(Math.floor(Date.now() - process.uptime() * 1000), TimestampStyle.RelativeTime);
+    const memory = process.memoryUsage();
+    const usedMemory = memory.rss;
+    const totalMemory = os.totalmem();
+    const memoryUsage = `${Number((usedMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB (${Number((totalMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB)`;
+    const app = await client.api.applications.getCurrent();
+    const guilds = app.approximate_guild_count;
+    const installs = app.approximate_user_install_count;
+
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -30,46 +41,17 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: '# Welcome to Pocket Tool!',
-            },
-            {
-              type: ComponentType.TextDisplay,
-              content: `You can view all the available slash commands by typing ${highlight('/')}\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user`,
+              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${link('https://discord.gg/CAr2YgdtAv', 'Keystone')}**`,
             },
             {
               type: ComponentType.Separator,
             },
             {
               type: ComponentType.TextDisplay,
-              content: '## How to report bugs?',
-            },
-            {
-              type: ComponentType.Section,
-              components: [
-                {
-                  type: ComponentType.TextDisplay,
-                  content: 'To report bugs simply click the button on the right and fill out the form',
-                },
-              ],
-              accessory: {
-                type: ComponentType.Button,
-                custom_id: 'report-bugs',
-                label: 'Report Bugs',
-                emoji: iconAsEmoji(Emoji.BugHunter),
-                style: ButtonStyle.Secondary,
-              },
+              content: `### Shard #${shardId}\n> Latency: **${latency !== undefined ? `${latency}ms` : 'N/A'}**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
             },
             {
               type: ComponentType.Separator,
-            },
-            {
-              type: ComponentType.TextDisplay,
-              content: `-# ${icon(Emoji.Exclamation)} You can visit **${link('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
-            },
-            {
-              type: ComponentType.Separator,
-              spacing: SeparatorSpacingSize.Small,
-              divider: false,
             },
             {
               type: ComponentType.ActionRow,

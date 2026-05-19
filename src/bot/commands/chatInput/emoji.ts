@@ -45,7 +45,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide between 1 and 4 valid emojis.`,
+            content: `${icon(Emoji.Exclamation)} Please provide between 1 and 4 valid emojis`,
           },
           {
             type: ComponentType.Separator,

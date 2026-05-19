@@ -30,7 +30,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid message to translate.`,
+            content: `${icon(Emoji.Exclamation)} Please select a valid message to translate`,
           },
           {
             type: ComponentType.Separator,

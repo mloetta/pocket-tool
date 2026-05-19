@@ -73,7 +73,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} You don't have enough permissions to softban multiple users. You need the following permissions in this channel: ${highlight('Manage Guild')}`,
+            content: `${icon(Emoji.Wrong)} You don't have enough permissions to softban multiple users\n-# You need the following permissions in this channel: ${highlight('Manage Guild')}`,
           },
           {
             type: ComponentType.Separator,
@@ -88,7 +88,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You can only softban up to 200 users at a time.`,
+            content: `${icon(Emoji.Exclamation)} You can only softban up to 200 users at a time`,
           },
           {
             type: ComponentType.Separator,
@@ -161,7 +161,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${hasSuccess ? `${icon(Emoji.Correct)} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${icon(Emoji.Exclamation)} No users were softbanned.` : ''}`,
+              content: `${hasSuccess ? `${icon(Emoji.Correct)} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${icon(Emoji.Exclamation)} No users were softbanned` : ''}`,
             },
           ],
         },

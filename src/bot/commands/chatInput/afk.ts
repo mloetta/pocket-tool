@@ -64,7 +64,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${icon(Emoji.Correct)} You're now afk!${reason ? ` **${reason}**` : ''}\n-# Send a message to return.`,
+          content: `${icon(Emoji.Correct)} You're now afk!${reason ? ` **${reason}**` : ''}\n-# Send a message to return`,
         },
         {
           type: ComponentType.Separator,

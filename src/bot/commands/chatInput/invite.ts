@@ -45,7 +45,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view.`,
+            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,
@@ -63,7 +63,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view.`,
+            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,

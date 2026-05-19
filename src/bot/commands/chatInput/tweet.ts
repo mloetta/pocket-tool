@@ -75,7 +75,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Twitter API key not set.`,
+            content: `${icon(Emoji.Exclamation)} Twitter API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -94,7 +94,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide a valid tweet URL or ID to view.`,
+            content: `${icon(Emoji.Exclamation)} Please provide a valid tweet URL or ID to view`,
           },
           {
             type: ComponentType.Separator,
@@ -122,7 +122,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Failed to find the tweet.`,
+            content: `${icon(Emoji.Exclamation)} Failed to find the tweet`,
           },
           {
             type: ComponentType.Separator,
@@ -202,7 +202,7 @@ export default {
               ? ([
                   {
                     type: ComponentType.TextDisplay,
-                    content: '-# Translated tweets may be inaccurate or may not reflect the original content.',
+                    content: '-# Translated tweets may be inaccurate or may not reflect the original content',
                   },
                 ] satisfies APIMessageTopLevelComponent[])
               : []),

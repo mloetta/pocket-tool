@@ -72,7 +72,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid user to view their avatar.`,
+            content: `${icon(Emoji.Exclamation)} Please select a valid user to view their avatar`,
           },
           {
             type: ComponentType.Separator,
@@ -90,7 +90,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This member doesn't has an avatar.`,
+              content: `${icon(Emoji.Exclamation)} This member doesn't has an avatar`,
             },
             {
               type: ComponentType.Separator,
@@ -173,7 +173,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This user doesn't has an avatar.`,
+              content: `${icon(Emoji.Exclamation)} This user doesn't has an avatar`,
             },
             {
               type: ComponentType.Separator,

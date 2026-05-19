@@ -64,7 +64,7 @@ export default {
         {
           type: ComponentType.TextDisplay,
           content: afkMentionData
-            .map((user) => `<@${user.user_id}> is currently afk.${user.reason ? `\n-# ${user.reason}` : ''}`)
+            .map((user) => `<@${user.user_id}> is currently afk${user.reason ? `\n-# ${user.reason}` : ''}`)
             .join('\n'),
         },
         {
