@@ -7,11 +7,10 @@ import {
   MessageFlags,
   Snowflake,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
-import { highlight, icon, smallHighlight } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { hasPermission } from '../../../utils/utils.js';
+import { emoji, highlight } from '../../../utils/markdown.js';
 
 type Options = {
   amount: number;
@@ -53,7 +52,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} I don't have enough permissions to purge messages\n-# I need the following permissions in this channel: ${highlight('Manage Messages')}`,
+            content: `${emoji('Wrong')} I don't have enough permissions to purge messages\n-# I need the following permissions in this channel: ${highlight('Manage Messages', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -95,7 +94,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} No messages found matching the given criteria.`,
+            content: `${emoji('Exclamation')} No messages found matching the given criteria`,
           },
           {
             type: ComponentType.Separator,
@@ -122,7 +121,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Correct)} Successfully purged ${highlight(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${smallHighlight(content)}` : ''}.`,
+              content: `${emoji('Correct')} Successfully purged ${highlight(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${highlight(content)}` : ''}.`,
             },
           ],
         },

@@ -11,9 +11,9 @@ import {
   UserFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, icon, iconAsEmoji, smallHighlight, timestamp } from '../../../utils/markdown.js';
+import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';
+import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
-import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 
 type Options = {
   user?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
@@ -73,7 +73,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid user to view`,
+            content: `${emoji('Exclamation')} Please select a valid user to view`,
           },
           {
             type: ComponentType.Separator,
@@ -85,39 +85,39 @@ export default {
       return;
     }
 
-    let badges: Emoji[] = [];
+    const badges: (keyof typeof Emoji)[] = [];
 
     if (user.public_flags) {
       const flags = user.public_flags;
       if (flags & UserFlags.Staff) {
-        badges.push(Emoji.Staff);
+        badges.push('Staff');
       }
       if (flags & UserFlags.BugHunterLevel1) {
-        badges.push(Emoji.BugHunter01);
+        badges.push('BugHunter01');
       }
       if (flags & UserFlags.BugHunterLevel2) {
-        badges.push(Emoji.BugHunter02);
+        badges.push('BugHunter02');
       }
       if (flags & UserFlags.PremiumEarlySupporter) {
-        badges.push(Emoji.EarlySupporter);
+        badges.push('EarlySupporter');
       }
       if (flags & UserFlags.VerifiedDeveloper) {
-        badges.push(Emoji.VerifiedDeveloper);
+        badges.push('VerifiedDeveloper');
       }
       if (flags & UserFlags.Hypesquad) {
-        badges.push(Emoji.HypesquadEvents);
+        badges.push('HypesquadEvents');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse2) {
-        badges.push(Emoji.HypesquadBrilliance);
+        badges.push('HypesquadBrilliance');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse1) {
-        badges.push(Emoji.HypesquadBravery);
+        badges.push('HypesquadBravery');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse3) {
-        badges.push(Emoji.HypesquadBalance);
+        badges.push('HypesquadBalance');
       }
       if (flags & UserFlags.CertifiedModerator) {
-        badges.push(Emoji.CertifiedModerator);
+        badges.push('CertifiedModerator');
       }
     }
 
@@ -128,7 +128,7 @@ export default {
       (member && (member.avatar?.startsWith('a_') || member.banner));
 
     if (hasNitro) {
-      badges.push(Emoji.Nitro);
+      badges.push('Nitro');
     }
 
     if (scope === 'guild' && member) {
@@ -142,7 +142,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} **${member.nick ?? user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
+                    content: `${emoji('Mention')} **${member.nick ?? user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
@@ -166,7 +166,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: iconAsEmoji(Emoji.User),
+                    emoji: toEmoji('User'),
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -176,14 +176,14 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${icon(Emoji.Leaf)} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                content: `${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('Leaf')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
                   member.roles.length > 0
-                    ? `\n\n${icon(Emoji.Roles)} **Roles:**\n${member.roles
+                    ? `\n\n${emoji('Roles')} **Roles:**\n${member.roles
                         .slice(0, 5)
                         .map((role) => `<@&${role}>`)
                         .join(', ')}`
                     : ''
-                }${member.roles.length > 5 ? ` ${smallHighlight(`+${(member.roles.length - 5).toLocaleString('en-US')}`)}` : ``}`,
+                }${member.roles.length > 5 ? ` ${highlight(`+${(member.roles.length - 5).toLocaleString('en-US')}`)}` : ``}`,
               },
             ],
           },
@@ -201,7 +201,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${icon(Emoji.Mention)} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(icon).join(' ')}` : ''}`,
+                    content: `${emoji('Mention')} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
@@ -218,7 +218,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: iconAsEmoji(Emoji.User),
+                    emoji: toEmoji('User'),
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -228,7 +228,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
+                content: `${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
               },
             ],
           },

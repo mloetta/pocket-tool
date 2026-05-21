@@ -6,12 +6,11 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { ChatInputCommand, HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { highlight, icon, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
+import { emoji, highlight, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   text: string;
@@ -76,7 +75,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set`,
+            content: `${emoji('Exclamation')} Eleven Labs API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -117,7 +116,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${emoji('Exclamation')} You have used your daily limit of ${highlight(15, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,

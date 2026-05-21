@@ -11,8 +11,7 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { cdn, icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { cdn, emoji } from '../../../utils/markdown.js';
 
 type Options = {
   user?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
@@ -72,7 +71,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid user to view their banner`,
+            content: `${emoji('Exclamation')} Please select a valid user to view their banner`,
           },
           {
             type: ComponentType.Separator,
@@ -97,7 +96,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This member doesn't has a banner`,
+              content: `${emoji('Exclamation')} This member doesn't has a banner`,
             },
             {
               type: ComponentType.Separator,
@@ -176,7 +175,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Exclamation)} This user doesn't has a banner`,
+              content: `${emoji('Exclamation')} This user doesn't has a banner`,
             },
             {
               type: ComponentType.Separator,

@@ -7,8 +7,7 @@ import {
 } from '@discordjs/core';
 import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji } from '../../../utils/markdown.js';
 
 export default {
   type: ApplicationCommandType.Message,
@@ -25,12 +24,13 @@ export default {
     const message = interaction.data.resolved.messages[messageId];
 
     const content = message.content;
+
     if (!content) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid message to translate`,
+            content: `${emoji('Exclamation')} Please select a valid message to translate`,
           },
           {
             type: ComponentType.Separator,
@@ -65,7 +65,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${icon(Emoji.Translator)} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**`,
+              content: `> ${emoji('Translator')} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**`,
             },
             {
               type: ComponentType.Separator,

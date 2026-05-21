@@ -6,11 +6,10 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
-import { highlight, icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { hasPermission } from '../../../utils/utils.js';
+import { emoji, highlight } from '../../../utils/markdown.js';
 
 type Options = {
   users: string;
@@ -51,7 +50,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} I don't have enough permissions to softban users. I need the following permissions in this channel: ${highlight('Ban Members')}`,
+            content: `${emoji('Wrong')} I don't have enough permissions to softban users. I need the following permissions in this channel: ${highlight('Ban Members', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -73,7 +72,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} You don't have enough permissions to softban multiple users\n-# You need the following permissions in this channel: ${highlight('Manage Guild')}`,
+            content: `${emoji('Wrong')} You don't have enough permissions to softban multiple users\n-# You need the following permissions in this channel: ${highlight('Manage Guild', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -88,7 +87,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You can only softban up to 200 users at a time`,
+            content: `${emoji('Exclamation')} You can only softban up to 200 users at a time`,
           },
           {
             type: ComponentType.Separator,
@@ -161,7 +160,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${hasSuccess ? `${icon(Emoji.Correct)} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${icon(Emoji.Exclamation)} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${icon(Emoji.Exclamation)} No users were softbanned` : ''}`,
+              content: `${hasSuccess ? `${emoji('Correct')} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${emoji('Exclamation')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${emoji('Exclamation')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${emoji('Exclamation')} No users were softbanned` : ''}`,
             },
           ],
         },

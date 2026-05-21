@@ -21,6 +21,7 @@ import {
   ApplicationCommand,
   ChatInputCommand,
   GatewayEvent,
+  HighlightStyle,
   MessageContextMenuCommand,
   PrimaryEntryPointCommand,
   RateLimitType,
@@ -28,10 +29,9 @@ import {
   UserContextMenuCommand,
 } from '../../types/types.js';
 import { parseCommandOptions, parseComponentArgs } from '../index.js';
-import { highlight, icon, timestamp } from '../../utils/markdown.js';
-import { Emoji } from '../../types/emojis.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
+import { emoji, highlight, timestamp } from '../../utils/markdown.js';
 
 export default {
   name: GatewayDispatchEvents.InteractionCreate,
@@ -51,7 +51,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} The bot is currently under maintenance - please try again later`,
+            content: `${emoji('Exclamation')} The bot is currently under maintenance - please try again later`,
           },
           {
             type: ComponentType.Separator,
@@ -91,7 +91,7 @@ async function handleApplicationCommand(
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${icon(Emoji.Exclamation)} The command: ${highlight(interaction.data.name)} was not found`,
+          content: `${emoji('Exclamation')} The command: ${highlight(interaction.data.name, HighlightStyle.Bold)} was not found`,
         },
         {
           type: ComponentType.Separator,
@@ -130,7 +130,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -151,7 +151,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -176,7 +176,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -224,7 +224,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -245,7 +245,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -270,7 +270,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -308,7 +308,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -329,7 +329,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} This guild is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -354,7 +354,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${icon(Emoji.Exclamation)} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('Exclamation')} You're currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -402,7 +402,7 @@ async function handleApplicationCommand(
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
+            content: `${emoji('Wrong')} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
           },
           {
             type: ComponentType.Separator,
@@ -415,7 +415,7 @@ async function handleApplicationCommand(
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Wrong)} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
+            content: `${emoji('Wrong')} The command: </${interaction.data.name}:${interaction.data.id}> has encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
           },
           {
             type: ComponentType.Separator,
@@ -482,7 +482,7 @@ async function handleComponent(
     console.error(`Component ${component.custom_id} encountered an error:`, e);
 
     await client.api.interactions.reply(interaction.id, interaction.token, {
-      content: `${icon(Emoji.Wrong)} The component ${component.custom_id} encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
+      content: `${emoji('Wrong')} The component ${component.custom_id} encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
       flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
     });
   }

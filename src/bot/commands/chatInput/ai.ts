@@ -8,8 +8,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
-import { icon, stringwrapPreserveWords } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji, truncate } from '../../../utils/markdown.js';
 import { msToApproxTime } from '../../../utils/utils.js';
 import OpenAI from 'openai';
 
@@ -46,7 +45,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} NVIDIA API key not set`,
+            content: `${emoji('Exclamation')} NVIDIA API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -84,7 +83,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${stringwrapPreserveWords(completion.choices[0].message.content!, 2000)}\n-# **${completion.model}** - Response may be inaccurate or incomplete - Took **${msToApproxTime(elapsed)}**`,
+          content: `${truncate(completion.choices[0].message.content!, 2000)}\n-# **${completion.model}** - Response may be inaccurate or incomplete - Took **${msToApproxTime(elapsed)}**`,
         },
       ],
       flags: MessageFlags.IsComponentsV2,

@@ -7,8 +7,7 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji } from '../../../utils/markdown.js';
 import { supabase } from '../../../utils/supabase.js';
 
 type Options = {
@@ -64,7 +63,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${icon(Emoji.Correct)} You're now afk!${reason ? ` **${reason}**` : ''}\n-# Send a message to return`,
+          content: `${emoji('Correct')} You're now afk!${reason ? ` **${reason}**` : ''}\n-# Send a message to return`,
         },
         {
           type: ComponentType.Separator,

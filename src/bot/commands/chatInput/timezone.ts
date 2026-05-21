@@ -8,8 +8,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { DateTime } from 'luxon';
-import { icon, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   zone: string;
@@ -40,9 +39,9 @@ export default {
     const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
     const choices = Object.values(Intl.supportedValuesOf('timeZone'))
-      .map((zone) => ({
-        name: zone,
-        value: zone,
+      .map((z) => ({
+        name: z,
+        value: z,
       }))
       .filter((c) => c.name.toLowerCase().includes(focused))
       .slice(0, 25);
@@ -61,7 +60,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Clock)} **${zone}**: ${time.toFormat('dd/MM/yyyy, HH:mm:ss')} -> ${timestamp(time.toMillis(), TimestampStyle.ShortDateMediumTime)}`,
+              content: `${emoji('Clock')} **${zone}**: ${time.toFormat('dd/MM/yyyy, HH:mm:ss')} -> ${timestamp(time.toMillis(), TimestampStyle.ShortDateMediumTime)}`,
             },
           ],
         },

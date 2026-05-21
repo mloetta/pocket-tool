@@ -76,16 +76,16 @@ export default {
               components: [
                 {
                   type: ComponentType.Button,
-                  label: 'Support Server',
-                  emoji: iconAsEmoji(Emoji.Discord),
-                  url: 'https://discord.gg/EEAchFSWpr',
+                  label: 'Invite Me!',
+                  emoji: iconAsEmoji(Emoji.Link),
+                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
-                  label: 'Invite Me!',
-                  emoji: iconAsEmoji(Emoji.Link),
-                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
+                  label: 'Support Server',
+                  emoji: iconAsEmoji(Emoji.Discord),
+                  url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },
               ],

@@ -6,10 +6,9 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
+import { emoji } from '../../../utils/markdown.js';
 
 export default {
   type: ApplicationCommandType.Message,
@@ -26,12 +25,13 @@ export default {
     const message = interaction.data.resolved.messages[messageId];
 
     const attachment = Object.values(message.attachments)[0];
+
     if (!attachment || !attachment.content_type?.startsWith('image/')) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid image to turn into a GIF`,
+            content: `${emoji('Exclamation')} Please select a valid image to turn into a GIF`,
           },
           {
             type: ComponentType.Separator,
