@@ -9,7 +9,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { emoji, highlight, maskedLink } from '../../../utils/markdown.js';
-import { toEmoji } from '../../../utils/utils.js';
+import { toEmojiObject } from '../../../utils/utils.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
@@ -55,7 +55,7 @@ export default {
                 type: ComponentType.Button,
                 custom_id: 'report-bugs',
                 label: 'Report Bugs',
-                emoji: toEmoji('BugHunter'),
+                emoji: toEmojiObject('BugHunter'),
                 style: ButtonStyle.Secondary,
               },
             },
@@ -77,14 +77,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmoji('Link'),
+                  emoji: toEmojiObject('Link'),
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmoji('Discord'),
+                  emoji: toEmojiObject('Discord'),
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

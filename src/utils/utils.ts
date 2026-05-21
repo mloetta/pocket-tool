@@ -133,7 +133,7 @@ export function msToReadableTime(ms: number): string {
   return parts.join(' ');
 }
 
-export function toEmoji(name: keyof typeof Emoji) {
+export function toEmojiObject(name: keyof typeof Emoji) {
   const emoji = Emoji[name];
 
   if (!Emoji[name]) {

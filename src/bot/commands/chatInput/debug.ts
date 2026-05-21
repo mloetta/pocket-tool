@@ -8,7 +8,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
 import { maskedLink, timestamp } from '../../../utils/markdown.js';
-import { getShardIdFromGuildId, toEmoji } from '../../../utils/utils.js';
+import { getShardIdFromGuildId, toEmojiObject } from '../../../utils/utils.js';
 import os from 'os';
 import { shardLatency } from '../../index.js';
 
@@ -58,14 +58,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmoji('Link'),
+                  emoji: toEmojiObject('Link'),
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmoji('Discord'),
+                  emoji: toEmojiObject('Discord'),
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

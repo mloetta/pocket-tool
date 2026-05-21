@@ -11,7 +11,7 @@ import {
   UserFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';
+import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 
@@ -166,7 +166,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmoji('User'),
+                    emoji: toEmojiObject('User'),
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -218,7 +218,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmoji('User'),
+                    emoji: toEmojiObject('User'),
                     style: ButtonStyle.Link,
                   },
                 ],
