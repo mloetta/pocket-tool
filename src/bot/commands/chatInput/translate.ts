@@ -115,7 +115,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${emoji('Translator')} Translated from **${languages.of(res[2])}** to **${languages.of(to ?? interaction.locale.split('-')[0])}**`,
+              content: `> ${emoji('translate')} Translated from **${languages.of(res[2])}** to **${languages.of(to ?? interaction.locale.split('-')[0])}**`,
             },
             {
               type: ComponentType.Separator,

@@ -43,7 +43,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please provide a valid image to turn into a GIF`,
+            content: `${emoji('exclamation')} Please provide a valid image to turn into a GIF`,
           },
           {
             type: ComponentType.Separator,

@@ -73,7 +73,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please select a valid user to view`,
+            content: `${emoji('exclamation')} Please select a valid user to view`,
           },
           {
             type: ComponentType.Separator,
@@ -90,34 +90,34 @@ export default {
     if (user.public_flags) {
       const flags = user.public_flags;
       if (flags & UserFlags.Staff) {
-        badges.push('Staff');
+        badges.push('staff');
       }
       if (flags & UserFlags.BugHunterLevel1) {
-        badges.push('BugHunter01');
+        badges.push('bug_hunter_01');
       }
       if (flags & UserFlags.BugHunterLevel2) {
-        badges.push('BugHunter02');
+        badges.push('bug_hunter_02');
       }
       if (flags & UserFlags.PremiumEarlySupporter) {
-        badges.push('EarlySupporter');
+        badges.push('early_supporter');
       }
       if (flags & UserFlags.VerifiedDeveloper) {
-        badges.push('VerifiedDeveloper');
+        badges.push('verified_developer');
       }
       if (flags & UserFlags.Hypesquad) {
-        badges.push('HypesquadEvents');
+        badges.push('hypesquad_events');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse2) {
-        badges.push('HypesquadBrilliance');
+        badges.push('hypesquad_brilliance');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse1) {
-        badges.push('HypesquadBravery');
+        badges.push('hypesquad_bravery');
       }
       if (flags & UserFlags.HypeSquadOnlineHouse3) {
-        badges.push('HypesquadBalance');
+        badges.push('hypesquad_balance');
       }
       if (flags & UserFlags.CertifiedModerator) {
-        badges.push('CertifiedModerator');
+        badges.push('certified_moderator');
       }
     }
 
@@ -128,7 +128,7 @@ export default {
       (member && (member.avatar?.startsWith('a_') || member.banner));
 
     if (hasNitro) {
-      badges.push('Nitro');
+      badges.push('nitro');
     }
 
     if (scope === 'guild' && member) {
@@ -142,7 +142,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${emoji('Mention')} **${member.nick ?? user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
+                    content: `${emoji('ping')} **${member.nick ?? user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
@@ -166,7 +166,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmojiObject('User'),
+                    emoji: toEmojiObject('person'),
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -176,9 +176,9 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('Leaf')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                content: `${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('new_members')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
                   member.roles.length > 0
-                    ? `\n\n${emoji('Roles')} **Roles:**\n${member.roles
+                    ? `\n\n${emoji('roles')} **Roles:**\n${member.roles
                         .slice(0, 5)
                         .map((role) => `<@&${role}>`)
                         .join(', ')}`
@@ -201,7 +201,7 @@ export default {
                 components: [
                   {
                     type: ComponentType.TextDisplay,
-                    content: `${emoji('Mention')} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
+                    content: `${emoji('ping')} **${user.global_name} (@${user.username})**\n-# ${user.id}${badges.length > 0 ? `\n${badges.map(emoji).join(' ')}` : ''}`,
                   },
                 ],
                 accessory: {
@@ -218,7 +218,7 @@ export default {
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmojiObject('User'),
+                    emoji: toEmojiObject('person'),
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -228,7 +228,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
+                content: `${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
               },
             ],
           },

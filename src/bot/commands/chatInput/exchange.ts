@@ -110,7 +110,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> Latest exchange rate: ${timestamp(new Date(res.date).getTime(), TimestampStyle.ShortDateShortTime)}\n${emoji('Currency')} ${amount.toLocaleString('en-US', { style: 'currency', currency: from.toUpperCase() })} **${from}** -> ${converted} **${to}**`,
+              content: `> Latest exchange rate: ${timestamp(new Date(res.date).getTime(), TimestampStyle.ShortDateShortTime)}\n${emoji('dollar')} ${amount.toLocaleString('en-US', { style: 'currency', currency: from.toUpperCase() })} **${from}** -> ${converted} **${to}**`,
             },
           ],
         },

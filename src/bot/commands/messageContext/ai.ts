@@ -30,7 +30,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} NVIDIA API key not set`,
+            content: `${emoji('exclamation')} NVIDIA API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -52,7 +52,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please select a valid message to ask AI about`,
+            content: `${emoji('exclamation')} Please select a valid message to ask AI about`,
           },
           {
             type: ComponentType.Separator,

@@ -50,7 +50,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Wrong')} I don't have enough permissions to softban users. I need the following permissions in this channel: ${highlight('Ban Members', HighlightStyle.Bold)}`,
+            content: `${emoji('wrong')} I don't have enough permissions to softban users. I need the following permissions in this channel: ${highlight('Ban Members', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -72,7 +72,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Wrong')} You don't have enough permissions to softban multiple users\n-# You need the following permissions in this channel: ${highlight('Manage Guild', HighlightStyle.Bold)}`,
+            content: `${emoji('wrong')} You don't have enough permissions to softban multiple users\n-# You need the following permissions in this channel: ${highlight('Manage Guild', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -87,7 +87,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} You can only softban up to 200 users at a time`,
+            content: `${emoji('exclamation')} You can only softban up to 200 users at a time`,
           },
           {
             type: ComponentType.Separator,
@@ -160,7 +160,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${hasSuccess ? `${emoji('Correct')} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${emoji('Exclamation')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${emoji('Exclamation')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${emoji('Exclamation')} No users were softbanned` : ''}`,
+              content: `${hasSuccess ? `${emoji('correct')} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n> ${emoji('wrong')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && hasFailures ? `${emoji('wrong')} Failed to softban: ${failedBans.map((userId) => `**${userId}**`).join(', ')}.` : ''}${!hasSuccess && !hasFailures ? `${emoji('exclamation')} No users were softbanned` : ''}`,
             },
           ],
         },

@@ -55,7 +55,7 @@ export default {
                 type: ComponentType.Button,
                 custom_id: 'report-bugs',
                 label: 'Report Bugs',
-                emoji: toEmojiObject('BugHunter'),
+                emoji: toEmojiObject('discord_bug_hunter'),
                 style: ButtonStyle.Secondary,
               },
             },
@@ -64,7 +64,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${emoji('Exclamation')} You can visit **${maskedLink('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
+              content: `-# ${emoji('exclamation')} You can visit **${maskedLink('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
             },
             {
               type: ComponentType.Separator,
@@ -77,14 +77,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('Link'),
+                  emoji: toEmojiObject('link'),
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('Discord'),
+                  emoji: toEmojiObject('discord'),
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

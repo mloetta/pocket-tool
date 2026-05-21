@@ -47,7 +47,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${emoji('Home')} **${name}**\n-# ${guildId}\n${emoji('Owner')} <@${ownerId}>\n\n${emoji('Wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
+                  content: `${emoji('general_info')} **${name}**\n-# ${guildId}\n${emoji('owner')} <@${ownerId}>\n\n${emoji('wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
                 },
               ],
               accessory: {

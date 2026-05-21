@@ -30,7 +30,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please select a valid message to translate`,
+            content: `${emoji('exclamation')} Please select a valid message to translate`,
           },
           {
             type: ComponentType.Separator,
@@ -65,7 +65,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${emoji('Translator')} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**`,
+              content: `> ${emoji('translate')} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**`,
             },
             {
               type: ComponentType.Separator,

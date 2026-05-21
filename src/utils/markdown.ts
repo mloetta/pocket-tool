@@ -29,7 +29,7 @@ export function emoji(name: keyof typeof Emoji): string {
     throw new Error(`Emoji "${name}" not found`);
   }
 
-  return emoji;
+  return emoji.replace(/:[a-zA-Z0-9_]*:/, ':e:');
 }
 
 export function highlight(content: unknown, style: HighlightStyle = HighlightStyle.Default): string {

@@ -53,3 +53,7 @@ export enum Permissions {
   PIN_MESSAGES = 0x0008000000000000,
   BYPASS_SLOWMODE = 0x0010000000000000,
 }
+
+export const ALL_PERMISSIONS = Object.values(Permissions)
+  .filter((v): v is number => typeof v === 'number')
+  .reduce((acc, v) => acc | BigInt(v), 0n);

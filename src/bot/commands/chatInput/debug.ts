@@ -58,14 +58,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('Link'),
+                  emoji: toEmojiObject('link'),
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('Discord'),
+                  emoji: toEmojiObject('discord'),
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

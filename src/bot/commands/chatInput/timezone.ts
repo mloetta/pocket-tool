@@ -60,7 +60,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('Clock')} **${zone}**: ${time.toFormat('dd/MM/yyyy, HH:mm:ss')} -> ${timestamp(time.toMillis(), TimestampStyle.ShortDateMediumTime)}`,
+              content: `${emoji('clock')} **${zone}**: ${time.toFormat('dd/MM/yyyy, HH:mm:ss')} -> ${timestamp(time.toMillis(), TimestampStyle.ShortDateMediumTime)}`,
             },
           ],
         },
