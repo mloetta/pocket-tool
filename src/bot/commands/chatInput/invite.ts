@@ -44,7 +44,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please select a valid invite link to view`,
+            content: `${emoji('exclamation')} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,
@@ -62,7 +62,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please select a valid invite link to view`,
+            content: `${emoji('exclamation')} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,
@@ -93,7 +93,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${emoji('Home')} **${name}**\n-# ${guildId}`,
+                  content: `${emoji('general_info')} **${name}**\n-# ${guildId}`,
                 },
               ],
               accessory: {
@@ -108,7 +108,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('Wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${emoji('Members')} ${highlight(members, HighlightStyle.Bold)}   ${emoji('Channel')} ${highlight(channels)}   ${emoji('Boost')} ${highlight(boosts)}`,
+              content: `${emoji('wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${emoji('people')} ${highlight(members, HighlightStyle.Bold)}   ${emoji('channel')} ${highlight(channels)}   ${emoji('nitro_boost')} ${highlight(boosts)}`,
             },
           ],
         },

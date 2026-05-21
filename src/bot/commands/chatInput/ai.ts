@@ -45,7 +45,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} NVIDIA API key not set`,
+            content: `${emoji('exclamation')} NVIDIA API key not set`,
           },
           {
             type: ComponentType.Separator,

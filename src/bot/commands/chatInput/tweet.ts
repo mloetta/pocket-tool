@@ -74,7 +74,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Twitter API key not set`,
+            content: `${emoji('exclamation')} Twitter API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -93,7 +93,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please provide a valid tweet URL or ID to view`,
+            content: `${emoji('exclamation')} Please provide a valid tweet URL or ID to view`,
           },
           {
             type: ComponentType.Separator,
@@ -121,7 +121,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Failed to find the tweet`,
+            content: `${emoji('exclamation')} Failed to find the tweet`,
           },
           {
             type: ComponentType.Separator,
@@ -183,7 +183,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# Posted by ${res.author.isVerified ? `${emoji('Verified')} ` : ''}**${res.author.name} (${maskedLink(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
+              content: `-# Posted by ${res.author.isVerified ? `${emoji('verified')} ` : ''}**${res.author.name} (${maskedLink(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
             },
             ...(res.media.length > 0
               ? ([
@@ -217,7 +217,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${emoji('Reply')} ${(res.replyCount ?? 0).toLocaleString('en-US')}   ${emoji('Repost')} ${(res.repostCount ?? 0).toLocaleString('en-US')}   ${emoji('Like')} ${(res.likeCount ?? 0).toLocaleString('en-US')}   ${emoji('Bookmark')} ${(res.bookmarkCount ?? 0).toLocaleString('en-US')}`,
+                  content: `${emoji('reply')} ${(res.replyCount ?? 0).toLocaleString('en-US')}   ${emoji('repost')} ${(res.repostCount ?? 0).toLocaleString('en-US')}   ${emoji('like')} ${(res.likeCount ?? 0).toLocaleString('en-US')}   ${emoji('bookmark')} ${(res.bookmarkCount ?? 0).toLocaleString('en-US')}`,
                 },
               ],
               accessory: {

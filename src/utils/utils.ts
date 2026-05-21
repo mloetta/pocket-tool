@@ -2,8 +2,10 @@ import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
 import { APIGuildChannel, APIGuildMember, APIRole, Snowflake } from '@discordjs/core';
-import { Permissions } from '../types/permissions.js';
+import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
 import { Emoji } from '../types/emojis.js';
+
+const EPOCH = 1420070400000;
 
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   const files = await readdir(folder, { recursive: true });
@@ -37,10 +39,6 @@ export async function readDirectory<Type>(folder: string): Promise<Type[]> {
 export function hasPermission(permissions: bigint, permission: bigint) {
   return (permissions & permission) === permission;
 }
-
-export const ALL_PERMISSIONS = Object.values(Permissions)
-  .filter((v): v is number => typeof v === 'number')
-  .reduce((acc, v) => acc | BigInt(v), 0n);
 
 export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChannel, roles: APIRole[]) {
   let permissions: bigint = 0n;
@@ -105,9 +103,6 @@ export function getShardIdFromGuildId(guildId: string, totalShards: number) {
   return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
 }
 
-// Discord timestamp epoch
-const EPOCH = 1420070400000;
-
 export function getTimestampFromSnowflake(snowflake: Snowflake): number {
   return Number(BigInt(snowflake) >> 22n) + EPOCH;
 }
@@ -136,13 +131,13 @@ export function msToReadableTime(ms: number): string {
 export function toEmojiObject(name: keyof typeof Emoji) {
   const emoji = Emoji[name];
 
-  if (!Emoji[name]) {
+  if (!emoji) {
     throw new Error(`Emoji "${name}" not found`);
   }
 
   return {
     id: emoji.replace(/<a?:[a-z0-9_]*:([0-9]*)>/g, '$1'),
-    name,
+    name: 'e',
     animated: emoji.startsWith('<a:'),
   };
 }

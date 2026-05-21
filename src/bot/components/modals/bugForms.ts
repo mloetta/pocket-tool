@@ -56,7 +56,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please provide valid image or video files`,
+            content: `${emoji('exclamation')} Please provide valid image or video files`,
           },
           {
             type: ComponentType.Separator,
@@ -151,7 +151,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${emoji('Correct')} Successfully submitted bug report`,
+          content: `${emoji('correct')} Successfully submitted bug report`,
         },
         {
           type: ComponentType.Separator,

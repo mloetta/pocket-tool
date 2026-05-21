@@ -44,7 +44,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} Please provide between 1 and 4 valid emojis`,
+            content: `${emoji('exclamation')} Please provide between 1 and 4 valid emojis`,
           },
           {
             type: ComponentType.Separator,
@@ -72,7 +72,7 @@ export default {
               content: emojis
                 .map(
                   (e) =>
-                    `${emoji('Expression')} **${e.name}**\n-# ${e.id}\n\n${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)}`,
+                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)}`,
                 )
                 .join('\n'),
             },

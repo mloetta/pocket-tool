@@ -52,7 +52,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Wrong')} I don't have enough permissions to purge messages\n-# I need the following permissions in this channel: ${highlight('Manage Messages', HighlightStyle.Bold)}`,
+            content: `${emoji('wrong')} I don't have enough permissions to purge messages\n-# I need the following permissions in this channel: ${highlight('Manage Messages', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -94,7 +94,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('Exclamation')} No messages found matching the given criteria`,
+            content: `${emoji('exclamation')} No messages found matching the given criteria`,
           },
           {
             type: ComponentType.Separator,
@@ -121,7 +121,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('Correct')} Successfully purged ${highlight(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${highlight(content)}` : ''}.`,
+              content: `${emoji('correct')} Successfully purged ${highlight(deleteIds.length)} message${deleteIds.length !== 1 ? 's' : ''}${content ? ` with content ${highlight(content)}` : ''}.`,
             },
           ],
         },

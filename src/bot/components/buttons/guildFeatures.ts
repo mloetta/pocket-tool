@@ -19,7 +19,7 @@ export default {
     const featureList = allFeatures.map((feature) => {
       const hasFeature = features.includes(feature);
 
-      return `${highlight(feature)} ${hasFeature ? emoji('Correct') : emoji('Wrong')}`;
+      return `${highlight(feature)} ${hasFeature ? emoji('correct') : emoji('wrong')}`;
     });
 
     await client.api.interactions.createModal(interaction.id, interaction.token, {
