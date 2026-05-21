@@ -40,7 +40,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${maskedLink('https://discord.gg/CAr2YgdtAv', 'Keystone')}**, designed by **${maskedLink('https://merpix.de/', 'Merpix')}**`,
+              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${maskedLink('https://discord.gg/CAr2YgdtAv', 'Keystone')}**, designed by **${maskedLink('https://merpix.de/', 'Merpix')}**, most emojis are from **${maskedLink('https://discord.gg/icons-859387663093727263', 'Icons')}**`,
             },
             {
               type: ComponentType.Separator,
