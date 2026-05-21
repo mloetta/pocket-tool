@@ -5,12 +5,11 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { MessageContextMenuCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { HighlightStyle, MessageContextMenuCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
-import { highlight, icon, stringwrapPreserveWords, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { supabase } from '../../../utils/supabase.js';
+import { emoji, highlight, timestamp, truncate } from '../../../utils/markdown.js';
 
 export default {
   type: ApplicationCommandType.Message,
@@ -30,7 +29,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Eleven Labs API key not set`,
+            content: `${emoji('Exclamation')} Eleven Labs API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -52,7 +51,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid message to convert to speech`,
+            content: `${emoji('Exclamation')} Please select a valid message to convert to speech`,
           },
           {
             type: ComponentType.Separator,
@@ -93,7 +92,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} You have used your daily limit of ${highlight(15)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${emoji('Exclamation')} You have used your daily limit of ${highlight(15, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,
@@ -108,7 +107,7 @@ export default {
     const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
     const audio = await elevenlabs.textToSpeech.convertWithTimestamps('M563YhMmA0S8vEYwkgYa', {
-      text: stringwrapPreserveWords(content, 500),
+      text: truncate(content, 500),
       modelId: 'eleven_flash_v2_5',
       outputFormat: 'opus_48000_192',
     });

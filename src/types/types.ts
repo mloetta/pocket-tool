@@ -185,6 +185,12 @@ export enum TimestampStyle {
   RelativeTime = 'R',
 }
 
+export enum HighlightStyle {
+  Bold = 'bold',
+  Compact = 'compact',
+  Default = 'default',
+}
+
 export enum RequestMethod {
   GET = 'GET',
   POST = 'POST',

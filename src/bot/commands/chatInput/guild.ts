@@ -7,9 +7,8 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, codeblock, icon, timestamp } from '../../../utils/markdown.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
-import { Emoji } from '../../../types/emojis.js';
+import { cdn, codeblock, emoji, timestamp } from '../../../utils/markdown.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
@@ -48,7 +47,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${icon(Emoji.Home)} **${name}**\n-# ${guildId}\n${icon(Emoji.Owner)} <@${ownerId}>\n\n${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
+                  content: `${emoji('Home')} **${name}**\n-# ${guildId}\n${emoji('Owner')} <@${ownerId}>\n\n${emoji('Wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
                 },
               ],
               accessory: {

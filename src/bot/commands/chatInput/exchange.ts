@@ -8,8 +8,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
-import { icon, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   amount: number;
@@ -60,9 +59,9 @@ export default {
         const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
         const choices = res
-          .map((currency: any) => ({
-            name: `${currency.name} (${currency.iso_code})`,
-            value: currency.iso_code,
+          .map((c: any) => ({
+            name: `${c.name} (${c.iso_code})`,
+            value: c.iso_code,
           }))
           .filter((c: any) => c.name.toLowerCase().includes(focused))
           .slice(0, 25);
@@ -79,9 +78,9 @@ export default {
         const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
         const choices = res
-          .map((currency: any) => ({
-            name: `${currency.name} (${currency.iso_code})`,
-            value: currency.iso_code,
+          .map((c: any) => ({
+            name: `${c.name} (${c.iso_code})`,
+            value: c.iso_code,
           }))
           .filter((c: any) => c.name.toLowerCase().includes(focused))
           .slice(0, 25);
@@ -111,7 +110,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> Latest exchange rate: ${timestamp(new Date(res.date).getTime(), TimestampStyle.ShortDateShortTime)}\n${icon(Emoji.Currency)} ${amount.toLocaleString('en-US', { style: 'currency', currency: from.toUpperCase() })} **${from}** -> ${converted} **${to}**`,
+              content: `> Latest exchange rate: ${timestamp(new Date(res.date).getTime(), TimestampStyle.ShortDateShortTime)}\n${emoji('Currency')} ${amount.toLocaleString('en-US', { style: 'currency', currency: from.toUpperCase() })} **${from}** -> ${converted} **${to}**`,
             },
           ],
         },

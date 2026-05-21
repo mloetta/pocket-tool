@@ -7,9 +7,9 @@ import {
   MessageFlags,
   SeparatorSpacingSize,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
-import { highlight, icon, iconAsEmoji, link } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
+import { emoji, highlight, maskedLink } from '../../../utils/markdown.js';
+import { toEmoji } from '../../../utils/utils.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
@@ -34,7 +34,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `You can view all the available slash commands by typing ${highlight('/')}\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user`,
+              content: `You can view all the available slash commands by typing ${highlight('/', HighlightStyle.Bold)}\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user`,
             },
             {
               type: ComponentType.Separator,
@@ -55,7 +55,7 @@ export default {
                 type: ComponentType.Button,
                 custom_id: 'report-bugs',
                 label: 'Report Bugs',
-                emoji: iconAsEmoji(Emoji.BugHunter),
+                emoji: toEmoji('BugHunter'),
                 style: ButtonStyle.Secondary,
               },
             },
@@ -64,7 +64,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${icon(Emoji.Exclamation)} You can visit **${link('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
+              content: `-# ${emoji('Exclamation')} You can visit **${maskedLink('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
             },
             {
               type: ComponentType.Separator,
@@ -76,16 +76,16 @@ export default {
               components: [
                 {
                   type: ComponentType.Button,
-                  label: 'Support Server',
-                  emoji: iconAsEmoji(Emoji.Discord),
-                  url: 'https://discord.gg/EEAchFSWpr',
+                  label: 'Invite Me!',
+                  emoji: toEmoji('Link'),
+                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
-                  label: 'Invite Me!',
-                  emoji: iconAsEmoji(Emoji.Link),
-                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
+                  label: 'Support Server',
+                  emoji: toEmoji('Discord'),
+                  url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },
               ],

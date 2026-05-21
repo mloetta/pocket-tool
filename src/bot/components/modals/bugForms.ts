@@ -1,7 +1,6 @@
 import { APIComponentInContainer, ComponentType, MessageFlags } from '@discordjs/core';
 import { Component, InteractableComponentType } from '../../../types/types.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji } from '../../../utils/markdown.js';
 
 export default {
   type: InteractableComponentType.Modal,
@@ -57,7 +56,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide valid image or video files.`,
+            content: `${emoji('Exclamation')} Please provide valid image or video files`,
           },
           {
             type: ComponentType.Separator,
@@ -152,7 +151,7 @@ export default {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: `${icon(Emoji.Correct)} Successfully submitted bug report.`,
+          content: `${emoji('Correct')} Successfully submitted bug report`,
         },
         {
           type: ComponentType.Separator,

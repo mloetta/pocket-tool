@@ -10,10 +10,9 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
-import { icon, link, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
+import { emoji, maskedLink, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   url: string;
@@ -75,7 +74,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Twitter API key not set`,
+            content: `${emoji('Exclamation')} Twitter API key not set`,
           },
           {
             type: ComponentType.Separator,
@@ -94,7 +93,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide a valid tweet URL or ID to view`,
+            content: `${emoji('Exclamation')} Please provide a valid tweet URL or ID to view`,
           },
           {
             type: ComponentType.Separator,
@@ -122,7 +121,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Failed to find the tweet`,
+            content: `${emoji('Exclamation')} Failed to find the tweet`,
           },
           {
             type: ComponentType.Separator,
@@ -159,7 +158,7 @@ export default {
       const escaped = hashtag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const pattern = new RegExp(`#${escaped}(?![\\p{L}\\p{N}_])`, 'gu');
 
-      content = content?.replace(pattern, link(`https://x.com/hashtag/${hashtag}`, `#${hashtag}`));
+      content = content?.replace(pattern, maskedLink(`https://x.com/hashtag/${hashtag}`, `#${hashtag}`));
     }
 
     await client.api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -168,14 +167,14 @@ export default {
           ? ([
               {
                 type: ComponentType.TextDisplay,
-                content: `-# *Quoting ${link(`https://x.com/${res.quotedPost?.author.username}/status/${res.quotedPost?.id}`, 'this tweet')}, posted by ${link(`https://x.com/${res.quotedPost?.author.username}`, `@${res.quotedPost?.author.username}`)}*`,
+                content: `-# *Quoting ${maskedLink(`https://x.com/${res.quotedPost?.author.username}/status/${res.quotedPost?.id}`, 'this tweet')}, posted by ${maskedLink(`https://x.com/${res.quotedPost?.author.username}`, `@${res.quotedPost?.author.username}`)}*`,
               },
             ] satisfies APIMessageTopLevelComponent[])
           : res.parentPost
             ? ([
                 {
                   type: ComponentType.TextDisplay,
-                  content: `-# *In reply to ${link(`https://x.com/${res.parentPost?.author.username}/status/${res.parentPost?.id}`, 'this tweet')}, posted by ${link(`https://x.com/${res.parentPost?.author.username}`, `@${res.parentPost?.author.username}`)}*`,
+                  content: `-# *In reply to ${maskedLink(`https://x.com/${res.parentPost?.author.username}/status/${res.parentPost?.id}`, 'this tweet')}, posted by ${maskedLink(`https://x.com/${res.parentPost?.author.username}`, `@${res.parentPost?.author.username}`)}*`,
                 },
               ] satisfies APIMessageTopLevelComponent[])
             : []),
@@ -184,7 +183,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# Posted by ${res.author.isVerified ? `${icon(Emoji.Verified)} ` : ''}**${res.author.name} (${link(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
+              content: `-# Posted by ${res.author.isVerified ? `${emoji('Verified')} ` : ''}**${res.author.name} (${maskedLink(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
             },
             ...(res.media.length > 0
               ? ([
@@ -218,7 +217,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${icon(Emoji.Reply)} ${(res.replyCount ?? 0).toLocaleString('en-US')}   ${icon(Emoji.Repost)} ${(res.repostCount ?? 0).toLocaleString('en-US')}   ${icon(Emoji.Like)} ${(res.likeCount ?? 0).toLocaleString('en-US')}   ${icon(Emoji.Bookmark)} ${(res.bookmarkCount ?? 0).toLocaleString('en-US')}`,
+                  content: `${emoji('Reply')} ${(res.replyCount ?? 0).toLocaleString('en-US')}   ${emoji('Repost')} ${(res.repostCount ?? 0).toLocaleString('en-US')}   ${emoji('Like')} ${(res.likeCount ?? 0).toLocaleString('en-US')}   ${emoji('Bookmark')} ${(res.bookmarkCount ?? 0).toLocaleString('en-US')}`,
                 },
               ],
               accessory: {

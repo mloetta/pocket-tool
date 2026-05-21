@@ -8,10 +8,9 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
+import { emoji } from '../../../utils/markdown.js';
 
 type Options = {
   image: APIAttachment;
@@ -44,7 +43,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide a valid image to turn into a GIF`,
+            content: `${emoji('Exclamation')} Please provide a valid image to turn into a GIF`,
           },
           {
             type: ComponentType.Separator,

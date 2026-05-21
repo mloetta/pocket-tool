@@ -7,11 +7,10 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
-import { iconAsEmoji, link, timestamp } from '../../../utils/markdown.js';
-import { getShardIdFromGuildId } from '../../../utils/utils.js';
+import { maskedLink, timestamp } from '../../../utils/markdown.js';
+import { getShardIdFromGuildId, toEmoji } from '../../../utils/utils.js';
 import os from 'os';
 import { shardLatency } from '../../index.js';
-import { Emoji } from '../../../types/emojis.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
@@ -41,7 +40,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${link('https://discord.gg/CAr2YgdtAv', 'Keystone')}**`,
+              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${maskedLink('https://discord.gg/CAr2YgdtAv', 'Keystone')}**, designed by **${maskedLink('https://merpix.de/', 'Merpix')}**`,
             },
             {
               type: ComponentType.Separator,
@@ -58,16 +57,16 @@ export default {
               components: [
                 {
                   type: ComponentType.Button,
-                  label: 'Support Server',
-                  emoji: iconAsEmoji(Emoji.Discord),
-                  url: 'https://discord.gg/EEAchFSWpr',
+                  label: 'Invite Me!',
+                  emoji: toEmoji('Link'),
+                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
-                  label: 'Invite Me!',
-                  emoji: iconAsEmoji(Emoji.Link),
-                  url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
+                  label: 'Support Server',
+                  emoji: toEmoji('Discord'),
+                  url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },
               ],

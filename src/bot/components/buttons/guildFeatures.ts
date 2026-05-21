@@ -1,7 +1,6 @@
 import { ComponentType, GuildFeature } from '@discordjs/core';
 import { Component, InteractableComponentType } from '../../../types/types.js';
-import { icon, smallHighlight } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji, highlight } from '../../../utils/markdown.js';
 
 const args = ['guildId'] as const;
 
@@ -20,7 +19,7 @@ export default {
     const featureList = allFeatures.map((feature) => {
       const hasFeature = features.includes(feature);
 
-      return `${smallHighlight(feature)} ${hasFeature ? icon(Emoji.Correct) : icon(Emoji.Wrong)}`;
+      return `${highlight(feature)} ${hasFeature ? emoji('Correct') : emoji('Wrong')}`;
     });
 
     await client.api.interactions.createModal(interaction.id, interaction.token, {

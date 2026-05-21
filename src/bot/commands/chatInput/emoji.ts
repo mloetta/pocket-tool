@@ -7,9 +7,8 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, icon, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
+import { cdn, emoji, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   emoji: string;
@@ -35,17 +34,17 @@ export default {
   },
   acknowledge: true,
   async run(interaction, options, client) {
-    const { emoji } = options;
+    const { emoji: rawEmoji } = options;
 
     const regex = /<(a?):(\w+):(\d+)>/g;
-    const matches = [...emoji.matchAll(regex)];
+    const matches = [...rawEmoji.matchAll(regex)];
 
     if (matches.length === 0 || matches.length > 4) {
       await client.api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please provide between 1 and 4 valid emojis`,
+            content: `${emoji('Exclamation')} Please provide between 1 and 4 valid emojis`,
           },
           {
             type: ComponentType.Separator,
@@ -72,8 +71,8 @@ export default {
               type: ComponentType.TextDisplay,
               content: emojis
                 .map(
-                  (emoji) =>
-                    `${icon(Emoji.Expression)} **${emoji.name}**\n-# ${emoji.id}\n\n${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(getTimestampFromSnowflake(emoji.id), TimestampStyle.LongDate)}`,
+                  (e) =>
+                    `${emoji('Expression')} **${e.name}**\n-# ${e.id}\n\n${emoji('Wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)}`,
                 )
                 .join('\n'),
             },

@@ -6,10 +6,9 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { cdn, highlight, icon, timestamp } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { ChatInputCommand, HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
+import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 
 type Options = {
   link: string;
@@ -45,7 +44,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view`,
+            content: `${emoji('Exclamation')} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,
@@ -63,7 +62,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${icon(Emoji.Exclamation)} Please select a valid invite link to view`,
+            content: `${emoji('Exclamation')} Please select a valid invite link to view`,
           },
           {
             type: ComponentType.Separator,
@@ -94,7 +93,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${icon(Emoji.Home)} **${name}**\n-# ${guildId}`,
+                  content: `${emoji('Home')} **${name}**\n-# ${guildId}`,
                 },
               ],
               accessory: {
@@ -109,7 +108,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${icon(Emoji.Wumpus)} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${icon(Emoji.Members)} ${highlight(members)}   ${icon(Emoji.Channel)} ${highlight(channels)}   ${icon(Emoji.Boost)} ${highlight(boosts)}`,
+              content: `${emoji('Wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${emoji('Members')} ${highlight(members, HighlightStyle.Bold)}   ${emoji('Channel')} ${highlight(channels)}   ${emoji('Boost')} ${highlight(boosts)}`,
             },
           ],
         },

@@ -3,6 +3,7 @@ import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
 import { APIGuildChannel, APIGuildMember, APIRole, Snowflake } from '@discordjs/core';
 import { Permissions } from '../types/permissions.js';
+import { Emoji } from '../types/emojis.js';
 
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   const files = await readdir(folder, { recursive: true });
@@ -130,4 +131,18 @@ export function msToReadableTime(ms: number): string {
   if (seconds || parts.length === 0) parts.push(`${seconds}s`);
 
   return parts.join(' ');
+}
+
+export function toEmoji(name: keyof typeof Emoji) {
+  const emoji = Emoji[name];
+
+  if (!Emoji[name]) {
+    throw new Error(`Emoji "${name}" not found`);
+  }
+
+  return {
+    id: emoji.replace(/<a?:[a-z0-9_]*:([0-9]*)>/g, '$1'),
+    name,
+    animated: emoji.startsWith('<a:'),
+  };
 }

@@ -9,8 +9,7 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
-import { icon } from '../../../utils/markdown.js';
-import { Emoji } from '../../../types/emojis.js';
+import { emoji } from '../../../utils/markdown.js';
 
 type Options = {
   text: string;
@@ -116,7 +115,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${icon(Emoji.Translator)} Translated from **${languages.of(res[2])}** to **${languages.of(to ?? interaction.locale.split('-')[0])}**`,
+              content: `> ${emoji('Translator')} Translated from **${languages.of(res[2])}** to **${languages.of(to ?? interaction.locale.split('-')[0])}**`,
             },
             {
               type: ComponentType.Separator,
