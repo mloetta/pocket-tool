@@ -77,22 +77,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-<<<<<<< HEAD
                   emoji: toEmoji('Link'),
-=======
-                  emoji: iconAsEmoji(Emoji.Link),
->>>>>>> d4c245d82b12d7c007e641cf296ffb34c48c3ac1
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-<<<<<<< HEAD
                   emoji: toEmoji('Discord'),
-=======
-                  emoji: iconAsEmoji(Emoji.Discord),
->>>>>>> d4c245d82b12d7c007e641cf296ffb34c48c3ac1
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },
