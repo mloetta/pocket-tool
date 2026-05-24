@@ -9,11 +9,14 @@ import {
 import { BooleanChatInputOption, GatewayEvent, NonPrimaryEntryPointCommand } from '../../types/types.js';
 import env from '../../utils/env.js';
 import { localizeCommand } from '../index.js';
+import { startReminderCron } from '../../crons/reminder.js';
 
 export default {
   name: GatewayDispatchEvents.Ready,
   async run(payload, client) {
     console.log(`Shard #${payload.shard![0]} is ready!`);
+
+    void startReminderCron(client);
 
     await client.updatePresence(payload.shard![0], {
       since: null,

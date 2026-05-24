@@ -1,4 +1,5 @@
 import {
+  APIMessageComponentEmoji,
   ApplicationCommandType,
   ApplicationIntegrationType,
   ButtonStyle,
@@ -24,8 +25,8 @@ export default {
       : 0;
     const totalShards = await client.gateway.getShardCount();
     const shardInfo = await getShardInfoFromGuild(interaction.guild_id, totalShards);
-    const latency = shardInfo.latency.toLocaleString('en-US');
-    const uptime = timestamp(Math.floor(shardInfo.uptime), TimestampStyle.RelativeTime);
+    const latency = shardInfo.latency!.toLocaleString('en-US');
+    const uptime = timestamp(Math.floor(shardInfo.uptime!), TimestampStyle.RelativeTime);
     const memory = process.memoryUsage();
     const usedMemory = memory.rss;
     const totalMemory = os.totalmem();
@@ -48,7 +49,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `### Shard #${shardId}\n> Shards: **${totalShards}**\n> Latency: **${latency}**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
+              content: `### Shard #${shardId}\n> Shards: **${totalShards}**\n> Latency: **${latency}ms**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
             },
             {
               type: ComponentType.Separator,
@@ -59,14 +60,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('link'),
+                  emoji: toEmojiObject('link') as APIMessageComponentEmoji,
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('discord'),
+                  emoji: toEmojiObject('discord') as APIMessageComponentEmoji,
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

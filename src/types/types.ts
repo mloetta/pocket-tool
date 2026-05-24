@@ -235,3 +235,10 @@ export interface ShardInformation {
   latency?: number;
   uptime?: number;
 }
+
+export interface Reminder {
+  id: string;
+  user_id: string;
+  time: Date;
+  reason?: string;
+}

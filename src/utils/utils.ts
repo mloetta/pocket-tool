@@ -1,7 +1,14 @@
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
-import { APIGuildChannel, APIGuildMember, APIRole, Snowflake } from '@discordjs/core';
+import {
+  APIEmoji,
+  APIGuildChannel,
+  APIGuildMember,
+  APIMessageComponentEmoji,
+  APIRole,
+  Snowflake,
+} from '@discordjs/core';
 import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
 import { Emoji } from '../types/emojis.js';
 import { Collection } from '@discordjs/collection';
@@ -9,7 +16,15 @@ import { ShardInformation } from '../types/types.js';
 
 export const shardInfo = new Collection<number, ShardInformation>();
 
-const EPOCH = 1420070400000;
+const DISCORD_EPOCH = 1420070400000;
+
+const TIME_UNITS = {
+  y: 1000 * 60 * 60 * 24 * 365,
+  d: 1000 * 60 * 60 * 24,
+  h: 1000 * 60 * 60,
+  m: 1000 * 60,
+  s: 1000,
+};
 
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   const files = await readdir(folder, { recursive: true });
@@ -40,11 +55,11 @@ export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   return imported;
 }
 
-export function hasPermission(permissions: bigint, permission: bigint) {
+export function hasPermission(permissions: bigint, permission: bigint): boolean {
   return (permissions & permission) === permission;
 }
 
-export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChannel, roles: APIRole[]) {
+export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChannel, roles: APIRole[]): bigint {
   let permissions: bigint = 0n;
 
   // Get the everyone role and apply its permissions
@@ -103,11 +118,14 @@ export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChann
   return permissions;
 }
 
-export function getShardIdFromGuildId(guildId: string, totalShards: number) {
+export function getShardIdFromGuildId(guildId: string, totalShards: number): number {
   return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
 }
 
-export async function getShardInfoFromGuild(guildId: Snowflake | undefined, totalShards: number) {
+export async function getShardInfoFromGuild(
+  guildId: Snowflake | undefined,
+  totalShards: number,
+): Promise<ShardInformation & { shardId: number }> {
   const shardId = guildId ? getShardIdFromGuildId(guildId, totalShards) : 0;
   const info = shardInfo.get(shardId);
 
@@ -119,22 +137,27 @@ export async function getShardInfoFromGuild(guildId: Snowflake | undefined, tota
 }
 
 export function getTimestampFromSnowflake(snowflake: Snowflake): number {
-  return Number(BigInt(snowflake) >> 22n) + EPOCH;
+  return Number(BigInt(snowflake) >> 22n) + DISCORD_EPOCH;
 }
 
 export function msToApproxTime(ms: number): string {
   if (ms < 1000) return `${Math.round(ms)}ms`;
-  return `~${(ms / 1000).toFixed(1)}s`;
+  if (ms < TIME_UNITS.m) return `~${(ms / 1000).toFixed(1)}s`;
+  if (ms < TIME_UNITS.h) return `~${Math.round(ms / TIME_UNITS.m)}m`;
+  if (ms < TIME_UNITS.d) return `~${(ms / TIME_UNITS.h).toFixed(1)}h`;
+  if (ms < TIME_UNITS.y) return `~${(ms / TIME_UNITS.d).toFixed(1)}d`;
+  return `~${(ms / TIME_UNITS.y).toFixed(1)}y`;
 }
 
 export function msToReadableTime(ms: number): string {
   const seconds = Math.floor(ms / 1000) % 60;
-  const minutes = Math.floor(ms / (1000 * 60)) % 60;
-  const hours = Math.floor(ms / (1000 * 60 * 60)) % 24;
-  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  const minutes = Math.floor(ms / TIME_UNITS.m) % 60;
+  const hours = Math.floor(ms / TIME_UNITS.h) % 24;
+  const days = Math.floor(ms / TIME_UNITS.d) % 365;
+  const years = Math.floor(ms / TIME_UNITS.y);
 
-  const parts = [];
-
+  const parts: string[] = [];
+  if (years) parts.push(`${years}y`);
   if (days) parts.push(`${days}d`);
   if (hours) parts.push(`${hours}h`);
   if (minutes) parts.push(`${minutes}m`);
@@ -143,7 +166,20 @@ export function msToReadableTime(ms: number): string {
   return parts.join(' ');
 }
 
-export function toEmojiObject(name: keyof typeof Emoji) {
+export function readableTimeToMs(time: string): number | null {
+  const matches = time.matchAll(/(\d+)(y|d|h|m|s)/g);
+  let ms = 0;
+  let matched = false;
+
+  for (const [, value, unit] of matches) {
+    ms += parseInt(value) * TIME_UNITS[unit as keyof typeof TIME_UNITS];
+    matched = true;
+  }
+
+  return matched ? ms : null;
+}
+
+export function toEmojiObject(name: keyof typeof Emoji): APIEmoji | APIMessageComponentEmoji {
   const emoji = Emoji[name];
 
   if (!emoji) {

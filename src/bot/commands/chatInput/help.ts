@@ -1,4 +1,5 @@
 import {
+  APIMessageComponentEmoji,
   ApplicationCommandType,
   ApplicationIntegrationType,
   ButtonStyle,
@@ -55,7 +56,7 @@ export default {
                 type: ComponentType.Button,
                 custom_id: 'report-bugs',
                 label: 'Report Bugs',
-                emoji: toEmojiObject('discord_bug_hunter'),
+                emoji: toEmojiObject('discord_bug_hunter') as APIMessageComponentEmoji,
                 style: ButtonStyle.Secondary,
               },
             },
@@ -77,14 +78,14 @@ export default {
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('link'),
+                  emoji: toEmojiObject('link') as APIMessageComponentEmoji,
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('discord'),
+                  emoji: toEmojiObject('discord') as APIMessageComponentEmoji,
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

@@ -1,4 +1,11 @@
-import { ApplicationCommandType, ButtonStyle, ComponentType, MessageFlags, UserFlags } from '@discordjs/core';
+import {
+  APIMessageComponentEmoji,
+  ApplicationCommandType,
+  ButtonStyle,
+  ComponentType,
+  MessageFlags,
+  UserFlags,
+} from '@discordjs/core';
 import { RateLimitType, TimestampStyle, UserContextMenuCommand } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
@@ -114,7 +121,7 @@ export default {
                   type: ComponentType.Button,
                   url: `discord://-/users/${user.id}`,
                   label: 'View User',
-                  emoji: toEmojiObject('person'),
+                  emoji: toEmojiObject('person') as APIMessageComponentEmoji,
                   style: ButtonStyle.Link,
                 },
               ],
