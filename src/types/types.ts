@@ -230,3 +230,8 @@ export interface RateLimit {
   type: RateLimitType;
   cooldown: number;
 }
+
+export interface ShardInformation {
+  latency?: number;
+  uptime?: number;
+}

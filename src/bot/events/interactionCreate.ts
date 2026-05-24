@@ -130,7 +130,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${emoji('exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('exclamation')} <#${interaction.channel.id}> is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -224,7 +224,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${emoji('exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('exclamation')} <#${interaction.channel.id}> is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,
@@ -308,7 +308,7 @@ async function handleApplicationCommand(
                     components: [
                       {
                         type: ComponentType.TextDisplay,
-                        content: `${emoji('exclamation')} This channel is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
+                        content: `${emoji('exclamation')} <#${interaction.channel.id}> is currently rate limited! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using </${interaction.data.name}:${interaction.data.id}> again`,
                       },
                       {
                         type: ComponentType.Separator,

@@ -96,7 +96,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} This member doesn't has a banner`,
+              content: `${emoji('exclamation')} <@${user.id}> doesn't has a guild banner`,
             },
             {
               type: ComponentType.Separator,
@@ -175,7 +175,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} This user doesn't has a banner`,
+              content: `${emoji('exclamation')} <@${user.id}> doesn't has a banner`,
             },
             {
               type: ComponentType.Separator,

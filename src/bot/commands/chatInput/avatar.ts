@@ -89,7 +89,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} This member doesn't has an avatar`,
+              content: `${emoji('exclamation')} <@${user.id}> doesn't has a guild avatar`,
             },
             {
               type: ComponentType.Separator,
@@ -172,7 +172,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} This user doesn't has an avatar`,
+              content: `${emoji('exclamation')} <@${user.id}> doesn't has an avatar`,
             },
             {
               type: ComponentType.Separator,

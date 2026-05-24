@@ -4,6 +4,10 @@ import { readdir } from 'fs/promises';
 import { APIGuildChannel, APIGuildMember, APIRole, Snowflake } from '@discordjs/core';
 import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
 import { Emoji } from '../types/emojis.js';
+import { Collection } from '@discordjs/collection';
+import { ShardInformation } from '../types/types.js';
+
+export const shardInfo = new Collection<number, ShardInformation>();
 
 const EPOCH = 1420070400000;
 
@@ -101,6 +105,17 @@ export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChann
 
 export function getShardIdFromGuildId(guildId: string, totalShards: number) {
   return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
+}
+
+export async function getShardInfoFromGuild(guildId: Snowflake | undefined, totalShards: number) {
+  const shardId = guildId ? getShardIdFromGuildId(guildId, totalShards) : 0;
+  const info = shardInfo.get(shardId);
+
+  return {
+    shardId,
+    latency: info?.latency ?? -1,
+    uptime: info?.uptime ?? -1,
+  };
 }
 
 export function getTimestampFromSnowflake(snowflake: Snowflake): number {

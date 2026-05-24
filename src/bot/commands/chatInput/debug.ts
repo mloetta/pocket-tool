@@ -8,9 +8,8 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
 import { maskedLink, timestamp } from '../../../utils/markdown.js';
-import { getShardIdFromGuildId, toEmojiObject } from '../../../utils/utils.js';
+import { getShardIdFromGuildId, getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
 import os from 'os';
-import { shardLatency } from '../../index.js';
 
 export default {
   type: ApplicationCommandType.ChatInput,
@@ -23,8 +22,10 @@ export default {
     const shardId = interaction.guild_id
       ? getShardIdFromGuildId(interaction.guild_id, await client.gateway.getShardCount())
       : 0;
-    const latency = shardLatency.get(shardId)?.toLocaleString('en-US');
-    const uptime = timestamp(Math.floor(Date.now() - process.uptime() * 1000), TimestampStyle.RelativeTime);
+    const totalShards = await client.gateway.getShardCount();
+    const shardInfo = await getShardInfoFromGuild(interaction.guild_id, totalShards);
+    const latency = shardInfo.latency.toLocaleString('en-US');
+    const uptime = timestamp(Math.floor(shardInfo.uptime), TimestampStyle.RelativeTime);
     const memory = process.memoryUsage();
     const usedMemory = memory.rss;
     const totalMemory = os.totalmem();
@@ -47,7 +48,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `### Shard #${shardId}\n> Latency: **${latency !== undefined ? `${latency}ms` : 'N/A'}**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
+              content: `### Shard #${shardId}\n> Shards: **${totalShards}**\n> Latency: **${latency}**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
             },
             {
               type: ComponentType.Separator,
