@@ -9,6 +9,7 @@ import {
   Client,
   GatewayIntentBits,
   InteractionType,
+  MessageFlags,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { readDirectory, shardInfo } from '../utils/utils.js';
@@ -117,7 +118,7 @@ async function loadModules() {
 const reply = client.api.interactions.reply.bind(client.api.interactions);
 
 client.api.interactions.reply = (async (interactionId, interactionToken, body, options) => {
-  if (body.content || body.components || body.embeds) {
+  if ((body.content || !!((body.flags ?? 0) & MessageFlags.IsComponentsV2)) && !body.allowed_mentions) {
     body.allowed_mentions = { parse: [] };
   }
 
@@ -127,7 +128,10 @@ client.api.interactions.reply = (async (interactionId, interactionToken, body, o
 const editReply = client.api.interactions.editReply.bind(client.api.interactions);
 
 client.api.interactions.editReply = (async (applicationId, interactionToken, callbackData, messageId, options) => {
-  if (callbackData.content || callbackData.components || callbackData.embeds) {
+  if (
+    (callbackData.content || !!((callbackData.flags ?? 0) & MessageFlags.IsComponentsV2)) &&
+    !callbackData.allowed_mentions
+  ) {
     callbackData.allowed_mentions = { parse: [] };
   }
 
@@ -137,7 +141,7 @@ client.api.interactions.editReply = (async (applicationId, interactionToken, cal
 const followUp = client.api.interactions.followUp.bind(client.api.interactions);
 
 client.api.interactions.followUp = (async (applicationId, interactionToken, body, options) => {
-  if (body.content || body.components || body.embeds) {
+  if ((body.content || !!((body.flags ?? 0) & MessageFlags.IsComponentsV2)) && !body.allowed_mentions) {
     body.allowed_mentions = { parse: [] };
   }
 

@@ -90,7 +90,6 @@ export default {
 
     if (user.public_flags) {
       const flags = user.public_flags;
-      console.log(flags);
       if (flags & UserFlags.Staff) {
         badges.push('staff');
       }
