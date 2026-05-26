@@ -49,7 +49,7 @@ const gateway = new WebSocketManager({
 gateway.on(WebSocketShardEvents.Ready, (_, shardId) => {
   const current = shardInfo.get(shardId);
 
-  shardInfo.set(shardId, { ...current, uptime: Date.now() });
+  shardInfo.set(shardId, { ...current, uptime: new Date().getTime() });
 });
 
 gateway.on(WebSocketShardEvents.HeartbeatComplete, (payload, shardId) => {

@@ -1,6 +1,6 @@
 import { APIComponentInContainer, ComponentType, MessageFlags } from '@discordjs/core';
-import { Component, InteractableComponentType } from '../../../types/types.js';
-import { emoji } from '../../../utils/markdown.js';
+import { Component, InteractableComponentType, TimestampStyle } from '../../../types/types.js';
+import { emoji, timestamp } from '../../../utils/markdown.js';
 
 export default {
   type: InteractableComponentType.Modal,
@@ -93,6 +93,8 @@ export default {
       }
     }
 
+    const now = new Date();
+
     await client.api.channels.createForumThread('1467550986129113169', {
       name: `Bug Report: ${bugReportId}`,
       applied_tags: ['1489983907477721238', '1467551226378981428', categoryId!],
@@ -103,21 +105,21 @@ export default {
             components: [
               {
                 type: ComponentType.TextDisplay,
-                content: `## Description\n${bugDescription || 'No description provided.'}`,
+                content: `### Description\n${bugDescription || 'No description provided.'}`,
               },
               {
                 type: ComponentType.Separator,
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `## Steps to Reproduce\n${bugReproduce || 'No steps to reproduce provided.'}`,
+                content: `### Steps to Reproduce\n${bugReproduce || 'No steps to reproduce provided.'}`,
               },
               {
                 type: ComponentType.Separator,
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `## Expected Behavior\n${bugBehavior || 'No expected behavior provided.'}`,
+                content: `### Expected Behavior\n${bugBehavior || 'No expected behavior provided.'}`,
               },
               ...(attachmentUrls.length > 0
                 ? ([
@@ -126,7 +128,7 @@ export default {
                     },
                     {
                       type: ComponentType.TextDisplay,
-                      content: '## Attachments',
+                      content: '### Attachments',
                     },
                     {
                       type: ComponentType.MediaGallery,
@@ -141,13 +143,21 @@ export default {
                     },
                   ] satisfies APIComponentInContainer[])
                 : []),
+              {
+                type: ComponentType.Separator,
+              },
+              {
+                type: ComponentType.TextDisplay,
+                content: `-# Bug Report by: <@${interaction.user?.id ?? interaction.member?.user.id}> at ${timestamp(now.getTime(), TimestampStyle.FullDateShortTime)} (${timestamp(now.getTime(), TimestampStyle.RelativeTime)})`,
+              },
             ],
           },
         ],
+        flags: MessageFlags.IsComponentsV2,
       },
     });
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await client.api.interactions.reply(interaction.id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

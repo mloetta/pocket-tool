@@ -34,7 +34,7 @@ export function scheduleReminder(reminder: Reminder, client: Client): void {
     return;
   }
 
-  const ms = new Date(reminder.time).getTime() - Date.now();
+  const ms = new Date(reminder.time).getTime() - new Date().getTime();
 
   if (ms <= 0) {
     remind(reminder, client);
@@ -51,7 +51,7 @@ export function scheduleReminder(reminder: Reminder, client: Client): void {
 
 async function loadReminders(client: Client): Promise<void> {
   const now = new Date();
-  const soon = new Date(Date.now() + LOOKAHEAD_MS);
+  const soon = new Date(new Date().getTime() + LOOKAHEAD_MS);
 
   const { data, error } = await supabase
     .from('reminder')

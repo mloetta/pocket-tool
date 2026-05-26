@@ -21,7 +21,7 @@ void bootstrapper.bootstrap({
     shard.on(WebSocketShardEvents.Ready, () => {
       const current = shardInfo.get(shard.id);
 
-      shardInfo.set(shard.id, { ...current, uptime: Date.now() });
+      shardInfo.set(shard.id, { ...current, uptime: new Date().getTime() });
     });
 
     shard.on(WebSocketShardEvents.HeartbeatComplete, (payload) => {

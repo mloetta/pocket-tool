@@ -64,7 +64,7 @@ export default {
       return;
     }
 
-    const date = new Date(Date.now() + time);
+    const date = new Date(new Date().getTime() + time);
 
     const id = crypto.randomUUID();
 

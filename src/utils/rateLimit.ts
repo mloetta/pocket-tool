@@ -7,7 +7,7 @@ const rateLimits = new Collection<string, Collection<Snowflake, Collection<strin
 export function checkRateLimit(id: Snowflake, commandName: string, rateLimit: RateLimit) {
   if (rateLimit.cooldown <= 0) throw new Error('Cooldown must be greater than 0.');
 
-  const now = Date.now();
+  const now = new Date().getTime();
 
   let scopeBuckets = rateLimits.get(rateLimit.type);
   if (!scopeBuckets) {

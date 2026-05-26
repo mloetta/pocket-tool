@@ -77,13 +77,13 @@ export default {
       if (message.id === originalResponse.id) return;
 
       if (content) {
-        if (Date.now() - new Date(message.timestamp).getTime() <= 1209000000) {
+        if (new Date().getTime() - new Date(message.timestamp).getTime() <= 1209000000) {
           if (message.content.includes(content)) {
             deleteIds.push(message.id);
           }
         }
       } else {
-        if (Date.now() - new Date(message.timestamp).getTime() <= 1209000000) {
+        if (new Date().getTime() - new Date(message.timestamp).getTime() <= 1209000000) {
           deleteIds.push(message.id);
         }
       }

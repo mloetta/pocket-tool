@@ -73,7 +73,7 @@ export default {
       throw error;
     }
 
-    const now = Date.now();
+    const now = new Date().getTime();
     const msIn24h = 24 * 60 * 60 * 1000;
 
     let useAmount = data?.use_amount ?? 0;

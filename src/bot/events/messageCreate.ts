@@ -23,7 +23,7 @@ export default {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `Welcome back, <@${message.author.id}>! You were away for **${msToReadableTime(Date.now() - new Date(afkData.went_away).getTime())}**.`,
+            content: `Welcome back, <@${message.author.id}>! You were away for **${msToReadableTime(new Date().getTime() - new Date(afkData.went_away).getTime())}**.`,
           },
           {
             type: ComponentType.Separator,
