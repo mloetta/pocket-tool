@@ -84,13 +84,10 @@ export default {
     }
 
     const u = await client.api.users.get(user.id);
-    let m;
 
-    if (member) {
-      m = await client.api.guilds.getMember(interaction.guild_id!, user.id);
-    }
+    if (scope === 'guild' && member && interaction.guild_id) {
+      const m = await client.api.guilds.getMember(interaction.guild_id, user.id);
 
-    if (scope === 'guild' && m) {
       if (!m.banner) {
         await client.api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
