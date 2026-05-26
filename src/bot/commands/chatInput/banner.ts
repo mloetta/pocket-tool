@@ -84,13 +84,15 @@ export default {
     }
 
     const u = await client.api.users.get(user.id);
-    let m;
 
-    if (member) {
-      m = await client.api.guilds.getMember(interaction.guild_id!, user.id);
-    }
+    const guild =
+      scope === 'guild' && interaction.guild_id
+        ? await client.api.guilds.get(interaction.guild_id).catch(() => null)
+        : null;
 
-    if (scope === 'guild' && m) {
+    if (scope === 'guild' && member && guild) {
+      const m = await client.api.guilds.getMember(guild.id, user.id);
+
       if (!m.banner) {
         await client.api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
@@ -156,7 +158,7 @@ export default {
                     ? ([
                         {
                           type: ComponentType.Button,
-                          url: cdn(`guilds/${interaction.guild_id}/users/${user.id}/avatars/${m.avatar}`, 4096, 'gif'),
+                          url: cdn(`guilds/${interaction.guild_id}/users/${user.id}/banners/${m.banner}`, 4096, 'gif'),
                           label: 'GIF',
                           style: ButtonStyle.Link,
                         },
