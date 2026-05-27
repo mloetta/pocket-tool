@@ -131,7 +131,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('wumpus')} **Created:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}${
+              content: `${emoji('calendar')} **Created:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}${
                 member
                   ? `\n\n${emoji('new_members')} **Joined:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
                       member.roles.length > 0

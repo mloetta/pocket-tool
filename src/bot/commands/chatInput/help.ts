@@ -49,7 +49,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: 'To report bugs simply click the button on the right and fill out the form',
+                  content: 'To report bugs simply click the button and fill out the form',
                 },
               ],
               accessory: {

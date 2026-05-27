@@ -108,7 +108,7 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${emoji('people')} ${highlight(members, HighlightStyle.Bold)}   ${emoji('channel')} ${highlight(channels)}   ${emoji('nitro_boost')} ${highlight(boosts)}`,
+              content: `${emoji('calendar')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}\n\n${emoji('people')} ${highlight(members, HighlightStyle.Bold)}   ${emoji('channel')} ${highlight(channels)}   ${emoji('nitro_boost')} ${highlight(boosts)}`,
             },
           ],
         },

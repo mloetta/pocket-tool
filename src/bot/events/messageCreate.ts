@@ -1,4 +1,4 @@
-import { ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
+import { ButtonStyle, ChannelType, ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
 import { GatewayEvent } from '../../types/types.js';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime } from '../../utils/utils.js';

@@ -177,7 +177,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('new_members')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('new_members')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
                   member.roles.length > 0
                     ? `\n\n${emoji('roles')} **Roles:**\n${member.roles
                         .slice(0, 5)
@@ -229,7 +229,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
+                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
               },
             ],
           },

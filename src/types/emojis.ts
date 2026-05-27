@@ -1,5 +1,4 @@
 export enum Emoji {
-  wumpus = '<:icons_wumpus:1507125727735185428>',
   wrong = '<:icons_wrong:1507125743770009731>',
   translate = '<:icons_translate:1507125759938920599>',
   sticker = '<:icons_stickers:1507125778712891623>',
@@ -19,6 +18,7 @@ export enum Emoji {
   nitro_boost = '<:icons_colorboostnitro:1507125963266457821>',
   clock = '<:icons_clock:1507125972892127292>',
   channel = '<:icons_channel:1507125982983618700>',
+  calendar = '<:icons_calendar:1508998267176747008>',
   // Twitter
   bookmark = '<:twitter_bookmark:1504947779548479669>',
   like = '<:twitter_like:1504947769717162076>',

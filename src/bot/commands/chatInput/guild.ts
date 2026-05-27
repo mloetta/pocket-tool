@@ -47,7 +47,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: `${emoji('general_info')} **${name}**\n-# ${guildId}\n${emoji('owner')} <@${ownerId}>\n\n${emoji('wumpus')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
+                  content: `${emoji('general_info')} **${name}**\n-# ${guildId}\n${emoji('owner')} <@${ownerId}>\n\n${emoji('calendar')} **Created At:**\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
                 },
               ],
               accessory: {
@@ -76,7 +76,7 @@ export default {
               components: [
                 {
                   type: ComponentType.TextDisplay,
-                  content: 'Click the button on the right to view the guild features',
+                  content: 'Click the button to view the guild features',
                 },
               ],
               accessory: {

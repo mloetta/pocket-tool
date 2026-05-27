@@ -72,7 +72,7 @@ export default {
               content: emojis
                 .map(
                   (e) =>
-                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('wumpus')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)}`,
+                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)}`,
                 )
                 .join('\n'),
             },

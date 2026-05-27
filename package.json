@@ -24,6 +24,7 @@
     "@supabase/supabase-js": "^2.104.1",
     "bufferutil": "^4.1.0",
     "luxon": "^3.7.2",
+    "mathjs": "^15.2.0",
     "node-cron": "^4.2.1",
     "openai": "^6.38.0",
     "redis": "^5.12.1",
