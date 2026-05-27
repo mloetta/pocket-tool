@@ -67,7 +67,7 @@ export default {
     const fullLatex = `\\mathbf{${latex} = ${result}}`;
     const encoded = encodeURIComponent(`\\dpi{300}\\bg_white ${fullLatex}`);
 
-    const buffer = await makeRequest(`https://latex.codecogs.com/png.latex/${encoded}`, {
+    const buffer = await makeRequest(`https://latex.codecogs.com/png.latex?${encoded}`, {
       method: RequestMethod.GET,
       response: ResponseType.BUFFER,
     });
