@@ -16,15 +16,18 @@ import { getPermissionsFor, hasPermission } from '../../../utils/utils.js';
 import { Permissions } from '../../../types/permissions.js';
 import { getSubscription, subscribe, TTS, unsubscribe } from '../../../utils/subscription.js';
 import { supabase } from '../../../utils/supabase.js';
+import { Locale } from '@discordjs/core';
 
 type Options = {
   speak: {
     text: string;
     voice?: string;
+    language?: string;
   };
   file: {
     text: string;
     voice?: string;
+    language?: string;
   };
 };
 
@@ -61,6 +64,13 @@ export default {
           ],
           required: false,
         },
+        {
+          type: ApplicationCommandOptionType.String,
+          name: 'language',
+          description: 'The language of the TTS (auto for discord locale)',
+          required: false,
+          autocomplete: true,
+        },
       ],
     },
     {
@@ -89,6 +99,13 @@ export default {
           ],
           required: false,
         },
+        {
+          type: ApplicationCommandOptionType.String,
+          name: 'language',
+          description: 'The language of the TTS (auto for discord locale)',
+          required: false,
+          autocomplete: true,
+        },
       ],
     },
   ],
@@ -97,11 +114,32 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
+  async autocomplete({ data: interaction, api, shardId }, client) {
+    const subcommand = interaction.data.options.find((o) => 'options' in o);
+    const options = subcommand && 'options' in subcommand ? subcommand.options : interaction.data.options;
+    const option = options?.find((o) => 'focused' in o && o.focused);
+    const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
+
+    const choices = [
+      {
+        name: 'Auto',
+        value: 'auto',
+      },
+      ...Object.entries(Locale).map(([key, value]) => ({
+        name: key,
+        value,
+      })),
+    ]
+      .filter((c) => c.name.toLowerCase().includes(focused))
+      .slice(0, 25);
+
+    await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
+  },
   async run({ data: interaction, api, shardId }, options, client) {
     const { speak, file } = options;
 
     if (speak) {
-      const { text, voice } = speak;
+      const { text, voice, language } = speak;
 
       const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
 
@@ -276,7 +314,8 @@ export default {
       const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
-        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username} said: ${text}`,
+        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username}: ${text}`,
+        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0] : language.split('-')[0],
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'opus_48000_192',
       });
@@ -319,7 +358,7 @@ export default {
         last_used: new Date(),
       });
     } else if (file) {
-      const { text, voice } = file;
+      const { text, voice, language } = file;
 
       const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
 
@@ -385,6 +424,7 @@ export default {
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
         text,
+        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0] : language.split('-')[0],
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'opus_48000_192',
       });
