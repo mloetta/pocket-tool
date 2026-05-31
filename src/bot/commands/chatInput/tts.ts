@@ -276,7 +276,7 @@ export default {
       const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
-        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username} said ${text}`,
+        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username} said: ${text}`,
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'opus_48000_192',
       });

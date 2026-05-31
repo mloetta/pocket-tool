@@ -1,6 +1,5 @@
 import { WorkerBootstrapper, WebSocketShardEvents } from '@discordjs/ws';
 import { parentPort } from 'worker_threads';
-import { shardInfo } from '../utils/utils.js';
 
 const bootstrapper = new WorkerBootstrapper();
 
@@ -19,19 +18,15 @@ void bootstrapper.bootstrap({
 
     // tracks shard information
     shard.on(WebSocketShardEvents.Ready, () => {
-      const current = shardInfo.get(shard.id);
-
-      shardInfo.set(shard.id, { ...current, uptime: new Date().getTime() });
+      parentPort?.postMessage({ type: 'shardInfo', shardId: shard.id, data: { uptime: new Date().getTime() } });
     });
 
     shard.on(WebSocketShardEvents.HeartbeatComplete, (payload) => {
-      const current = shardInfo.get(shard.id);
-
-      shardInfo.set(shard.id, { ...current, latency: payload.latency });
+      parentPort?.postMessage({ type: 'shardInfo', shardId: shard.id, data: { latency: payload.latency } });
     });
 
     shard.on(WebSocketShardEvents.Closed, () => {
-      shardInfo.delete(shard.id);
+      parentPort?.postMessage({ type: 'shardInfo', shardId: shard.id, data: null });
     });
   },
 });

@@ -14,7 +14,7 @@ import {
   ToEventProps,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
-import { readDirectory } from '../utils/utils.js';
+import { readDirectory, shardInfo } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
 import fs from 'fs';
 import path from 'path';
@@ -48,6 +48,17 @@ const gateway = new WebSocketManager({
               api: client.api,
               shardId: payload.shardId,
             });
+            break;
+          }
+          case 'shardInfo': {
+            if (payload.data === null) {
+              shardInfo.delete(payload.shardId);
+            } else {
+              const current = shardInfo.get(payload.shardId) ?? {};
+
+              shardInfo.set(payload.shardId, { ...current, ...payload.data });
+            }
+            break;
           }
         }
       },
