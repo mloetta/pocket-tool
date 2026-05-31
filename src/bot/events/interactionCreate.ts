@@ -4,7 +4,6 @@ import {
   APIChatInputApplicationCommandInteraction,
   APIMessageApplicationCommandInteraction,
   APIMessageComponentButtonInteraction,
-  APIMessageComponentInteraction,
   APIMessageComponentSelectMenuInteraction,
   APIModalSubmitInteraction,
   APIPrimaryEntryPointCommandInteraction,
@@ -20,8 +19,10 @@ import {
 import {
   ApplicationCommand,
   ChatInputCommand,
+  Component,
   GatewayEvent,
   HighlightStyle,
+  InteractableComponentType,
   MessageContextMenuCommand,
   PrimaryEntryPointCommand,
   RateLimitType,
@@ -32,10 +33,11 @@ import { parseCommandOptions, parseComponentArgs } from '../index.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
 import { emoji, highlight, timestamp } from '../../utils/markdown.js';
+import { API } from '@discordjs/core';
 
 export default {
   name: GatewayDispatchEvents.InteractionCreate,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     console.log(
       `Received interactionCreate event: ${interaction.id} (${InteractionType[interaction.type]}) from ${interaction.user?.username ?? interaction.member?.user.username} (${interaction.user?.id ?? interaction.member?.user.id})`,
     );
@@ -47,7 +49,7 @@ export default {
         .toArray()
         .includes(interaction.user?.id ?? interaction.member?.user.id)
     ) {
-      await client.api.interactions.reply(interaction.id, interaction.token, {
+      await api.interactions.reply(interaction.id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -66,11 +68,17 @@ export default {
     switch (interaction.type) {
       case InteractionType.ApplicationCommand:
       case InteractionType.ApplicationCommandAutocomplete:
-        await handleApplicationCommand(interaction, client);
+        await handleApplicationCommand(interaction, api, shardId, client);
         break;
       case InteractionType.MessageComponent:
+        if (interaction.data.component_type === ComponentType.Button) {
+          await handleButton(interaction as APIMessageComponentButtonInteraction, api, shardId, client);
+        } else {
+          await handleSelectMenu(interaction as APIMessageComponentSelectMenuInteraction, api, shardId, client);
+        }
+        break;
       case InteractionType.ModalSubmit:
-        await handleComponent(interaction, client);
+        await handleModal(interaction, api, shardId, client);
         break;
     }
   },
@@ -78,6 +86,8 @@ export default {
 
 async function handleApplicationCommand(
   interaction: APIApplicationCommandInteraction | APIApplicationCommandAutocompleteInteraction,
+  api: API,
+  shardId: number,
   client: Client,
 ) {
   if (!interaction.data) {
@@ -87,7 +97,7 @@ async function handleApplicationCommand(
   let command = client.commands.get(interaction.data.name) as ApplicationCommand;
 
   if (!command) {
-    await client.api.interactions.reply(interaction.id, interaction.token, {
+    await api.interactions.reply(interaction.id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,
@@ -126,7 +136,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -147,7 +157,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -172,7 +182,7 @@ async function handleApplicationCommand(
                 );
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -199,13 +209,17 @@ async function handleApplicationCommand(
           const incognito = option?.type === ApplicationCommandOptionType.Boolean ? Boolean(option.value) : false;
 
           if (command.acknowledge) {
-            await client.api.interactions.defer(interaction.id, interaction.token, {
+            await api.interactions.defer(interaction.id, interaction.token, {
               flags: command.ephemeral || incognito ? MessageFlags.Ephemeral : undefined,
             });
           }
 
           await (command as ChatInputCommand).run(
-            interaction as APIChatInputApplicationCommandInteraction,
+            {
+              data: interaction as APIChatInputApplicationCommandInteraction,
+              api,
+              shardId,
+            },
             parseCommandOptions(interaction as APIChatInputApplicationCommandInteraction),
             client,
           );
@@ -220,7 +234,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -241,7 +255,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -266,7 +280,7 @@ async function handleApplicationCommand(
                 );
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -287,12 +301,19 @@ async function handleApplicationCommand(
           }
 
           if (command.acknowledge) {
-            await client.api.interactions.defer(interaction.id, interaction.token, {
+            await api.interactions.defer(interaction.id, interaction.token, {
               flags: command.ephemeral ? MessageFlags.Ephemeral : undefined,
             });
           }
 
-          await command.run(interaction as APIMessageApplicationCommandInteraction, client);
+          await command.run(
+            {
+              data: interaction as APIMessageApplicationCommandInteraction,
+              api,
+              shardId,
+            },
+            client,
+          );
           break;
         }
         case ApplicationCommandType.User: {
@@ -304,7 +325,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -325,7 +346,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -350,7 +371,7 @@ async function handleApplicationCommand(
                 );
 
                 if (!result.executable) {
-                  await client.api.interactions.reply(interaction.id, interaction.token, {
+                  await api.interactions.reply(interaction.id, interaction.token, {
                     components: [
                       {
                         type: ComponentType.TextDisplay,
@@ -371,19 +392,33 @@ async function handleApplicationCommand(
           }
 
           if (command.acknowledge) {
-            await client.api.interactions.defer(interaction.id, interaction.token, {
+            await api.interactions.defer(interaction.id, interaction.token, {
               flags: command.ephemeral ? MessageFlags.Ephemeral : undefined,
             });
           }
 
-          await command.run(interaction as APIUserApplicationCommandInteraction, client);
+          await command.run(
+            {
+              data: interaction as APIUserApplicationCommandInteraction,
+              api,
+              shardId,
+            },
+            client,
+          );
           break;
         }
         case ApplicationCommandType.PrimaryEntryPoint: {
           command = command as PrimaryEntryPointCommand;
 
           if (command.run) {
-            await command.run(interaction as APIPrimaryEntryPointCommandInteraction, client);
+            await command.run(
+              {
+                data: interaction as APIPrimaryEntryPointCommandInteraction,
+                api,
+                shardId,
+              },
+              client,
+            );
           }
 
           break;
@@ -391,14 +426,21 @@ async function handleApplicationCommand(
       }
     } else if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
       if ('autocomplete' in command && command.autocomplete) {
-        await command.autocomplete(interaction as APIApplicationCommandAutocompleteInteraction, client);
+        await command.autocomplete(
+          {
+            data: interaction as APIApplicationCommandAutocompleteInteraction,
+            api,
+            shardId,
+          },
+          client,
+        );
       }
     }
   } catch (e) {
     console.error(`Command ${interaction.data.name} encountered an error:`, e);
 
     if ('acknowledge' in command && command.acknowledge) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -411,7 +453,7 @@ async function handleApplicationCommand(
         flags: MessageFlags.IsComponentsV2,
       });
     } else {
-      await client.api.interactions.reply(interaction.application_id, interaction.token, {
+      await api.interactions.reply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -427,63 +469,95 @@ async function handleApplicationCommand(
   }
 }
 
-async function handleComponent(
-  interaction: APIMessageComponentInteraction | APIModalSubmitInteraction,
+async function handleButton(
+  interaction: APIMessageComponentButtonInteraction,
+  api: API,
+  shardId: number,
   client: Client,
 ) {
-  if (!interaction.data) {
-    return;
-  }
-
   const args = interaction.data.custom_id?.split('_') ?? [];
   const customId = args.shift();
 
-  if (!customId) {
-    return;
-  }
+  if (!customId) return;
 
-  let component = client.components.get(customId);
+  const button = client.components.get(customId) as Component<InteractableComponentType.Button>;
 
-  if (!component) {
-    return;
-  }
+  if (!button) return;
 
-  if (component.acknowledge) {
-    await client.api.interactions.deferMessageUpdate(interaction.id, interaction.token);
+  if (button.acknowledge) {
+    await api.interactions.deferMessageUpdate(interaction.id, interaction.token);
   }
 
   try {
-    if (interaction.type === InteractionType.MessageComponent) {
-      if (interaction.data.component_type === ComponentType.Button) {
-        await component.run(
-          interaction as APIMessageComponentButtonInteraction,
-          parseComponentArgs(component, args),
-          client,
-        );
-      } else if (
-        [
-          ComponentType.RoleSelect,
-          ComponentType.UserSelect,
-          ComponentType.StringSelect,
-          ComponentType.ChannelSelect,
-          ComponentType.MentionableSelect,
-        ].includes(interaction.data.component_type)
-      ) {
-        await component.run(
-          interaction as APIMessageComponentSelectMenuInteraction,
-          parseComponentArgs(component, args),
-          client,
-        );
-      }
-    } else {
-      await component.run(interaction as APIModalSubmitInteraction, parseComponentArgs(component, args), client);
-    }
+    await button.run(
+      {
+        data: interaction,
+        api,
+        shardId,
+      },
+      parseComponentArgs(button, args),
+      client,
+    );
   } catch (e) {
-    console.error(`Component ${component.custom_id} encountered an error:`, e);
+    console.error(`Button ${customId} encountered an error:`, e);
+  }
+}
 
-    await client.api.interactions.reply(interaction.id, interaction.token, {
-      content: `${emoji('wrong')} The component ${component.custom_id} encountered an error - please try again later\n-# If the issue persists, please report it to the developers by using </help:1494455586631188562>`,
-      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
-    });
+async function handleSelectMenu(
+  interaction: APIMessageComponentSelectMenuInteraction,
+  api: API,
+  shardId: number,
+  client: Client,
+) {
+  const args = interaction.data.custom_id?.split('_') ?? [];
+  const customId = args.shift();
+
+  if (!customId) return;
+
+  const selectMenu = client.components.get(customId) as Component<InteractableComponentType.SelectMenu>;
+
+  if (!selectMenu) return;
+
+  if (selectMenu.acknowledge) {
+    await api.interactions.deferMessageUpdate(interaction.id, interaction.token);
+  }
+
+  try {
+    await selectMenu.run(
+      {
+        data: interaction,
+        api,
+        shardId,
+      },
+      parseComponentArgs(selectMenu, args),
+      client,
+    );
+  } catch (e) {
+    console.error(`Select menu ${customId} encountered an error:`, e);
+  }
+}
+
+async function handleModal(interaction: APIModalSubmitInteraction, api: API, shardId: number, client: Client) {
+  const args = interaction.data.custom_id?.split('_') ?? [];
+  const customId = args.shift();
+
+  if (!customId) return;
+
+  const modal = client.components.get(customId) as Component<InteractableComponentType.Modal>;
+
+  if (!modal) return;
+
+  try {
+    await modal.run(
+      {
+        data: interaction,
+        api,
+        shardId,
+      },
+      parseComponentArgs(modal, args),
+      client,
+    );
+  } catch (e) {
+    console.error(`Modal ${customId} encountered an error:`, e);
   }
 }

@@ -6,8 +6,8 @@ export default {
   type: InteractableComponentType.Button,
   custom_id: `support-resolved`,
   acknowledge: true,
-  async run(interaction, args, client) {
-    const channel = await client.api.channels.get(interaction.channel.id);
+  async run({ data: interaction, api, shardId }, args, client) {
+    const channel = await api.channels.get(interaction.channel.id);
 
     if (channel.type !== ChannelType.PublicThread) {
       return;
@@ -22,7 +22,7 @@ export default {
 
     const currentTags = channel.applied_tags ?? [];
 
-    await client.api.channels.edit(channel.id, {
+    await api.channels.edit(channel.id, {
       archived: true,
       locked: true,
       applied_tags: [...currentTags, '1508633668514742412'],
@@ -30,7 +30,7 @@ export default {
 
     const now = new Date();
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

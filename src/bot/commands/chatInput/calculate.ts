@@ -35,7 +35,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { expression } = options;
 
     let result: number;
@@ -48,7 +48,7 @@ export default {
       result = node.evaluate();
       latex = node.toTex({ parenthesis: 'auto' });
     } catch {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -87,7 +87,7 @@ export default {
       })
       .toBuffer();
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

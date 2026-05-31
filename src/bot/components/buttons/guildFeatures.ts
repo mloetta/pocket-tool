@@ -8,10 +8,10 @@ export default {
   type: InteractableComponentType.Button,
   custom_id: `guild-features`,
   args,
-  async run(interaction, args, client) {
+  async run({ data: interaction, api, shardId }, args, client) {
     const { guildId } = args;
 
-    const guild = await client.api.guilds.get(guildId);
+    const guild = await api.guilds.get(guildId);
 
     const features = guild.features;
     const allFeatures = Object.values(GuildFeature);
@@ -22,7 +22,7 @@ export default {
       return `${highlight(feature)} ${hasFeature ? emoji('correct') : emoji('wrong')}`;
     });
 
-    await client.api.interactions.createModal(interaction.id, interaction.token, {
+    await api.interactions.createModal(interaction.id, interaction.token, {
       title: `Guild Features`,
       custom_id: `guild-features-modal`,
       components: [

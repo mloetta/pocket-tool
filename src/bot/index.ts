@@ -1,22 +1,25 @@
 import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
-import { CompressionMethod, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from '@discordjs/ws';
+import { CompressionMethod, WebSocketManager, WorkerShardingStrategy } from '@discordjs/ws';
 import {
   APIApplicationCommandInteractionDataOption,
   APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
+  GatewayDispatchPayload,
   GatewayIntentBits,
   InteractionType,
   MessageFlags,
+  ToEventProps,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
-import { readDirectory, shardInfo } from '../utils/utils.js';
+import { readDirectory } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createVoiceAdapter } from '../utils/adapter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,48 +28,39 @@ const rest = new REST().setToken(env.get('token', true).toString());
 
 const gateway = new WebSocketManager({
   token: env.get('token', true).toString(),
-  intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
+  intents:
+    GatewayIntentBits.Guilds |
+    GatewayIntentBits.GuildMessages |
+    GatewayIntentBits.MessageContent |
+    GatewayIntentBits.GuildVoiceStates,
   shardCount: null,
   rest,
   compression: CompressionMethod.ZlibNative,
   buildStrategy: (manager) =>
     new WorkerShardingStrategy(manager, {
       shardsPerWorker: 4,
-      /*
       workerPath: path.join(__dirname, 'worker.js'),
       unknownPayloadHandler(payload) {
         switch (payload.type) {
           case 'dispatch': {
-            client.emit(payload.payload.t, payload.payload.d);
+            client.emit(payload.payload.t, {
+              data: payload.payload.d,
+              api: client.api,
+              shardId: payload.shardId,
+            });
           }
         }
       },
-      */
     }),
-});
-
-// shard info stuff
-gateway.on(WebSocketShardEvents.Ready, (_, shardId) => {
-  const current = shardInfo.get(shardId);
-
-  shardInfo.set(shardId, { ...current, uptime: new Date().getTime() });
-});
-
-gateway.on(WebSocketShardEvents.HeartbeatComplete, (payload, shardId) => {
-  const current = shardInfo.get(shardId);
-
-  shardInfo.set(shardId, { ...current, latency: payload.latency });
-});
-
-gateway.on(WebSocketShardEvents.Closed, (shardId) => {
-  shardInfo.delete(shardId);
 });
 
 const client = new Client({ rest, gateway });
 
+// custom properties for the client
 client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
 client.events = new Collection<string, GatewayEvent>();
+client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
 // load everything and then connect to the gateway
 void loadModules().then(() => void gateway.connect());
@@ -102,13 +96,16 @@ async function loadModules() {
 
       console.log(`Binding event: ${event.name}`);
 
-      client.on(event.name, async (payload: any) => {
-        try {
-          await event.run(payload.data, client);
-        } catch (e) {
-          console.log(`An error occurred while running event ${event.name}:`, e);
-        }
-      });
+      client.on(
+        event.name,
+        async (payload: ToEventProps<Extract<GatewayDispatchPayload, { t: typeof event.name }>['d']>) => {
+          try {
+            await event.run(payload, client);
+          } catch (e) {
+            console.log(`An error occurred while running event ${event.name}:`, e);
+          }
+        },
+      );
     }
   }
 }
@@ -244,7 +241,7 @@ export function parseCommandOptions(
 }
 
 export function parseComponentArgs<Args extends readonly string[]>(
-  component: Component,
+  component: Component<any>,
   args: string[],
 ): Record<Args[number], string> {
   const result = {} as Record<Args[number], string>;

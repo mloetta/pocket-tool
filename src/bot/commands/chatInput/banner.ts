@@ -53,7 +53,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     let { user: target, scope } = options;
 
     if (!target) {
@@ -67,7 +67,7 @@ export default {
     const { user, member } = target;
 
     if (!user) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -83,18 +83,16 @@ export default {
       return;
     }
 
-    const u = await client.api.users.get(user.id);
+    const u = await api.users.get(user.id);
 
     const guild =
-      scope === 'guild' && interaction.guild_id
-        ? await client.api.guilds.get(interaction.guild_id).catch(() => null)
-        : null;
+      scope === 'guild' && interaction.guild_id ? await api.guilds.get(interaction.guild_id).catch(() => null) : null;
 
     if (scope === 'guild' && member && guild) {
-      const m = await client.api.guilds.getMember(guild.id, user.id);
+      const m = await api.guilds.getMember(guild.id, user.id);
 
       if (!m.banner) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -110,7 +108,7 @@ export default {
         return;
       }
 
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.Container,
@@ -173,7 +171,7 @@ export default {
       });
     } else {
       if (!u.banner) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -189,7 +187,7 @@ export default {
         return;
       }
 
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.Container,

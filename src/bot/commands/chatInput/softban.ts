@@ -42,11 +42,11 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { users, reason } = options;
 
     if (!hasPermission(BigInt(interaction.app_permissions ?? 0), BigInt(Permissions.BAN_MEMBERS))) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -68,7 +68,7 @@ export default {
       userIds.length > 1 &&
       !hasPermission(BigInt(interaction.member?.permissions ?? 0), BigInt(Permissions.MANAGE_GUILD))
     ) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -83,7 +83,7 @@ export default {
 
       return;
     } else if (userIds.length >= 200) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -105,13 +105,13 @@ export default {
     if (userIds.length === 1) {
       const userId = userIds[0];
       try {
-        await client.api.guilds.banUser(
+        await api.guilds.banUser(
           interaction.guild!.id,
           userId,
           { delete_message_seconds: 604800 },
           { reason: `${reason ?? ''}\nSoftban command ran by ${interaction.member?.user.username}` },
         );
-        await client.api.guilds.unbanUser(interaction.guild!.id, userId, {
+        await api.guilds.unbanUser(interaction.guild!.id, userId, {
           reason: `Softban command ran by ${interaction.member?.user.username}`,
         });
         successfulBans.push(userId);
@@ -119,7 +119,7 @@ export default {
         failedBans.push(userId);
       }
     } else {
-      const bulkBanResult = await client.api.guilds
+      const bulkBanResult = await api.guilds
         .bulkBanUsers(
           interaction.guild!.id,
           { user_ids: userIds, delete_message_seconds: 604800 },
@@ -134,7 +134,7 @@ export default {
 
       const unbanResults = await Promise.allSettled(
         bulkSuccesfullUserIds.map((userId) =>
-          client.api.guilds.unbanUser(interaction.guild!.id, userId, {
+          api.guilds.unbanUser(interaction.guild!.id, userId, {
             reason: `Softban command ran by ${interaction.member?.user.username}`,
           }),
         ),
@@ -153,7 +153,7 @@ export default {
     const hasSuccess = successfulBans.length > 0;
     const hasFailures = failedBans.length > 0;
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

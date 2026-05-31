@@ -1,23 +1,23 @@
 import {
-  APIApplicationCommandAutocompleteInteraction,
-  APIChatInputApplicationCommandInteraction,
-  APIMessageApplicationCommandInteraction,
   APIMessageComponentButtonInteraction,
+  APIMessageComponentInteractionData,
   APIMessageComponentSelectMenuInteraction,
   APIModalSubmitInteraction,
-  APIPrimaryEntryPointCommandInteraction,
-  APIUserApplicationCommandInteraction,
   ApplicationCommandOptionAllowedChannelType,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
   Client,
+  ComponentType,
   EntryPointCommandHandlerType,
   GatewayDispatchEvents,
   GatewayDispatchPayload,
+  GatewayInteractionCreateDispatchData,
   InteractionContextType,
+  InteractionType,
   LocalizationMap,
   Snowflake,
+  ToEventProps,
 } from '@discordjs/core';
 import { Permissions } from './permissions.js';
 
@@ -41,8 +41,8 @@ export interface ChatInputCommand<
 > extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.ChatInput> {
   description: Localization;
   options?: ChatInputOption[];
-  run: (interaction: APIChatInputApplicationCommandInteraction, options: Options, client: Client) => Promise<void>;
-  autocomplete?: (interaction: APIApplicationCommandAutocompleteInteraction, client: Client) => Promise<void>;
+  run: (context: ToCommandProps<ApplicationCommandType.ChatInput>, options: Options, client: Client) => Promise<void>;
+  autocomplete?: (context: ToAutocompleteProps, client: Client) => Promise<void>;
 }
 
 export type ChatInputOption =
@@ -118,18 +118,18 @@ export type ChatInputOptionChoice<Type extends ApplicationCommandOptionType> = {
 };
 
 export interface UserContextMenuCommand extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.User> {
-  run: (interaction: APIUserApplicationCommandInteraction, client: Client) => Promise<void>;
+  run: (context: ToCommandProps<ApplicationCommandType.User>, client: Client) => Promise<void>;
 }
 
 export interface MessageContextMenuCommand extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.Message> {
-  run: (interaction: APIMessageApplicationCommandInteraction, client: Client) => Promise<void>;
+  run: (context: ToCommandProps<ApplicationCommandType.Message>, client: Client) => Promise<void>;
 }
 
 export interface PrimaryEntryPointCommand {
   type: ApplicationCommandType.PrimaryEntryPoint;
   name: Localization;
   handler: EntryPointCommandHandlerType;
-  run?: (interaction: APIPrimaryEntryPointCommandInteraction, client: Client) => Promise<void>;
+  run?: (context: ToCommandProps<ApplicationCommandType.PrimaryEntryPoint>, client: Client) => Promise<void>;
 }
 
 export type NonPrimaryEntryPointCommand = ChatInputCommand | UserContextMenuCommand | MessageContextMenuCommand;
@@ -138,20 +138,14 @@ export type ApplicationCommand = NonPrimaryEntryPointCommand | PrimaryEntryPoint
 
 export interface GatewayEvent<Event extends GatewayDispatchEvents = GatewayDispatchEvents> {
   name: Event;
-  run: (args: Extract<GatewayDispatchPayload, { t: Event }>['d'], client: Client) => Promise<void>;
+  run: (data: ToEventProps<Extract<GatewayDispatchPayload, { t: Event }>['d']>, client: Client) => Promise<void>;
 }
 
 export enum InteractableComponentType {
-  Button = 'Button',
-  Select = 'Select',
-  Modal = 'Modal',
+  Button = 'button',
+  SelectMenu = 'select_menu',
+  Modal = 'modal',
 }
-
-export type ComponentInteraction = {
-  [InteractableComponentType.Button]: APIMessageComponentButtonInteraction;
-  [InteractableComponentType.Select]: APIMessageComponentSelectMenuInteraction;
-  [InteractableComponentType.Modal]: APIModalSubmitInteraction;
-};
 
 export interface Component<
   Type extends InteractableComponentType = InteractableComponentType,
@@ -161,7 +155,7 @@ export interface Component<
   custom_id: Snowflake;
   args?: Args;
   acknowledge?: boolean;
-  run: (interaction: ComponentInteraction[Type], args: Record<Args[number], string>, client: Client) => Promise<void>;
+  run: (context: ToComponentProps<Type>, args: Record<Args[number], string>, client: Client) => Promise<void>;
 }
 
 export enum TimestampStyle {
@@ -242,3 +236,35 @@ export interface Reminder {
   time: Date;
   reason?: string;
 }
+
+export interface TTSTrack {
+  buffer: Buffer;
+  onFinish?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export type ToCommandProps<Type extends ApplicationCommandType = ApplicationCommandType> = ToEventProps<
+  Extract<GatewayInteractionCreateDispatchData, { type: InteractionType.ApplicationCommand; data: { type: Type } }>
+>;
+
+export type ToAutocompleteProps = ToEventProps<
+  Extract<GatewayInteractionCreateDispatchData, { type: InteractionType.ApplicationCommandAutocomplete }>
+>;
+
+export type InteractableComponentToComponent = {
+  [InteractableComponentType.Button]: APIMessageComponentButtonInteraction;
+  [InteractableComponentType.SelectMenu]: APIMessageComponentSelectMenuInteraction;
+};
+
+export type ToMessageComponentProps<Type extends Exclude<InteractableComponentType, InteractableComponentType.Modal>> =
+  ToEventProps<InteractableComponentToComponent[Type]>;
+
+export type ToModalProps = ToEventProps<APIModalSubmitInteraction>;
+
+export type InteractableComponentToProps = {
+  [InteractableComponentType.Button]: ToMessageComponentProps<InteractableComponentType.Button>;
+  [InteractableComponentType.SelectMenu]: ToMessageComponentProps<InteractableComponentType.SelectMenu>;
+  [InteractableComponentType.Modal]: ToModalProps;
+};
+
+export type ToComponentProps<Type extends InteractableComponentType> = InteractableComponentToProps[Type];

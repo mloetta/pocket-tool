@@ -33,14 +33,14 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { link } = options;
 
     const code = link.match(
       /(https?:\/\/)?(www\.)?(discord\.gg|discord(?:app)?\.com\/invite)\/([a-zA-Z0-9-]{2,64})/,
     )?.[4];
     if (!code) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -56,9 +56,9 @@ export default {
       return;
     }
 
-    const invite = await client.api.invites.get(code, { with_counts: true });
+    const invite = await api.invites.get(code, { with_counts: true });
     if (!invite || !invite.guild) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -78,12 +78,12 @@ export default {
     const guildIcon = cdn(`/icons/${invite.guild.id}/${invite.guild.icon}`, 4096, 'webp', true);
     const name = invite.guild.name;
     const members = invite.approximate_member_count;
-    const channels = (await client.api.guilds.getChannels(invite.guild.id)).length;
+    const channels = (await api.guilds.getChannels(invite.guild.id)).length;
     const boosts = invite.guild.premium_subscription_count;
     const guildId = invite.guild.id;
     const createdAt = getTimestampFromSnowflake(invite.guild.id);
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

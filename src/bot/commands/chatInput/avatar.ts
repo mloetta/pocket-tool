@@ -53,7 +53,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     let { user: target, scope } = options;
 
     if (!target) {
@@ -67,7 +67,7 @@ export default {
     const { user, member } = target;
 
     if (!user) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -85,7 +85,7 @@ export default {
 
     if (scope === 'guild' && member) {
       if (!member.avatar) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -101,7 +101,7 @@ export default {
         return;
       }
 
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.Container,
@@ -168,7 +168,7 @@ export default {
       });
     } else {
       if (!user.avatar) {
-        await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -184,7 +184,7 @@ export default {
         return;
       }
 
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.Container,

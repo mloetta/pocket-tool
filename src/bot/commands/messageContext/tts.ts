@@ -21,11 +21,11 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
 
     if (!elevenLabsApiKey) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -47,7 +47,7 @@ export default {
     const content = message.content;
 
     if (!content) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -88,7 +88,7 @@ export default {
     if (useAmount >= 15) {
       const resetTime = (lastReset ?? now) + msIn24h;
 
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -114,7 +114,7 @@ export default {
 
     const buffer = Buffer.from(audio.audioBase64, 'base64');
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       attachments: [
         {
           id: 0,

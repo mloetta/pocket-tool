@@ -1,11 +1,11 @@
-import { ButtonStyle, ChannelType, ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
+import { ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
 import { GatewayEvent } from '../../types/types.js';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime } from '../../utils/utils.js';
 
 export default {
   name: GatewayDispatchEvents.MessageCreate,
-  async run(message, client) {
+  async run({ data: message, api, shardId }, client) {
     const { data: afkData, error: afkError } = await supabase
       .from('afk')
       .select('*')
@@ -19,7 +19,7 @@ export default {
     if (afkData) {
       await supabase.from('afk').delete().eq('user_id', message.author.id);
 
-      await client.api.channels.createMessage(message.channel_id, {
+      await api.channels.createMessage(message.channel_id, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -59,7 +59,7 @@ export default {
       return;
     }
 
-    await client.api.channels.createMessage(message.channel_id, {
+    await api.channels.createMessage(message.channel_id, {
       components: [
         {
           type: ComponentType.TextDisplay,

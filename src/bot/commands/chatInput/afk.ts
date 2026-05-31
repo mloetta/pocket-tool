@@ -33,7 +33,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { reason } = options;
 
     const { data, error } = await supabase
@@ -59,7 +59,7 @@ export default {
       });
     }
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

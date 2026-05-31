@@ -35,13 +35,13 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { prompt } = options;
 
     const nvidiaApiKey = env.get('nvidia_api_key', true).toString();
 
     if (!nvidiaApiKey) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -79,7 +79,7 @@ export default {
     const end = performance.now();
     const elapsed = end - start;
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

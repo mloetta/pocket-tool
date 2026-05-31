@@ -20,14 +20,14 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
     const attachment = Object.values(message.attachments)[0];
 
     if (!attachment || !attachment.content_type?.startsWith('image/')) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -50,7 +50,7 @@ export default {
 
     const gif = await sharp(buffer).gif().toBuffer();
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       files: [
         {
           name: 'output.gif',

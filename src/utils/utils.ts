@@ -12,7 +12,7 @@ import {
 import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
 import { Emoji } from '../types/emojis.js';
 import { Collection } from '@discordjs/collection';
-import { ShardInformation } from '../types/types.js';
+import { Component, InteractableComponentType, ShardInformation } from '../types/types.js';
 
 export const shardInfo = new Collection<number, ShardInformation>();
 

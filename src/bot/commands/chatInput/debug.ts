@@ -19,10 +19,7 @@ export default {
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   acknowledge: true,
-  async run(interaction, options, client) {
-    const shardId = interaction.guild_id
-      ? getShardIdFromGuildId(interaction.guild_id, await client.gateway.getShardCount())
-      : 0;
+  async run({ data: interaction, api, shardId }, options, client) {
     const totalShards = await client.gateway.getShardCount();
     const shardInfo = await getShardInfoFromGuild(interaction.guild_id, totalShards);
     const latency = shardInfo.latency!.toLocaleString('en-US');
@@ -31,11 +28,11 @@ export default {
     const usedMemory = memory.rss;
     const totalMemory = os.totalmem();
     const memoryUsage = `${Number((usedMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB (${Number((totalMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB)`;
-    const app = await client.api.applications.getCurrent();
+    const app = await api.applications.getCurrent();
     const guilds = app.approximate_guild_count;
     const installs = app.approximate_user_install_count;
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

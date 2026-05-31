@@ -19,13 +19,13 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     const userId = interaction.data.target_id;
     const user = interaction.data.resolved.users[userId];
     const member = interaction.data.resolved.members?.[userId];
 
     if (!user) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -87,7 +87,7 @@ export default {
       badges.push('nitro');
     }
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

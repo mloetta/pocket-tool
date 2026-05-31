@@ -5,7 +5,7 @@ import { emoji, timestamp } from '../../../utils/markdown.js';
 export default {
   type: InteractableComponentType.Modal,
   custom_id: 'bug-form',
-  async run(interaction, args, client) {
+  async run({ data: interaction, api, shardId }, args, client) {
     const components = interaction.data?.components;
 
     const bugCategory =
@@ -52,7 +52,7 @@ export default {
           !attachment?.content_type?.startsWith('image/') && attachment?.content_type?.startsWith('video/'),
       )
     ) {
-      await client.api.interactions.reply(interaction.id, interaction.token, {
+      await api.interactions.reply(interaction.id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -95,7 +95,7 @@ export default {
 
     const now = new Date();
 
-    await client.api.channels.createForumThread('1467550986129113169', {
+    await api.channels.createForumThread('1467550986129113169', {
       name: `Bug Report: ${bugReportId}`,
       applied_tags: ['1489983907477721238', '1467551226378981428', categoryId!],
       message: {
@@ -157,7 +157,7 @@ export default {
       },
     });
 
-    await client.api.interactions.reply(interaction.id, interaction.token, {
+    await api.interactions.reply(interaction.id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

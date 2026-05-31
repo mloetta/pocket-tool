@@ -42,13 +42,13 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { time: rawTime, reason } = options;
 
     const time = readableTimeToMs(rawTime);
 
     if (!time) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -78,11 +78,11 @@ export default {
     if (time <= LOOKAHEAD_MS) {
       scheduleReminder(
         { id, user_id: (interaction.user?.id ?? interaction.member?.user.id)!, time: date, reason },
-        client,
+        api,
       );
     }
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,

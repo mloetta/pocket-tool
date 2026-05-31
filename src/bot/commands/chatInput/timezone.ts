@@ -34,7 +34,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async autocomplete(interaction, client) {
+  async autocomplete({ data: interaction, api, shardId }, client) {
     const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
     const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
@@ -46,14 +46,14 @@ export default {
       .filter((c) => c.name.toLowerCase().includes(focused))
       .slice(0, 25);
 
-    await client.api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
+    await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { zone } = options;
 
     const time = DateTime.now().setZone(zone);
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

@@ -23,8 +23,8 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+  async run({ data: interaction, api, shardId }, options, client) {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

@@ -35,11 +35,11 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { image } = options;
 
     if (!image || !image.content_type?.startsWith('image/')) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -62,7 +62,7 @@ export default {
 
     const gif = await sharp(buffer).gif().toBuffer();
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       files: [
         {
           name: 'output.gif',

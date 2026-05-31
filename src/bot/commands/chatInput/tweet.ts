@@ -45,7 +45,7 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async autocomplete(interaction, client) {
+  async autocomplete({ data: interaction, api, shardId }, client) {
     const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
     const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
@@ -62,15 +62,15 @@ export default {
       .filter((c) => c.name.toLowerCase().includes(focused))
       .slice(0, 25);
 
-    await client.api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
+    await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { url, language } = options;
 
     const tolgchuTwitterApiKey = env.get('tolgchu_twitter_api_key').toString();
 
     if (!tolgchuTwitterApiKey) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -89,7 +89,7 @@ export default {
     const tweetId = extractTweetId(url);
 
     if (!tweetId) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -117,7 +117,7 @@ export default {
     });
 
     if (!res) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -161,7 +161,7 @@ export default {
       content = content?.replace(pattern, maskedLink(`https://x.com/hashtag/${hashtag}`, `#${hashtag}`));
     }
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         ...(res.quotedPost
           ? ([

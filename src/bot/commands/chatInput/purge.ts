@@ -44,11 +44,11 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { amount, content } = options;
 
     if (!hasPermission(BigInt(interaction.app_permissions ?? 0), BigInt(Permissions.MANAGE_MESSAGES))) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -64,12 +64,9 @@ export default {
       return;
     }
 
-    const originalResponse = await client.api.interactions.getOriginalReply(
-      interaction.application_id,
-      interaction.token,
-    );
+    const originalResponse = await api.interactions.getOriginalReply(interaction.application_id, interaction.token);
 
-    const messages = await client.api.channels.getMessages(interaction.channel.id, { limit: amount + 1 });
+    const messages = await api.channels.getMessages(interaction.channel.id, { limit: amount + 1 });
 
     let deleteIds: Snowflake[] = [];
 
@@ -90,7 +87,7 @@ export default {
     });
 
     if (deleteIds.length === 0) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -107,14 +104,14 @@ export default {
     }
 
     deleteIds.length === 1
-      ? await client.api.channels.deleteMessage(interaction.channel.id, deleteIds[0], {
+      ? await api.channels.deleteMessage(interaction.channel.id, deleteIds[0], {
           reason: `Purge command ran by ${interaction.member?.user.username}`,
         })
-      : await client.api.channels.bulkDeleteMessages(interaction.channel.id, deleteIds, {
+      : await api.channels.bulkDeleteMessages(interaction.channel.id, deleteIds, {
           reason: `Purge command ran by ${interaction.member?.user.username}`,
         });
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

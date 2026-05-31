@@ -21,15 +21,15 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
-    const guild = await client.api.guilds.get(interaction.guild_id!, { with_counts: true });
+  async run({ data: interaction, api, shardId }, options, client) {
+    const guild = await api.guilds.get(interaction.guild_id!, { with_counts: true });
 
     // guild info we will be displaying
     const guildIcon = cdn(`/icons/${guild.id}/${guild.icon}`, 4096, 'webp', true);
     const name = guild.name;
     const members = guild.approximate_member_count;
     const roles = guild.roles.length;
-    const channels = (await client.api.guilds.getChannels(guild.id)).length;
+    const channels = (await api.guilds.getChannels(guild.id)).length;
     const emojis = guild.emojis.length;
     const stickers = guild.stickers?.length;
     const boosts = guild.premium_subscription_count;
@@ -37,7 +37,7 @@ export default {
     const guildId = guild.id;
     const createdAt = getTimestampFromSnowflake(guild.id);
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

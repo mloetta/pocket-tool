@@ -31,7 +31,7 @@ export default {
   guild: '1457032144349302900',
   dev: true,
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { code } = options;
 
     let result;
@@ -54,7 +54,7 @@ export default {
 
     const formatted = typeof value === 'string' ? value : util.inspect(value);
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

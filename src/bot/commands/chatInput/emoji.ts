@@ -33,14 +33,14 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run(interaction, options, client) {
+  async run({ data: interaction, api, shardId }, options, client) {
     const { emoji: rawEmoji } = options;
 
     const regex = /<(a?):(\w+):(\d+)>/g;
     const matches = [...rawEmoji.matchAll(regex)];
 
     if (matches.length === 0 || matches.length > 4) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -62,7 +62,7 @@ export default {
       id: m[3],
     }));
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

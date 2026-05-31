@@ -19,14 +19,14 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
     const content = message.content;
 
     if (!content) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -58,7 +58,7 @@ export default {
       type: 'language',
     });
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.Container,

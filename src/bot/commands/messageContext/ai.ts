@@ -23,11 +23,11 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run(interaction, client) {
+  async run({ data: interaction, api, shardId }, client) {
     const nvidiaApiKey = env.get('nvidia_api_key', true).toString();
 
     if (!nvidiaApiKey) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -52,7 +52,7 @@ export default {
     let referenced;
 
     if (message.message_reference?.message_id) {
-      referenced = await client.api.channels
+      referenced = await api.channels
         .getMessage(message.message_reference.channel_id, message.message_reference.message_id)
         .catch(() => undefined);
     }
@@ -65,7 +65,7 @@ export default {
       referencedAttachments.find((a) => a.content_type?.startsWith('image/'));
 
     if (!message.content && !referenced?.content && !attachment) {
-      await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
@@ -120,7 +120,7 @@ export default {
     const end = performance.now();
     const elapsed = end - start;
 
-    await client.api.interactions.editReply(interaction.application_id, interaction.token, {
+    await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
           type: ComponentType.TextDisplay,
