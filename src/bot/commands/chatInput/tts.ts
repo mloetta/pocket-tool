@@ -55,7 +55,7 @@ export default {
           name: 'voice',
           description: 'The voice to use for TTS',
           choices: [
-            { name: 'Male', value: 'ZEBslWM12xCQWILoQtiP' },
+            { name: 'Male', value: 'UgBBYS2sOqTuMpoF3BR0' },
             { name: 'Female', value: 'nf4MCGNSdM0hxM95ZBQR' },
             { name: 'Neutral', value: 'M563YhMmA0S8vEYwkgYa' },
             { name: 'Mommy', value: '5BX0dyTd6iq3fuD6Kuf1' },
@@ -90,7 +90,7 @@ export default {
           name: 'voice',
           description: 'The voice to use for TTS',
           choices: [
-            { name: 'Male', value: 'ZEBslWM12xCQWILoQtiP' },
+            { name: 'Male', value: 'UgBBYS2sOqTuMpoF3BR0' },
             { name: 'Female', value: 'nf4MCGNSdM0hxM95ZBQR' },
             { name: 'Neutral', value: 'M563YhMmA0S8vEYwkgYa' },
             { name: 'Mommy', value: '5BX0dyTd6iq3fuD6Kuf1' },
@@ -333,7 +333,7 @@ export default {
                 }
                 subscription!.timeout = null;
               },
-              15 * 60 * 1000,
+              5 * 60 * 1000,
             );
           }
         },

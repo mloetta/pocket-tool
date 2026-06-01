@@ -85,14 +85,14 @@ export default {
       useAmount = 0;
     }
 
-    if (useAmount >= 15) {
+    if (useAmount >= 50) {
       const resetTime = (lastReset ?? now) + msIn24h;
 
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('exclamation')} You have used your daily limit of ${highlight(15, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+            content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
           },
           {
             type: ComponentType.Separator,

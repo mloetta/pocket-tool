@@ -32,7 +32,7 @@ export default {
             current.voiceConnection.destroy();
           }
           subscription.timeout = null;
-        }, 60_000);
+        }, 60 * 1000);
       }
     } else {
       if (subscription.timeout) {
