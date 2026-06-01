@@ -401,14 +401,14 @@ export default {
         useAmount = 0;
       }
 
-      if (useAmount >= 50) {
+      if (useAmount >= 50 && !env.get('dev_ids').toArray().includes(interaction.user?.id ?? interaction.member?.user.id)) {
         const resetTime = (lastReset ?? now) + msIn24h;
 
         await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime), TimestampStyle.RelativeTime)}`,
             },
             {
               type: ComponentType.Separator,
