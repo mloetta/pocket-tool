@@ -58,9 +58,6 @@ export default {
             { name: 'Male', value: 'UgBBYS2sOqTuMpoF3BR0' },
             { name: 'Female', value: 'nf4MCGNSdM0hxM95ZBQR' },
             { name: 'Neutral', value: 'M563YhMmA0S8vEYwkgYa' },
-            { name: 'Mommy', value: '5BX0dyTd6iq3fuD6Kuf1' },
-            { name: 'h', value: 'S0o3L7a2j0fXPOSqqHkq' },
-            { name: 'Toki', value: 'ntGc9TzXh1235N5w2Pf3' },
           ],
           required: false,
         },
@@ -93,9 +90,6 @@ export default {
             { name: 'Male', value: 'UgBBYS2sOqTuMpoF3BR0' },
             { name: 'Female', value: 'nf4MCGNSdM0hxM95ZBQR' },
             { name: 'Neutral', value: 'M563YhMmA0S8vEYwkgYa' },
-            { name: 'Mommy', value: '5BX0dyTd6iq3fuD6Kuf1' },
-            { name: 'h', value: 'S0o3L7a2j0fXPOSqqHkq' },
-            { name: 'Toki', value: 'ntGc9TzXh1235N5w2Pf3' },
           ],
           required: false,
         },
@@ -189,7 +183,7 @@ export default {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
+              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests - please try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
             },
             {
               type: ComponentType.Separator,
@@ -401,14 +395,20 @@ export default {
         useAmount = 0;
       }
 
-      if (useAmount >= 50 && !env.get('dev_ids').toArray().includes(interaction.user?.id ?? interaction.member?.user.id)) {
+      if (
+        useAmount >= 50 &&
+        !env
+          .get('dev_ids')
+          .toArray()
+          .includes(interaction.user?.id ?? interaction.member?.user.id)
+      ) {
         const resetTime = (lastReset ?? now) + msIn24h;
 
         await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests\n-# Try again ${timestamp(Math.floor(resetTime), TimestampStyle.RelativeTime)}`,
+              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests - please try again ${timestamp(Math.floor(resetTime), TimestampStyle.RelativeTime)}`,
             },
             {
               type: ComponentType.Separator,

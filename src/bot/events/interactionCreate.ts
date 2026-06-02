@@ -29,7 +29,7 @@ import {
   TimestampStyle,
   UserContextMenuCommand,
 } from '../../types/types.js';
-import { parseCommandOptions, parseComponentArgs } from '../index.js';
+import { findCommandOption, parseCommandOptions, parseComponentArgs } from '../index.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
 import { emoji, highlight, timestamp } from '../../utils/markdown.js';
@@ -94,7 +94,7 @@ async function handleApplicationCommand(
     return;
   }
 
-  let command = client.commands.get(interaction.data.name) as ApplicationCommand;
+  const command = client.commands.get(interaction.data.name) as ApplicationCommand;
 
   if (!command) {
     await api.interactions.reply(interaction.id, interaction.token, {
@@ -128,12 +128,12 @@ async function handleApplicationCommand(
     if (interaction.type === InteractionType.ApplicationCommand) {
       switch (interaction.data.type) {
         case ApplicationCommandType.ChatInput: {
-          command = command as ChatInputCommand;
+          const chatInput = command as ChatInputCommand;
 
-          if (command.rate_limit) {
-            switch (command.rate_limit.type) {
+          if (chatInput.rate_limit) {
+            switch (chatInput.rate_limit.type) {
               case RateLimitType.Channel: {
-                const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(interaction.channel.id, interaction.data.name, chatInput.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -154,7 +154,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.Guild: {
-                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, chatInput.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -178,7 +178,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(
                   (interaction.user?.id ?? interaction.member?.user.id)!,
                   interaction.data.name,
-                  command.rate_limit,
+                  chatInput.rate_limit,
                 );
 
                 if (!result.executable) {
@@ -202,19 +202,17 @@ async function handleApplicationCommand(
             }
           }
 
-          const option = interaction.data.options?.find(
-            (o) => o.name === 'incognito' && o.type === ApplicationCommandOptionType.Boolean,
-          );
+          const option = findCommandOption(interaction.data.options ?? [], 'incognito');
 
-          const incognito = option?.type === ApplicationCommandOptionType.Boolean ? Boolean(option.value) : false;
+          const incognito = option?.type === ApplicationCommandOptionType.Boolean ? option.value === true : false;
 
-          if (command.acknowledge) {
+          if (chatInput.acknowledge) {
             await api.interactions.defer(interaction.id, interaction.token, {
-              flags: command.ephemeral || incognito ? MessageFlags.Ephemeral : undefined,
+              flags: chatInput.ephemeral || incognito ? MessageFlags.Ephemeral : undefined,
             });
           }
 
-          await (command as ChatInputCommand).run(
+          await chatInput.run(
             {
               data: interaction as APIChatInputApplicationCommandInteraction,
               api,
@@ -226,12 +224,16 @@ async function handleApplicationCommand(
           break;
         }
         case ApplicationCommandType.Message: {
-          command = command as MessageContextMenuCommand;
+          const messageContextMenu = command as MessageContextMenuCommand;
 
-          if (command.rate_limit) {
-            switch (command.rate_limit.type) {
+          if (messageContextMenu.rate_limit) {
+            switch (messageContextMenu.rate_limit.type) {
               case RateLimitType.Channel: {
-                const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(
+                  interaction.channel.id,
+                  interaction.data.name,
+                  messageContextMenu.rate_limit,
+                );
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -252,7 +254,11 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.Guild: {
-                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(
+                  interaction.guild!.id,
+                  interaction.data.name,
+                  messageContextMenu.rate_limit,
+                );
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -276,7 +282,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(
                   (interaction.user?.id ?? interaction.member?.user.id)!,
                   interaction.data.name,
-                  command.rate_limit,
+                  messageContextMenu.rate_limit,
                 );
 
                 if (!result.executable) {
@@ -300,13 +306,13 @@ async function handleApplicationCommand(
             }
           }
 
-          if (command.acknowledge) {
+          if (messageContextMenu.acknowledge) {
             await api.interactions.defer(interaction.id, interaction.token, {
-              flags: command.ephemeral ? MessageFlags.Ephemeral : undefined,
+              flags: messageContextMenu.ephemeral ? MessageFlags.Ephemeral : undefined,
             });
           }
 
-          await command.run(
+          await messageContextMenu.run(
             {
               data: interaction as APIMessageApplicationCommandInteraction,
               api,
@@ -317,12 +323,16 @@ async function handleApplicationCommand(
           break;
         }
         case ApplicationCommandType.User: {
-          command = command as UserContextMenuCommand;
+          const userContextMenu = command as UserContextMenuCommand;
 
-          if (command.rate_limit) {
-            switch (command.rate_limit.type) {
+          if (userContextMenu.rate_limit) {
+            switch (userContextMenu.rate_limit.type) {
               case RateLimitType.Channel: {
-                const result = checkRateLimit(interaction.channel.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(
+                  interaction.channel.id,
+                  interaction.data.name,
+                  userContextMenu.rate_limit,
+                );
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -343,7 +353,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.Guild: {
-                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, command.rate_limit);
+                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, userContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -367,7 +377,7 @@ async function handleApplicationCommand(
                 const result = checkRateLimit(
                   (interaction.user?.id ?? interaction.member?.user.id)!,
                   interaction.data.name,
-                  command.rate_limit,
+                  userContextMenu.rate_limit,
                 );
 
                 if (!result.executable) {
@@ -391,13 +401,13 @@ async function handleApplicationCommand(
             }
           }
 
-          if (command.acknowledge) {
+          if (userContextMenu.acknowledge) {
             await api.interactions.defer(interaction.id, interaction.token, {
-              flags: command.ephemeral ? MessageFlags.Ephemeral : undefined,
+              flags: userContextMenu.ephemeral ? MessageFlags.Ephemeral : undefined,
             });
           }
 
-          await command.run(
+          await userContextMenu.run(
             {
               data: interaction as APIUserApplicationCommandInteraction,
               api,
@@ -408,10 +418,10 @@ async function handleApplicationCommand(
           break;
         }
         case ApplicationCommandType.PrimaryEntryPoint: {
-          command = command as PrimaryEntryPointCommand;
+          const primaryEntryPoint = command as PrimaryEntryPointCommand;
 
-          if (command.run) {
-            await command.run(
+          if (primaryEntryPoint.run) {
+            await primaryEntryPoint.run(
               {
                 data: interaction as APIPrimaryEntryPointCommandInteraction,
                 api,
@@ -453,7 +463,7 @@ async function handleApplicationCommand(
         flags: MessageFlags.IsComponentsV2,
       });
     } else {
-      await api.interactions.reply(interaction.application_id, interaction.token, {
+      await api.interactions.reply(interaction.id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,

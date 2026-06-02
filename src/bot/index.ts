@@ -18,11 +18,7 @@ import { readDirectory, shardInfo } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { createVoiceAdapter } from '../utils/adapter.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const rest = new REST().setToken(env.get('token', true).toString());
 
@@ -39,7 +35,7 @@ const gateway = new WebSocketManager({
   buildStrategy: (manager) =>
     new WorkerShardingStrategy(manager, {
       shardsPerWorker: 4,
-      workerPath: path.join(__dirname, 'worker.js'),
+      workerPath: path.join(process.cwd(), 'dist', 'bot', 'worker.js'),
       unknownPayloadHandler(payload) {
         switch (payload.type) {
           case 'dispatch': {
@@ -55,7 +51,6 @@ const gateway = new WebSocketManager({
               shardInfo.delete(payload.shardId);
             } else {
               const current = shardInfo.get(payload.shardId) ?? {};
-
               shardInfo.set(payload.shardId, { ...current, ...payload.data });
             }
             break;
@@ -74,7 +69,7 @@ client.events = new Collection<string, GatewayEvent>();
 client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
 // load everything and then connect to the gateway
-void loadModules().then(() => void gateway.connect());
+void loadModules().then(() => gateway.connect());
 
 // error handling
 process.on('uncaughtException', console.error);
@@ -274,4 +269,29 @@ export function parseComponentArgs<Args extends readonly string[]>(
   }
 
   return result;
+}
+
+export function findCommandOption(
+  options: APIApplicationCommandInteractionDataOption[],
+  name: string,
+): APIApplicationCommandInteractionDataOption | undefined {
+  if (!options.length) {
+    return undefined;
+  }
+
+  for (const option of options) {
+    if (option.name === name) {
+      return option;
+    }
+
+    if (
+      option.type === ApplicationCommandOptionType.Subcommand ||
+      option.type === ApplicationCommandOptionType.SubcommandGroup
+    ) {
+      const found = findCommandOption(option.options ?? [], name);
+      if (found) {
+        return found;
+      }
+    }
+  }
 }

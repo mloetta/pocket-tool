@@ -16,16 +16,6 @@ import { ShardInformation } from '../types/types.js';
 
 export const shardInfo = new Collection<number, ShardInformation>();
 
-const DISCORD_EPOCH = 1420070400000;
-
-const TIME_UNITS = {
-  y: 1000 * 60 * 60 * 24 * 365,
-  d: 1000 * 60 * 60 * 24,
-  h: 1000 * 60 * 60,
-  m: 1000 * 60,
-  s: 1000,
-};
-
 export async function readDirectory<Type>(folder: string): Promise<Type[]> {
   const files = await readdir(folder, { recursive: true });
 
@@ -136,9 +126,19 @@ export async function getShardInfoFromGuild(
   };
 }
 
+const DISCORD_EPOCH = 1420070400000;
+
 export function getTimestampFromSnowflake(snowflake: Snowflake): number {
   return Number(BigInt(snowflake) >> 22n) + DISCORD_EPOCH;
 }
+
+const TIME_UNITS = {
+  y: 1000 * 60 * 60 * 24 * 365,
+  d: 1000 * 60 * 60 * 24,
+  h: 1000 * 60 * 60,
+  m: 1000 * 60,
+  s: 1000,
+};
 
 export function msToApproxTime(ms: number): string {
   if (ms < 1000) return `${Math.round(ms)}ms`;
