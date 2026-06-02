@@ -76,7 +76,7 @@ export default {
       if (globalCommands.length) {
         await api.applicationCommands
           .bulkOverwriteGlobalCommands(payload.user.id, globalCommands)
-          .then(() => console.log(`Registered ${globalCommands.length} global commands.`))
+          .then(() => console.log(`Registered ${globalCommands.length} global commands`))
           .catch((error) => console.error(`Failed to register global commands: ${error}`));
       }
 
@@ -102,7 +102,7 @@ export default {
         for (const [guildId, cmds] of Object.entries(guilds)) {
           await api.applicationCommands
             .bulkOverwriteGuildCommands(payload.user.id, guildId, cmds)
-            .then(() => console.log(`Registered ${cmds.length} guild commands for guild ${guildId}.`))
+            .then(() => console.log(`Registered ${cmds.length} guild commands for guild ${guildId}`))
             .catch((error) => console.error(`Failed to register guild commands for guild ${guildId}: ${error}`));
 
           await new Promise((resolve) => setTimeout(resolve, 1000));
