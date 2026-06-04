@@ -18,14 +18,17 @@ import {
 } from '@discordjs/core';
 import {
   ApplicationCommand,
+  ButtonComponent,
   ChatInputCommand,
   Component,
   GatewayEvent,
   HighlightStyle,
   InteractableComponentType,
   MessageContextMenuCommand,
+  ModalComponent,
   PrimaryEntryPointCommand,
   RateLimitType,
+  SelectMenuComponent,
   TimestampStyle,
   UserContextMenuCommand,
 } from '../../types/types.js';
@@ -452,7 +455,7 @@ async function handleButton(interaction: APIMessageComponentButtonInteraction, a
 
   if (!customId) return;
 
-  const button = client.components.get(customId) as Component<InteractableComponentType.Button>;
+  const button = client.components.get(customId) as ButtonComponent;
 
   if (!button) return;
 
@@ -473,7 +476,7 @@ async function handleSelectMenu(interaction: APIMessageComponentSelectMenuIntera
 
   if (!customId) return;
 
-  const selectMenu = client.components.get(customId) as Component<InteractableComponentType.SelectMenu>;
+  const selectMenu = client.components.get(customId) as SelectMenuComponent;
 
   if (!selectMenu) return;
 
@@ -494,7 +497,7 @@ async function handleModal(interaction: APIModalSubmitInteraction, api: API) {
 
   if (!customId) return;
 
-  const modal = client.components.get(customId) as Component<InteractableComponentType.Modal>;
+  const modal = client.components.get(customId) as ModalComponent;
 
   if (!modal) return;
 
