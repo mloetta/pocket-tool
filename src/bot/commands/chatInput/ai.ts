@@ -6,17 +6,14 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { emoji, truncate } from '../../../utils/markdown.js';
 import { msToApproxTime } from '../../../utils/utils.js';
 import OpenAI from 'openai';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  prompt: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'ai',
   description: 'Ask AI anything you want!',
@@ -35,7 +32,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { prompt } = options;
 
     const nvidiaApiKey = env.get('nvidia_api_key', true).toString();
@@ -89,4 +86,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

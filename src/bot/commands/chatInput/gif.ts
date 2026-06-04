@@ -1,5 +1,4 @@
 import {
-  APIAttachment,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -7,16 +6,13 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
+import { RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
 import { emoji } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  image: APIAttachment;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'gif',
   description: 'Turn an image into a GIF',
@@ -35,7 +31,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { image } = options;
 
     if (!image || !image.content_type?.startsWith('image/')) {
@@ -71,4 +67,4 @@ export default {
       ],
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

@@ -9,8 +9,9 @@ import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType }
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
 import { emoji } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.Message,
   name: 'Turn to GIF',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
@@ -20,7 +21,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
@@ -59,4 +60,4 @@ export default {
       ],
     });
   },
-} satisfies MessageContextMenuCommand;
+});

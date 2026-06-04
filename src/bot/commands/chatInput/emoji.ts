@@ -6,15 +6,12 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 import { cdn, emoji, timestamp } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  emoji: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'emoji',
   description: 'Views information about an emoji',
@@ -33,7 +30,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { emoji: rawEmoji } = options;
 
     const regex = /<(a?):(\w+):(\d+)>/g;
@@ -90,4 +87,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

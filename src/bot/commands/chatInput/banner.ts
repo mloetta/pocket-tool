@@ -1,7 +1,5 @@
 import {
   APIComponentInMessageActionRow,
-  APIInteractionDataResolvedGuildMember,
-  APIUser,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -10,15 +8,11 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { RateLimitType } from '../../../types/types.js';
 import { cdn, emoji } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  user?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
-  scope?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'banner',
   description: "View a user's banner",
@@ -53,11 +47,11 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     let { user: target, scope } = options;
 
     if (!target) {
-      target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };
+      target = { user: (interaction.user ?? interaction.member?.user)!, member: interaction.member };
     }
 
     if (!scope) {
@@ -245,4 +239,4 @@ export default {
       });
     }
   },
-} satisfies ChatInputCommand<Options>;
+});

@@ -1,16 +1,16 @@
 import { ApplicationCommandType, ApplicationIntegrationType, InteractionContextType } from '@discordjs/core';
-import { ChatInputCommand } from '../../../types/types.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'ping',
   description: 'Pong!',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       content: `Pong!`,
     });
   },
-} satisfies ChatInputCommand;
+});

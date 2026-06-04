@@ -1,23 +1,28 @@
 import {
+  API,
+  APIApplicationCommandAutocompleteInteraction,
+  APIAttachment,
+  APIChannel,
+  APIChatInputApplicationCommandInteraction,
+  APIInteractionDataResolvedGuildMember,
+  APIMessageApplicationCommandInteraction,
   APIMessageComponentButtonInteraction,
-  APIMessageComponentInteractionData,
   APIMessageComponentSelectMenuInteraction,
   APIModalSubmitInteraction,
+  APIPrimaryEntryPointCommandInteraction,
+  APIRole,
+  APIUser,
+  APIUserApplicationCommandInteraction,
   ApplicationCommandOptionAllowedChannelType,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
-  Client,
-  ComponentType,
   EntryPointCommandHandlerType,
   GatewayDispatchEvents,
   GatewayDispatchPayload,
-  GatewayInteractionCreateDispatchData,
   InteractionContextType,
-  InteractionType,
   LocalizationMap,
   Snowflake,
-  ToEventProps,
 } from '@discordjs/core';
 import { Permissions } from './permissions.js';
 
@@ -37,12 +42,16 @@ export interface BaseNonPrimaryEntryPointCommand<Type extends ApplicationCommand
 }
 
 export interface ChatInputCommand<
-  Options extends Record<string, unknown> = Record<string, unknown>,
+  Options extends ChatInputOption[] = ChatInputOption[],
 > extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.ChatInput> {
   description: Localization;
-  options?: ChatInputOption[];
-  run: (context: ToCommandProps<ApplicationCommandType.ChatInput>, options: Options, client: Client) => Promise<void>;
-  autocomplete?: (context: ToAutocompleteProps, client: Client) => Promise<void>;
+  options?: Options;
+  run: (
+    interaction: APIChatInputApplicationCommandInteraction,
+    options: GetChatInputCommandOptions<Options>,
+    api: API,
+  ) => Promise<void>;
+  autocomplete?: (context: APIApplicationCommandAutocompleteInteraction, api: API) => Promise<void>;
 }
 
 export type ChatInputOption =
@@ -117,28 +126,84 @@ export type ChatInputOptionChoice<Type extends ApplicationCommandOptionType> = {
       : never;
 };
 
+export interface InteractionResolvedUser {
+  user: APIUser;
+  member?: APIInteractionDataResolvedGuildMember;
+}
+
+export interface TypeToResolvedMap {
+  [ApplicationCommandOptionType.String]: string;
+  [ApplicationCommandOptionType.Integer]: number;
+  [ApplicationCommandOptionType.Boolean]: boolean;
+  [ApplicationCommandOptionType.User]: InteractionResolvedUser;
+  [ApplicationCommandOptionType.Channel]: APIChannel;
+  [ApplicationCommandOptionType.Role]: APIRole;
+  [ApplicationCommandOptionType.Mentionable]: APIRole | InteractionResolvedUser;
+  [ApplicationCommandOptionType.Number]: number;
+  [ApplicationCommandOptionType.Attachment]: APIAttachment;
+}
+
+export type SubCommandApplicationCommand =
+  | ApplicationCommandOptionType.Subcommand
+  | ApplicationCommandOptionType.SubcommandGroup;
+
+export type ConvertTypeToResolved<T extends keyof TypeToResolvedMap> = TypeToResolvedMap[T];
+
+export type GetOptionName<T> = T extends { name: string }
+  ? T['name']
+  : T extends { name: { global: string } }
+    ? T['name']['global']
+    : never;
+
+export type BuildOptions<Options extends ChatInputOption[] | undefined> = {
+  [Prop in keyof Omit<Options, keyof unknown[]> as GetOptionName<Options[Prop]>]: GetOptionValue<Options[Prop]>;
+};
+
+export type GetOptionValue<Type> = Type extends {
+  type: ApplicationCommandOptionType;
+  required?: boolean;
+}
+  ? Type extends {
+      type: SubCommandApplicationCommand;
+      options?: ChatInputOption[];
+    }
+    ? BuildOptions<Type['options']>
+    : Type['type'] extends keyof TypeToResolvedMap
+      ? ConvertTypeToResolved<Type['type']> | (Type['required'] extends true ? never : undefined)
+      : never
+  : never;
+
+export type GetChatInputCommandOptions<Options extends ChatInputOption[]> = Options extends ChatInputOption[]
+  ? { [Prop in keyof BuildOptions<Options> as Prop]: BuildOptions<Options>[Prop] }
+  : never;
+
 export interface UserContextMenuCommand extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.User> {
-  run: (context: ToCommandProps<ApplicationCommandType.User>, client: Client) => Promise<void>;
+  run: (interaction: APIUserApplicationCommandInteraction, api: API) => Promise<void>;
 }
 
 export interface MessageContextMenuCommand extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.Message> {
-  run: (context: ToCommandProps<ApplicationCommandType.Message>, client: Client) => Promise<void>;
+  run: (interaction: APIMessageApplicationCommandInteraction, api: API) => Promise<void>;
 }
 
 export interface PrimaryEntryPointCommand {
   type: ApplicationCommandType.PrimaryEntryPoint;
   name: Localization;
   handler: EntryPointCommandHandlerType;
-  run?: (context: ToCommandProps<ApplicationCommandType.PrimaryEntryPoint>, client: Client) => Promise<void>;
+  run?: (interaction: APIPrimaryEntryPointCommandInteraction, api: API) => Promise<void>;
 }
 
-export type NonPrimaryEntryPointCommand = ChatInputCommand | UserContextMenuCommand | MessageContextMenuCommand;
+export type NonPrimaryEntryPointCommand<Options extends ChatInputOption[] = ChatInputOption[]> =
+  | ChatInputCommand<Options>
+  | UserContextMenuCommand
+  | MessageContextMenuCommand;
 
-export type ApplicationCommand = NonPrimaryEntryPointCommand | PrimaryEntryPointCommand;
+export type ApplicationCommand<Options extends ChatInputOption[] = ChatInputOption[]> =
+  | NonPrimaryEntryPointCommand<Options>
+  | PrimaryEntryPointCommand;
 
 export interface GatewayEvent<Event extends GatewayDispatchEvents = GatewayDispatchEvents> {
   name: Event;
-  run: (data: ToEventProps<Extract<GatewayDispatchPayload, { t: Event }>['d']>, client: Client) => Promise<void>;
+  run: (args: Extract<GatewayDispatchPayload, { t: Event }>['d'], api: API) => Promise<void>;
 }
 
 export enum InteractableComponentType {
@@ -147,16 +212,50 @@ export enum InteractableComponentType {
   Modal = 'modal',
 }
 
-export interface Component<
+export interface BaseComponent<
   Type extends InteractableComponentType = InteractableComponentType,
   Args extends readonly string[] = readonly string[],
 > {
   type: Type;
   custom_id: Snowflake;
   args?: Args;
-  acknowledge?: boolean;
-  run: (context: ToComponentProps<Type>, args: Record<Args[number], string>, client: Client) => Promise<void>;
 }
+
+export interface ButtonComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
+  InteractableComponentType.Button,
+  Args
+> {
+  acknowledge?: boolean;
+  run: (
+    interaction: APIMessageComponentButtonInteraction,
+    args: Record<Args[number], string>,
+    api: API,
+  ) => Promise<void>;
+}
+
+export interface SelectMenuComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
+  InteractableComponentType.SelectMenu,
+  Args
+> {
+  acknowledge?: boolean;
+  run: (
+    interaction: APIMessageComponentSelectMenuInteraction,
+    args: Record<Args[number], string>,
+    api: API,
+  ) => Promise<void>;
+}
+
+export interface ModalComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
+  InteractableComponentType.Modal,
+  Args
+> {
+  run: (interaction: APIModalSubmitInteraction, args: Record<Args[number], string>, api: API) => Promise<void>;
+}
+
+export type Component<Args extends readonly string[] = readonly string[]> =
+  | ButtonComponent<Args>
+  | SelectMenuComponent<Args>
+  | ModalComponent<Args>;
 
 export enum TimestampStyle {
   /**	16:20 */
@@ -186,17 +285,17 @@ export enum HighlightStyle {
 }
 
 export enum RequestMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH',
+  GET = 'get',
+  POST = 'post',
+  PUT = 'put',
+  DELETE = 'delete',
+  PATCH = 'patch',
 }
 
 export enum ResponseType {
-  TEXT = 'TEXT',
-  JSON = 'JSON',
-  BUFFER = 'BUFFER',
+  TEXT = 'text',
+  JSON = 'json',
+  BUFFER = 'buffer',
 }
 
 export type RequestOptions<Type extends ResponseType> = {
@@ -215,9 +314,9 @@ export type RequestResponse = {
 };
 
 export enum RateLimitType {
-  Channel = 'Channel',
-  Guild = 'Guild',
-  User = 'User',
+  Channel = 'channel',
+  Guild = 'guild',
+  User = 'user',
 }
 
 export interface RateLimit {
@@ -242,29 +341,3 @@ export interface TTSTrack {
   onFinish?: () => void;
   onError?: (error: Error) => void;
 }
-
-export type ToCommandProps<Type extends ApplicationCommandType = ApplicationCommandType> = ToEventProps<
-  Extract<GatewayInteractionCreateDispatchData, { type: InteractionType.ApplicationCommand; data: { type: Type } }>
->;
-
-export type ToAutocompleteProps = ToEventProps<
-  Extract<GatewayInteractionCreateDispatchData, { type: InteractionType.ApplicationCommandAutocomplete }>
->;
-
-export type InteractableComponentToComponent = {
-  [InteractableComponentType.Button]: APIMessageComponentButtonInteraction;
-  [InteractableComponentType.SelectMenu]: APIMessageComponentSelectMenuInteraction;
-};
-
-export type ToMessageComponentProps<Type extends Exclude<InteractableComponentType, InteractableComponentType.Modal>> =
-  ToEventProps<InteractableComponentToComponent[Type]>;
-
-export type ToModalProps = ToEventProps<APIModalSubmitInteraction>;
-
-export type InteractableComponentToProps = {
-  [InteractableComponentType.Button]: ToMessageComponentProps<InteractableComponentType.Button>;
-  [InteractableComponentType.SelectMenu]: ToMessageComponentProps<InteractableComponentType.SelectMenu>;
-  [InteractableComponentType.Modal]: ToModalProps;
-};
-
-export type ToComponentProps<Type extends InteractableComponentType> = InteractableComponentToProps[Type];

@@ -11,8 +11,9 @@ import {
 import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { emoji, highlight, maskedLink } from '../../../utils/markdown.js';
 import { toEmojiObject } from '../../../utils/utils.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'help',
   description: 'Learn more about me and what I can do',
@@ -23,7 +24,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -97,4 +98,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand;
+});

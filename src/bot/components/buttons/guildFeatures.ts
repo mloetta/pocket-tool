@@ -1,17 +1,13 @@
 import { ComponentType, GuildFeature } from '@discordjs/core';
-import { Component, InteractableComponentType } from '../../../types/types.js';
+import { InteractableComponentType } from '../../../types/types.js';
 import { emoji, highlight } from '../../../utils/markdown.js';
+import createComponent from '../../../helpers/component.js';
 
-const args = ['guildId'] as const;
-
-export default {
+createComponent({
   type: InteractableComponentType.Button,
   custom_id: `guild-features`,
-  args,
-  async run({ data: interaction, api, shardId }, args, client) {
-    const { guildId } = args;
-
-    const guild = await api.guilds.get(guildId);
+  async run(interaction, args, api) {
+    const guild = await api.guilds.get(interaction.guild_id!);
 
     const features = guild.features;
     const allFeatures = Object.values(GuildFeature);
@@ -33,4 +29,4 @@ export default {
       ],
     });
   },
-} satisfies Component<InteractableComponentType.Button, typeof args>;
+});

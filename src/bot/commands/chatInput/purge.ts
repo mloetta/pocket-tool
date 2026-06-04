@@ -7,17 +7,13 @@ import {
   MessageFlags,
   Snowflake,
 } from '@discordjs/core';
-import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
+import { HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
 import { hasPermission } from '../../../utils/utils.js';
 import { emoji, highlight } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  amount: number;
-  content?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'purge',
   description: 'Removes recent messages in chat',
@@ -44,7 +40,7 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { amount, content } = options;
 
     if (!hasPermission(BigInt(interaction.app_permissions ?? 0), BigInt(Permissions.MANAGE_MESSAGES))) {
@@ -126,4 +122,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

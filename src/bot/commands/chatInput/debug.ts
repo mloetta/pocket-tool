@@ -9,17 +9,22 @@ import {
 } from '@discordjs/core';
 import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
 import { maskedLink, timestamp } from '../../../utils/markdown.js';
-import { getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
+import { getShardIdFromGuildId, getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
 import os from 'os';
+import createApplicationCommand from '../../../helpers/command.js';
+import { client } from '../../index.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'debug',
   description: 'View some informations about the bot',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
+    const shardId = interaction.guild_id
+      ? getShardIdFromGuildId(interaction.guild_id, await client.gateway.getShardCount())
+      : 0;
     const totalShards = await client.gateway.getShardCount();
     const shardInfo = await getShardInfoFromGuild(interaction.guild_id, totalShards);
     const latency = shardInfo.latency!.toLocaleString('en-US');
@@ -76,4 +81,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand;
+});

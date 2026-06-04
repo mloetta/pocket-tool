@@ -7,16 +7,13 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
-  GatewayDispatchPayload,
   GatewayIntentBits,
   InteractionType,
   MessageFlags,
-  ToEventProps,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { readDirectory, shardInfo } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
-import fs from 'fs';
 import path from 'path';
 import { createVoiceAdapter } from '../utils/adapter.js';
 
@@ -31,7 +28,7 @@ const gateway = new WebSocketManager({
     GatewayIntentBits.GuildVoiceStates,
   shardCount: null,
   rest,
-  compression: CompressionMethod.ZlibNative,
+  compression: CompressionMethod.ZlibSync,
   buildStrategy: (manager) =>
     new WorkerShardingStrategy(manager, {
       shardsPerWorker: 4,
@@ -60,63 +57,36 @@ const gateway = new WebSocketManager({
     }),
 });
 
-const client = new Client({ rest, gateway });
+export const client = new Client({ rest, gateway });
 
 // custom properties for the client
-client.commands = new Collection<string, ApplicationCommand>();
+client.commands = new Collection<string, ApplicationCommand<any>>();
 client.components = new Collection<string, Component>();
-client.events = new Collection<string, GatewayEvent>();
+client.events = new Collection<string, GatewayEvent<any>>();
 client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
-// load everything and then connect to the gateway
 void loadModules().then(() => gateway.connect());
 
 // error handling
 process.on('uncaughtException', console.error);
 process.on('unhandledRejection', console.error);
 
+// helper functions
+
 async function loadModules() {
-  const basePath = path.join(process.cwd(), 'dist', 'bot');
+  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands'));
+  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events'));
 
-  if (fs.existsSync(path.join(basePath, 'commands'))) {
-    const commands = await readDirectory<ApplicationCommand>(path.join(basePath, 'commands'));
-
-    for (const command of commands) {
-      client.commands.set((command.name as any).global ?? command.name, command);
-    }
-  }
-
-  if (fs.existsSync(path.join(basePath, 'components'))) {
-    const components = await readDirectory<Component>(path.join(basePath, 'components'));
-
-    for (const component of components) {
-      client.components.set(component.custom_id, component);
-    }
-  }
-
-  if (fs.existsSync(path.join(basePath, 'events'))) {
-    const events = await readDirectory<GatewayEvent>(path.join(basePath, 'events'));
-
-    for (const event of events) {
-      client.events.set(event.name, event);
-
-      console.log(`Binding event: ${event.name}`);
-
-      client.on(
-        event.name,
-        async (payload: ToEventProps<Extract<GatewayDispatchPayload, { t: typeof event.name }>['d']>) => {
-          try {
-            await event.run(payload, client);
-          } catch (e) {
-            console.log(`An error occurred while running event ${event.name}:`, e);
-          }
-        },
-      );
-    }
+  for (const event of client.events.values()) {
+    client.on(event.name, async (payload: any) => {
+      try {
+        await event.run(payload.data, client.api);
+      } catch (e) {
+        console.log(`An error occurred while running event ${event.name}:`, e);
+      }
+    });
   }
 }
-
-// helper functions
 
 const reply = client.api.interactions.reply.bind(client.api.interactions);
 

@@ -10,8 +10,9 @@ import { RateLimitType, TimestampStyle, UserContextMenuCommand } from '../../../
 import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.User,
   name: 'View User',
   rate_limit: {
@@ -19,7 +20,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     const userId = interaction.data.target_id;
     const user = interaction.data.resolved.users[userId];
     const member = interaction.data.resolved.members?.[userId];
@@ -131,9 +132,9 @@ export default {
             },
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('calendar')} **Created:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}${
+              content: `${emoji('calendar')} **Created:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.RelativeTime)})${
                 member
-                  ? `\n\n${emoji('new_members')} **Joined:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                  ? `\n\n${emoji('new_members')} **Joined:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)} (${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.RelativeTime)})${
                       member.roles.length > 0
                         ? `\n\n${emoji('roles')} **Roles:**\n${member.roles
                             .slice(0, 5)
@@ -150,4 +151,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies UserContextMenuCommand;
+});

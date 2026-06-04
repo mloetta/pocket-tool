@@ -13,13 +13,9 @@ import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType, Timestamp
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
 import { emoji, maskedLink, timestamp } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  url: string;
-  language?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'tweet',
   description: 'Display a tweet',
@@ -45,7 +41,7 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async autocomplete({ data: interaction, api, shardId }, client) {
+  async autocomplete(interaction, api) {
     const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
     const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
@@ -64,7 +60,7 @@ export default {
 
     await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { url, language } = options;
 
     const tolgchuTwitterApiKey = env.get('tolgchu_twitter_api_key').toString();
@@ -233,7 +229,7 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});
 
 const regex = /^(?:https?:\/\/(?:www\.)?(?:twitter\.com|x\.com)\/(?:#!\/)?\w+\/status\/(\d+)|(\d+))$/;
 

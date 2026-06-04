@@ -1,7 +1,5 @@
 import {
-  APIInteractionDataResolvedGuildMember,
   APIMessageComponentEmoji,
-  APIUser,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -11,17 +9,13 @@ import {
   MessageFlags,
   UserFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  user?: { user?: APIUser; member?: APIInteractionDataResolvedGuildMember };
-  scope?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'user',
   description: 'Views information about an user or yourself',
@@ -56,11 +50,11 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     let { user: target, scope } = options;
 
     if (!target) {
-      target = { user: interaction.user ?? interaction.member?.user, member: interaction.member };
+      target = { user: (interaction.user ?? interaction.member?.user)!, member: interaction.member };
     }
 
     if (!scope) {
@@ -177,7 +171,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}\n\n${emoji('new_members')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)}${
+                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.RelativeTime)})\n\n${emoji('new_members')} **Joined At:**\n${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.LongDate)} (${timestamp(new Date(member.joined_at!).getTime(), TimestampStyle.RelativeTime)})${
                   member.roles.length > 0
                     ? `\n\n${emoji('roles')} **Roles:**\n${member.roles
                         .slice(0, 5)
@@ -229,7 +223,7 @@ export default {
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)}`,
+                content: `${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(user.id), TimestampStyle.RelativeTime)})`,
               },
             ],
           },
@@ -238,4 +232,4 @@ export default {
       });
     }
   },
-} satisfies ChatInputCommand<Options>;
+});

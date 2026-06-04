@@ -6,18 +6,14 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { readableTimeToMs } from '../../../utils/utils.js';
 import { emoji, timestamp } from '../../../utils/markdown.js';
 import { supabase } from '../../../utils/supabase.js';
 import { LOOKAHEAD_MS, scheduleReminder } from '../../../crons/reminder.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  time: string;
-  reason?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'remind-me',
   description: "Remind's you to do something at a specified time",
@@ -42,7 +38,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { time: rawTime, reason } = options;
 
     const time = readableTimeToMs(rawTime);
@@ -95,4 +91,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

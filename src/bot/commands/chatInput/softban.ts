@@ -6,17 +6,13 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
+import { HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
 import { hasPermission } from '../../../utils/utils.js';
 import { emoji, highlight } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  users: string;
-  reason?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'softban',
   description: 'Bans a user and unbans them immediately',
@@ -42,7 +38,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { users, reason } = options;
 
     if (!hasPermission(BigInt(interaction.app_permissions ?? 0), BigInt(Permissions.BAN_MEMBERS))) {
@@ -168,4 +164,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

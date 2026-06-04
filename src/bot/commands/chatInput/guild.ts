@@ -9,8 +9,9 @@ import {
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 import { cdn, codeblock, emoji, timestamp } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'guild',
   description: 'Views information about the guild',
@@ -21,7 +22,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const guild = await api.guilds.get(interaction.guild_id!, { with_counts: true });
 
     // guild info we will be displaying
@@ -92,4 +93,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand;
+});

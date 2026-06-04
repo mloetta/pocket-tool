@@ -10,8 +10,9 @@ import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
 import { supabase } from '../../../utils/supabase.js';
 import { emoji, highlight, timestamp, truncate } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.Message,
   name: 'Text to Speech',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
@@ -21,7 +22,7 @@ export default {
     cooldown: 10,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     const elevenLabsApiKey = env.get('eleven_labs_api_key', true).toString();
 
     if (!elevenLabsApiKey) {
@@ -144,4 +145,4 @@ export default {
       last_used: new Date(),
     });
   },
-} satisfies MessageContextMenuCommand;
+});

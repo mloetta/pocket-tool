@@ -7,14 +7,10 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import util from 'util';
-import { ChatInputCommand } from '../../../types/types.js';
 import { codeblock, truncate } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  code: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'eval',
   description: 'Evaluates the provided code',
@@ -31,7 +27,7 @@ export default {
   guild: '1457032144349302900',
   dev: true,
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { code } = options;
 
     let result;
@@ -69,4 +65,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

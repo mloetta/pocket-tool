@@ -8,8 +8,9 @@ import {
 import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import { emoji } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.Message,
   name: 'Translate',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
@@ -19,7 +20,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
@@ -80,4 +81,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies MessageContextMenuCommand;
+});

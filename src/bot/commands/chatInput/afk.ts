@@ -6,15 +6,12 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType } from '../../../types/types.js';
+import { RateLimitType } from '../../../types/types.js';
 import { emoji } from '../../../utils/markdown.js';
 import { supabase } from '../../../utils/supabase.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  reason?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'afk',
   description: "Go AFK and let other users know you're away",
@@ -33,7 +30,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { reason } = options;
 
     const { data, error } = await supabase
@@ -72,4 +69,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

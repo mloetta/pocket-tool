@@ -6,17 +6,14 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
+import { RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { all, create } from 'mathjs';
 import { emoji } from '../../../utils/markdown.js';
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  expression: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'calculate',
   description: 'Solved mathematical expressions',
@@ -35,7 +32,7 @@ export default {
     cooldown: 3,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { expression } = options;
 
     let result: number;
@@ -114,4 +111,4 @@ export default {
       ],
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

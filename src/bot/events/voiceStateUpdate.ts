@@ -1,13 +1,13 @@
 import { GatewayDispatchEvents } from '@discordjs/core';
-import { GatewayEvent } from '../../types/types.js';
 import { getSubscription, unsubscribe } from '../../utils/subscription.js';
 import env from '../../utils/env.js';
+import createGatewayEvent from '../../helpers/event.js';
 
 const botId = atob(env.get('token').toString().split('.')[0]);
 
-export default {
+createGatewayEvent({
   name: GatewayDispatchEvents.VoiceStateUpdate,
-  async run({ data: voiceState, api, shardId }, client) {
+  async run(voiceState, api) {
     if (!voiceState.guild_id) {
       return;
     }
@@ -41,4 +41,4 @@ export default {
       }
     }
   },
-} satisfies GatewayEvent<GatewayDispatchEvents.VoiceStateUpdate>;
+});

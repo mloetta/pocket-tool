@@ -1,11 +1,11 @@
 import { ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
-import { GatewayEvent } from '../../types/types.js';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime } from '../../utils/utils.js';
+import createGatewayEvent from '../../helpers/event.js';
 
-export default {
+createGatewayEvent({
   name: GatewayDispatchEvents.MessageCreate,
-  async run({ data: message, api, shardId }, client) {
+  async run(message, api) {
     const { data: afkData, error: afkError } = await supabase
       .from('afk')
       .select('*')
@@ -74,4 +74,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies GatewayEvent<GatewayDispatchEvents.MessageCreate>;
+});

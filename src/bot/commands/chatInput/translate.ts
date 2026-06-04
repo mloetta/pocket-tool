@@ -10,14 +10,9 @@ import {
 import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import { emoji } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  text: string;
-  from?: string;
-  to?: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'translate',
   description: 'Translates the given text to any language',
@@ -50,7 +45,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async autocomplete({ data: interaction, api, shardId }, client) {
+  async autocomplete(interaction, api) {
     const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
 
     switch (option?.name) {
@@ -89,7 +84,7 @@ export default {
       }
     }
   },
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { text, from, to } = options;
 
     const res = await makeRequest('https://translate.googleapis.com/translate_a/single', {
@@ -130,4 +125,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

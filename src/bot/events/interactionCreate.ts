@@ -29,15 +29,16 @@ import {
   TimestampStyle,
   UserContextMenuCommand,
 } from '../../types/types.js';
-import { findCommandOption, parseCommandOptions, parseComponentArgs } from '../index.js';
+import { client, findCommandOption, parseCommandOptions, parseComponentArgs } from '../index.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
 import { emoji, highlight, timestamp } from '../../utils/markdown.js';
 import { API } from '@discordjs/core';
+import createGatewayEvent from '../../helpers/event.js';
 
-export default {
+createGatewayEvent({
   name: GatewayDispatchEvents.InteractionCreate,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     console.log(
       `Received interactionCreate event: ${interaction.id} (${InteractionType[interaction.type]}) from ${interaction.user?.username ?? interaction.member?.user.username} (${interaction.user?.id ?? interaction.member?.user.id})`,
     );
@@ -68,27 +69,25 @@ export default {
     switch (interaction.type) {
       case InteractionType.ApplicationCommand:
       case InteractionType.ApplicationCommandAutocomplete:
-        await handleApplicationCommand(interaction, api, shardId, client);
+        await handleApplicationCommand(interaction, api);
         break;
       case InteractionType.MessageComponent:
         if (interaction.data.component_type === ComponentType.Button) {
-          await handleButton(interaction as APIMessageComponentButtonInteraction, api, shardId, client);
+          await handleButton(interaction as APIMessageComponentButtonInteraction, api);
         } else {
-          await handleSelectMenu(interaction as APIMessageComponentSelectMenuInteraction, api, shardId, client);
+          await handleSelectMenu(interaction as APIMessageComponentSelectMenuInteraction, api);
         }
         break;
       case InteractionType.ModalSubmit:
-        await handleModal(interaction, api, shardId, client);
+        await handleModal(interaction, api);
         break;
     }
   },
-} satisfies GatewayEvent<GatewayDispatchEvents.InteractionCreate>;
+});
 
 async function handleApplicationCommand(
   interaction: APIApplicationCommandInteraction | APIApplicationCommandAutocompleteInteraction,
   api: API,
-  shardId: number,
-  client: Client,
 ) {
   if (!interaction.data) {
     return;
@@ -213,13 +212,9 @@ async function handleApplicationCommand(
           }
 
           await chatInput.run(
-            {
-              data: interaction as APIChatInputApplicationCommandInteraction,
-              api,
-              shardId,
-            },
+            interaction as APIChatInputApplicationCommandInteraction,
             parseCommandOptions(interaction as APIChatInputApplicationCommandInteraction),
-            client,
+            api,
           );
           break;
         }
@@ -312,14 +307,7 @@ async function handleApplicationCommand(
             });
           }
 
-          await messageContextMenu.run(
-            {
-              data: interaction as APIMessageApplicationCommandInteraction,
-              api,
-              shardId,
-            },
-            client,
-          );
+          await messageContextMenu.run(interaction as APIMessageApplicationCommandInteraction, api);
           break;
         }
         case ApplicationCommandType.User: {
@@ -407,28 +395,14 @@ async function handleApplicationCommand(
             });
           }
 
-          await userContextMenu.run(
-            {
-              data: interaction as APIUserApplicationCommandInteraction,
-              api,
-              shardId,
-            },
-            client,
-          );
+          await userContextMenu.run(interaction as APIUserApplicationCommandInteraction, api);
           break;
         }
         case ApplicationCommandType.PrimaryEntryPoint: {
           const primaryEntryPoint = command as PrimaryEntryPointCommand;
 
           if (primaryEntryPoint.run) {
-            await primaryEntryPoint.run(
-              {
-                data: interaction as APIPrimaryEntryPointCommandInteraction,
-                api,
-                shardId,
-              },
-              client,
-            );
+            await primaryEntryPoint.run(interaction as APIPrimaryEntryPointCommandInteraction, api);
           }
 
           break;
@@ -436,14 +410,7 @@ async function handleApplicationCommand(
       }
     } else if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
       if ('autocomplete' in command && command.autocomplete) {
-        await command.autocomplete(
-          {
-            data: interaction as APIApplicationCommandAutocompleteInteraction,
-            api,
-            shardId,
-          },
-          client,
-        );
+        await command.autocomplete(interaction as APIApplicationCommandAutocompleteInteraction, api);
       }
     }
   } catch (e) {
@@ -479,12 +446,7 @@ async function handleApplicationCommand(
   }
 }
 
-async function handleButton(
-  interaction: APIMessageComponentButtonInteraction,
-  api: API,
-  shardId: number,
-  client: Client,
-) {
+async function handleButton(interaction: APIMessageComponentButtonInteraction, api: API) {
   const args = interaction.data.custom_id?.split('_') ?? [];
   const customId = args.shift();
 
@@ -499,26 +461,13 @@ async function handleButton(
   }
 
   try {
-    await button.run(
-      {
-        data: interaction,
-        api,
-        shardId,
-      },
-      parseComponentArgs(button, args),
-      client,
-    );
+    await button.run(interaction, parseComponentArgs(button, args), api);
   } catch (e) {
     console.error(`Button ${customId} encountered an error:`, e);
   }
 }
 
-async function handleSelectMenu(
-  interaction: APIMessageComponentSelectMenuInteraction,
-  api: API,
-  shardId: number,
-  client: Client,
-) {
+async function handleSelectMenu(interaction: APIMessageComponentSelectMenuInteraction, api: API) {
   const args = interaction.data.custom_id?.split('_') ?? [];
   const customId = args.shift();
 
@@ -533,21 +482,13 @@ async function handleSelectMenu(
   }
 
   try {
-    await selectMenu.run(
-      {
-        data: interaction,
-        api,
-        shardId,
-      },
-      parseComponentArgs(selectMenu, args),
-      client,
-    );
+    await selectMenu.run(interaction, parseComponentArgs(selectMenu, args), api);
   } catch (e) {
     console.error(`Select menu ${customId} encountered an error:`, e);
   }
 }
 
-async function handleModal(interaction: APIModalSubmitInteraction, api: API, shardId: number, client: Client) {
+async function handleModal(interaction: APIModalSubmitInteraction, api: API) {
   const args = interaction.data.custom_id?.split('_') ?? [];
   const customId = args.shift();
 
@@ -558,15 +499,7 @@ async function handleModal(interaction: APIModalSubmitInteraction, api: API, sha
   if (!modal) return;
 
   try {
-    await modal.run(
-      {
-        data: interaction,
-        api,
-        shardId,
-      },
-      parseComponentArgs(modal, args),
-      client,
-    );
+    await modal.run(interaction, parseComponentArgs(modal, args), api);
   } catch (e) {
     console.error(`Modal ${customId} encountered an error:`, e);
   }

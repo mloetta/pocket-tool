@@ -7,7 +7,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
@@ -17,21 +17,10 @@ import { Permissions } from '../../../types/permissions.js';
 import { getSubscription, subscribe, TTS, unsubscribe } from '../../../utils/subscription.js';
 import { supabase } from '../../../utils/supabase.js';
 import { Locale } from '@discordjs/core';
+import createApplicationCommand from '../../../helpers/command.js';
+import { client } from '../../index.js';
 
-type Options = {
-  speak: {
-    text: string;
-    voice?: string;
-    language?: string;
-  };
-  file: {
-    text: string;
-    voice?: string;
-    language?: string;
-  };
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'tts',
   description: 'Converts text to speech',
@@ -108,7 +97,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async autocomplete({ data: interaction, api, shardId }, client) {
+  async autocomplete(interaction, api) {
     const subcommand = interaction.data.options.find((o) => 'options' in o);
     const options = subcommand && 'options' in subcommand ? subcommand.options : interaction.data.options;
     const option = options?.find((o) => 'focused' in o && o.focused);
@@ -129,7 +118,7 @@ export default {
 
     await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { speak, file } = options;
 
     if (speak) {
@@ -456,4 +445,4 @@ export default {
       });
     }
   },
-} satisfies ChatInputCommand<Options>;
+});

@@ -1,11 +1,12 @@
 import { APIComponentInContainer, ComponentType, MessageFlags } from '@discordjs/core';
-import { Component, InteractableComponentType, TimestampStyle } from '../../../types/types.js';
+import { InteractableComponentType, TimestampStyle } from '../../../types/types.js';
 import { emoji, timestamp } from '../../../utils/markdown.js';
+import createComponent from '../../../helpers/component.js';
 
-export default {
+createComponent({
   type: InteractableComponentType.Modal,
-  custom_id: 'bug-form',
-  async run({ data: interaction, api, shardId }, args, client) {
+  custom_id: 'bug-report',
+  async run(interaction, args, api) {
     const components = interaction.data?.components;
 
     const bugCategory =
@@ -170,4 +171,4 @@ export default {
       flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
     });
   },
-} satisfies Component<InteractableComponentType.Modal>;
+});

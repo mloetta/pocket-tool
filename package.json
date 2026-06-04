@@ -30,11 +30,13 @@
     "node-cron": "^4.2.1",
     "openai": "^6.38.0",
     "redis": "^5.12.1",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "zlib-sync": "^0.1.10"
   },
   "allowScripts": {
     "bufferutil@4.1.0": true,
     "sharp@0.34.5": true,
-    "@discordjs/opus@0.10.0": true
+    "@discordjs/opus@0.10.0": true,
+    "zlib-sync@0.1.10": true
   }
 }

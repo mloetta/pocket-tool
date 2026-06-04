@@ -12,8 +12,9 @@ import { msToApproxTime } from '../../../utils/utils.js';
 import OpenAI from 'openai';
 import { ChatCompletionContentPart } from 'openai/resources';
 import { emoji, truncate } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.Message,
   name: 'Ask AI',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
@@ -23,7 +24,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, client) {
+  async run(interaction, api) {
     const nvidiaApiKey = env.get('nvidia_api_key', true).toString();
 
     if (!nvidiaApiKey) {
@@ -130,4 +131,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies MessageContextMenuCommand;
+});

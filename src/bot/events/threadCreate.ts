@@ -1,9 +1,9 @@
 import { ButtonStyle, ChannelType, ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
-import { GatewayEvent } from '../../types/types.js';
+import createGatewayEvent from '../../helpers/event.js';
 
-export default {
+createGatewayEvent({
   name: GatewayDispatchEvents.ThreadCreate,
-  async run({ data: thread, api, shardId }, client) {
+  async run(thread, api) {
     if (!thread.newly_created) {
       return;
     }
@@ -42,4 +42,4 @@ export default {
       await api.channels.pinMessage(message.channel_id, message.id);
     }
   },
-} satisfies GatewayEvent<GatewayDispatchEvents.ThreadCreate>;
+});

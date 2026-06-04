@@ -8,12 +8,14 @@ import {
 } from '@discordjs/core';
 import { BooleanChatInputOption, GatewayEvent, NonPrimaryEntryPointCommand } from '../../types/types.js';
 import env from '../../utils/env.js';
-import { localizeCommand } from '../index.js';
+import { client, localizeCommand } from '../index.js';
 import { startReminderCron } from '../../crons/reminder.js';
+import createGatewayEvent from '../../helpers/event.js';
 
-export default {
+createGatewayEvent({
   name: GatewayDispatchEvents.Ready,
-  async run({ data: payload, api, shardId }, client) {
+  async run(payload, api) {
+    const shardId = payload.shard![0];
     console.log(`Shard #${shardId} is ready!`);
 
     void startReminderCron(api);
@@ -110,4 +112,4 @@ export default {
       }
     }
   },
-} satisfies GatewayEvent<GatewayDispatchEvents.Ready>;
+});

@@ -9,12 +9,9 @@ import {
 import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { DateTime } from 'luxon';
 import { emoji, timestamp } from '../../../utils/markdown.js';
+import createApplicationCommand from '../../../helpers/command.js';
 
-type Options = {
-  zone: string;
-};
-
-export default {
+createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
   name: 'timezone',
   description: 'View the current time for a specific timezone',
@@ -34,7 +31,7 @@ export default {
     cooldown: 5,
   },
   acknowledge: true,
-  async autocomplete({ data: interaction, api, shardId }, client) {
+  async autocomplete(interaction, api) {
     const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
     const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
 
@@ -48,7 +45,7 @@ export default {
 
     await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },
-  async run({ data: interaction, api, shardId }, options, client) {
+  async run(interaction, options, api) {
     const { zone } = options;
 
     const time = DateTime.now().setZone(zone);
@@ -68,4 +65,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies ChatInputCommand<Options>;
+});

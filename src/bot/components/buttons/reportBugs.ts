@@ -1,12 +1,13 @@
 import { ComponentType, TextInputStyle } from '@discordjs/core';
-import { Component, InteractableComponentType } from '../../../types/types.js';
+import { InteractableComponentType } from '../../../types/types.js';
+import createComponent from '../../../helpers/component.js';
 
-export default {
+createComponent({
   type: InteractableComponentType.Button,
   custom_id: 'report-bugs',
-  async run({ data: interaction, api, shardId }, args, client) {
+  async run(interaction, args, api) {
     await api.interactions.createModal(interaction.id, interaction.token, {
-      custom_id: 'bug-form',
+      custom_id: 'bug-report',
       title: 'Bug Report',
       components: [
         {
@@ -93,4 +94,4 @@ export default {
       ],
     });
   },
-} satisfies Component<InteractableComponentType.Button>;
+});

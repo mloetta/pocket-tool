@@ -1,12 +1,13 @@
 import { ChannelType, ComponentType, MessageFlags } from '@discordjs/core';
-import { Component, InteractableComponentType, TimestampStyle } from '../../../types/types.js';
+import { InteractableComponentType, TimestampStyle } from '../../../types/types.js';
 import { timestamp } from '../../../utils/markdown.js';
+import createComponent from '../../../helpers/component.js';
 
-export default {
+createComponent({
   type: InteractableComponentType.Button,
   custom_id: `support-resolved`,
   acknowledge: true,
-  async run({ data: interaction, api, shardId }, args, client) {
+  async run(interaction, args, api) {
     const channel = await api.channels.get(interaction.channel.id);
 
     if (channel.type !== ChannelType.PublicThread) {
@@ -47,4 +48,4 @@ export default {
       flags: MessageFlags.IsComponentsV2,
     });
   },
-} satisfies Component<InteractableComponentType.Button>;
+});
