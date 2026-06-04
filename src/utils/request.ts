@@ -7,11 +7,13 @@ export async function makeRequest<Type extends ResponseType>(
   const parsedUrl = new URL(url);
 
   if (options.params) {
-    parsedUrl.search = new URLSearchParams(options.params).toString();
+    parsedUrl.search = new URLSearchParams(
+      Object.entries(options.params).map(([key, value]) => [key, String(value)]),
+    ).toString();
   }
 
   const controller = new AbortController();
-  const timeout = options.timeout || 60000;
+  const timeout = options.timeout ?? 60 * 1000;
 
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -19,11 +21,10 @@ export async function makeRequest<Type extends ResponseType>(
     const res = await fetch(parsedUrl.toString(), {
       method: options.method,
       headers: options.headers,
-      body: options.body && options.method !== RequestMethod.GET ? JSON.stringify(options.body) : undefined,
+      body:
+        options.body !== undefined && options.method !== RequestMethod.GET ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
     });
-
-    clearTimeout(timeoutId);
 
     if (!res.ok) {
       const err = await res.text().catch(() => '');
@@ -38,15 +39,17 @@ export async function makeRequest<Type extends ResponseType>(
         const arrayBuffer = await res.arrayBuffer();
         return Buffer.from(arrayBuffer) as RequestResponse[Type];
       }
-      default: {
+      case ResponseType.TEXT: {
         return (await res.text()) as RequestResponse[Type];
       }
     }
-  } catch (e) {
-    if ((e as any).name === 'AbortError') {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
       throw new Error('Request timed out');
     }
 
-    throw e;
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

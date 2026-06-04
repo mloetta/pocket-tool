@@ -147,34 +147,34 @@ export type SubCommandApplicationCommand =
   | ApplicationCommandOptionType.Subcommand
   | ApplicationCommandOptionType.SubcommandGroup;
 
-export type ConvertTypeToResolved<T extends keyof TypeToResolvedMap> = TypeToResolvedMap[T];
+export type ConvertTypeToResolved<Type extends keyof TypeToResolvedMap> = TypeToResolvedMap[Type];
 
-export type GetOptionName<T> = T extends { name: string }
-  ? T['name']
-  : T extends { name: { global: string } }
-    ? T['name']['global']
+export type GetOptionName<Option> = Option extends { name: string }
+  ? Option['name']
+  : Option extends { name: { global: string } }
+    ? Option['name']['global']
     : never;
 
 export type BuildOptions<Options extends ChatInputOption[] | undefined> = {
-  [Prop in keyof Omit<Options, keyof unknown[]> as GetOptionName<Options[Prop]>]: GetOptionValue<Options[Prop]>;
+  [Index in keyof Omit<Options, keyof unknown[]> as GetOptionName<Options[Index]>]: GetOptionValue<Options[Index]>;
 };
 
-export type GetOptionValue<Type> = Type extends {
+export type GetOptionValue<Option> = Option extends {
   type: ApplicationCommandOptionType;
   required?: boolean;
 }
-  ? Type extends {
+  ? Option extends {
       type: SubCommandApplicationCommand;
       options?: ChatInputOption[];
     }
-    ? BuildOptions<Type['options']>
-    : Type['type'] extends keyof TypeToResolvedMap
-      ? ConvertTypeToResolved<Type['type']> | (Type['required'] extends true ? never : undefined)
+    ? BuildOptions<Option['options']>
+    : Option['type'] extends keyof TypeToResolvedMap
+      ? ConvertTypeToResolved<Option['type']> | (Option['required'] extends true ? never : undefined)
       : never
   : never;
 
 export type GetChatInputCommandOptions<Options extends ChatInputOption[]> = Options extends ChatInputOption[]
-  ? { [Prop in keyof BuildOptions<Options> as Prop]: BuildOptions<Options>[Prop] }
+  ? { [Index in keyof BuildOptions<Options> as Index]: BuildOptions<Options>[Index] }
   : never;
 
 export interface UserContextMenuCommand extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.User> {
@@ -300,16 +300,16 @@ export enum ResponseType {
 
 export type RequestOptions<Type extends ResponseType> = {
   method: RequestMethod;
-  response?: Type;
-  params?: { [key: string]: any };
-  body?: any;
-  headers?: { [key: string]: any };
+  response: Type;
+  headers?: Record<string, string>;
+  params?: Record<string, string | number | boolean>;
+  body?: unknown;
   timeout?: number;
 };
 
 export type RequestResponse = {
   [ResponseType.TEXT]: string;
-  [ResponseType.JSON]: { [key: string]: any };
+  [ResponseType.JSON]: any;
   [ResponseType.BUFFER]: Buffer;
 };
 

@@ -34,8 +34,8 @@ createApplicationCommand({
 
     try {
       result = eval(code);
-    } catch (e) {
-      result = e;
+    } catch (error) {
+      result = error;
     }
 
     let value = result;
@@ -43,8 +43,8 @@ createApplicationCommand({
     if (result && typeof result.then === 'function') {
       try {
         value = await result;
-      } catch (e) {
-        value = e;
+      } catch (error) {
+        value = error;
       }
     }
 

@@ -416,8 +416,8 @@ async function handleApplicationCommand(
         await command.autocomplete(interaction as APIApplicationCommandAutocompleteInteraction, api);
       }
     }
-  } catch (e) {
-    console.error(`Command ${interaction.data.name} encountered an error:`, e);
+  } catch (error) {
+    console.error(`Command ${interaction.data.name} encountered an error:`, error);
 
     if ('acknowledge' in command && command.acknowledge) {
       await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -465,8 +465,8 @@ async function handleButton(interaction: APIMessageComponentButtonInteraction, a
 
   try {
     await button.run(interaction, parseComponentArgs(button, args), api);
-  } catch (e) {
-    console.error(`Button ${customId} encountered an error:`, e);
+  } catch (error) {
+    console.error(`Button ${customId} encountered an error:`, error);
   }
 }
 
@@ -486,8 +486,8 @@ async function handleSelectMenu(interaction: APIMessageComponentSelectMenuIntera
 
   try {
     await selectMenu.run(interaction, parseComponentArgs(selectMenu, args), api);
-  } catch (e) {
-    console.error(`Select menu ${customId} encountered an error:`, e);
+  } catch (error) {
+    console.error(`Select menu ${customId} encountered an error:`, error);
   }
 }
 
@@ -503,7 +503,7 @@ async function handleModal(interaction: APIModalSubmitInteraction, api: API) {
 
   try {
     await modal.run(interaction, parseComponentArgs(modal, args), api);
-  } catch (e) {
-    console.error(`Modal ${customId} encountered an error:`, e);
+  } catch (error) {
+    console.error(`Modal ${customId} encountered an error:`, error);
   }
 }

@@ -1,29 +1,39 @@
-import { ComponentType, GatewayDispatchEvents, MessageFlags } from '@discordjs/core';
+import {
+  API,
+  ComponentType,
+  GatewayDispatchEvents,
+  GatewayMessageCreateDispatchData,
+  MessageFlags,
+} from '@discordjs/core';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime } from '../../utils/utils.js';
 import createGatewayEvent from '../../helpers/event.js';
 
+type Handler = (message: GatewayMessageCreateDispatchData, api: API) => Promise<void>;
+
 createGatewayEvent({
   name: GatewayDispatchEvents.MessageCreate,
   async run(message, api) {
-    const { data: afkData, error: afkError } = await supabase
-      .from('afk')
-      .select('*')
-      .eq('user_id', message.author.id)
-      .maybeSingle();
+    await Promise.all(handlers.map((h) => h(message, api)));
+  },
+});
 
-    if (afkError) {
-      throw afkError;
+const handlers: Handler[] = [
+  async (message, api) => {
+    const { data, error } = await supabase.from('afk').select('*').eq('user_id', message.author.id).maybeSingle();
+
+    if (error) {
+      throw error;
     }
 
-    if (afkData) {
+    if (data) {
       await supabase.from('afk').delete().eq('user_id', message.author.id);
 
       await api.channels.createMessage(message.channel_id, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `Welcome back, <@${message.author.id}>! You were away for **${msToReadableTime(new Date().getTime() - new Date(afkData.went_away).getTime())}**.`,
+            content: `Welcome back, <@${message.author.id}>! You were away for **${msToReadableTime(Date.now() - new Date(data.went_away).getTime())}**.`,
           },
           {
             type: ComponentType.Separator,
@@ -38,24 +48,21 @@ createGatewayEvent({
         message.content
           .match(/<@!?(\d+)>/g)
           ?.map((m) => m.replace(/\D/g, ''))
-          .filter((userId) => userId !== message.author.id) ?? [],
+          .filter((id) => id !== message.author.id) ?? [],
       ),
     ];
 
-    if (mentions.length === 0) {
+    if (!mentions.length) {
       return;
     }
 
-    const { data: afkMentionData, error: afkMentionError } = await supabase
-      .from('afk')
-      .select('*')
-      .in('user_id', mentions);
+    const { data: mentionData, error: mentionError } = await supabase.from('afk').select('*').in('user_id', mentions);
 
-    if (afkMentionError) {
-      throw afkMentionError;
+    if (mentionError) {
+      throw mentionError;
     }
 
-    if (!afkMentionData?.length) {
+    if (!mentionData?.length) {
       return;
     }
 
@@ -63,8 +70,8 @@ createGatewayEvent({
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: afkMentionData
-            .map((user) => `<@${user.user_id}> is currently afk${user.reason ? `\n-# ${user.reason}` : ''}`)
+          content: mentionData
+            .map((u) => `<@${u.user_id}> is currently afk${u.reason ? `\n-# ${u.reason}` : ''}`)
             .join('\n'),
         },
         {
@@ -74,4 +81,4 @@ createGatewayEvent({
       flags: MessageFlags.IsComponentsV2,
     });
   },
-});
+];

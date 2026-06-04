@@ -75,14 +75,15 @@ process.on('unhandledRejection', console.error);
 
 async function loadModules() {
   await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands'));
+  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components'));
   await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events'));
 
   for (const event of client.events.values()) {
     client.on(event.name, async (payload: any) => {
       try {
         await event.run(payload.data, client.api);
-      } catch (e) {
-        console.log(`An error occurred while running event ${event.name}:`, e);
+      } catch (error) {
+        console.log(`An error occurred while running event ${event.name}:`, error);
       }
     });
   }
