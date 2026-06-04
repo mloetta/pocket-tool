@@ -7,9 +7,11 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
+  GatewayDispatchPayload,
   GatewayIntentBits,
   InteractionType,
   MessageFlags,
+  ToEventProps,
 } from '@discordjs/core';
 import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { readDirectory, shardInfo } from '../utils/utils.js';
@@ -65,7 +67,7 @@ client.components = new Collection<string, Component>();
 client.events = new Collection<string, GatewayEvent<any>>();
 client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
-void loadModules().then(() => gateway.connect());
+void bind().then(() => gateway.connect());
 
 // error handling
 process.on('uncaughtException', console.error);
@@ -73,18 +75,18 @@ process.on('unhandledRejection', console.error);
 
 // helper functions
 
-async function loadModules() {
-  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands'));
-  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components'));
-  await readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events'));
+async function bind() {
+  await Promise.all([
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands')),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components')),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events')),
+  ]);
 
   for (const event of client.events.values()) {
-    client.on(event.name, async (payload: any) => {
-      try {
-        await event.run(payload.data, client.api);
-      } catch (error) {
+    client.on(event.name, (payload: ToEventProps<Extract<GatewayDispatchPayload, { t: typeof event.name }>['d']>) => {
+      event.run(payload.data, client.api).catch((error) => {
         console.log(`An error occurred while running event ${event.name}:`, error);
-      }
+      });
     });
   }
 }
