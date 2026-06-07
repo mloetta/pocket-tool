@@ -7,7 +7,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, TimestampStyle } from '../../../types/types.js';
+import { TimestampStyle } from '../../../types/types.js';
 import { maskedLink, timestamp } from '../../../utils/markdown.js';
 import { getShardIdFromGuildId, getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
 import os from 'os';

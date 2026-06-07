@@ -46,8 +46,35 @@ createComponent({
         },
         {
           type: ComponentType.Label,
-          label: 'Description',
-          description: 'Describe the bug you encountered',
+          label: 'Priority',
+          description: 'How critical is this bug?',
+          component: {
+            type: ComponentType.RadioGroup,
+            custom_id: 'bug-priority',
+            options: [
+              {
+                label: 'Low',
+                value: 'low',
+                description: 'Minor issue that does not significantly impact functionality',
+              },
+              {
+                label: 'Medium',
+                value: 'medium',
+                description: 'Issue that affects functionality but has a workaround',
+              },
+              {
+                label: 'High',
+                value: 'high',
+                description: 'Critical issue that severely impacts functionality and has no workaround',
+              },
+            ],
+            required: true,
+          },
+        },
+        {
+          type: ComponentType.Label,
+          label: 'Current Behavior',
+          description: 'What is currently happening that you believe is a bug?',
           component: {
             type: ComponentType.TextInput,
             custom_id: 'bug-description',
@@ -63,19 +90,7 @@ createComponent({
           component: {
             type: ComponentType.TextInput,
             custom_id: 'expected-behavior',
-            placeholder: 'Enter the expected behavior...',
-            style: TextInputStyle.Paragraph,
-            required: true,
-          },
-        },
-        {
-          type: ComponentType.Label,
-          label: 'Steps to Reproduce',
-          description: 'How can we reproduce the bug? Make sure to follow the format below',
-          component: {
-            type: ComponentType.TextInput,
-            custom_id: 'steps-to-reproduce',
-            placeholder: '1.\n2.\n3.\n4.\n...',
+            placeholder: 'Enter what you expected to happen...',
             style: TextInputStyle.Paragraph,
             required: true,
           },

@@ -16,21 +16,21 @@ createComponent({
           : undefined
         : undefined;
 
-    const bugDescription =
+    const bugPriority =
       components?.[1].type === ComponentType.Label
-        ? components?.[1].component?.type === ComponentType.TextInput
+        ? components?.[1].component?.type === ComponentType.RadioGroup
           ? components?.[1].component.value
           : undefined
         : undefined;
 
-    const bugBehavior =
+    const bugCurrentBehavior =
       components?.[2].type === ComponentType.Label
         ? components?.[2].component?.type === ComponentType.TextInput
           ? components?.[2].component.value
           : undefined
         : undefined;
 
-    const bugReproduce =
+    const bugExpectedBehavior =
       components?.[3].type === ComponentType.Label
         ? components?.[3].component?.type === ComponentType.TextInput
           ? components?.[3].component.value
@@ -94,6 +94,23 @@ createComponent({
       }
     }
 
+    let priorityId;
+
+    switch (bugPriority) {
+      case 'low': {
+        priorityId = '1467551077837832325';
+        break;
+      }
+      case 'medium': {
+        priorityId = '1467551096477323296';
+        break;
+      }
+      case 'high': {
+        priorityId = '1467551113568977102';
+        break;
+      }
+    }
+
     const now = new Date();
 
     await api.channels.createForumThread('1467550986129113169', {
@@ -106,21 +123,14 @@ createComponent({
             components: [
               {
                 type: ComponentType.TextDisplay,
-                content: `### Description\n${bugDescription || 'No description provided.'}`,
+                content: `### Current Behavior\n${bugCurrentBehavior || 'No current behavior provided.'}`,
               },
               {
                 type: ComponentType.Separator,
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `### Steps to Reproduce\n${bugReproduce || 'No steps to reproduce provided.'}`,
-              },
-              {
-                type: ComponentType.Separator,
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: `### Expected Behavior\n${bugBehavior || 'No expected behavior provided.'}`,
+                content: `### Expected Behavior\n${bugExpectedBehavior || 'No expected behavior provided.'}`,
               },
               ...(attachmentUrls.length > 0
                 ? ([

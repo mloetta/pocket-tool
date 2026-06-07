@@ -62,12 +62,14 @@ const gateway = new WebSocketManager({
 export const client = new Client({ rest, gateway });
 
 // custom properties for the client
-client.commands = new Collection<string, ApplicationCommand<any>>();
+client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
-client.events = new Collection<string, GatewayEvent<any>>();
+client.events = new Collection<string, GatewayEvent>();
 client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
-void bind().then(() => gateway.connect());
+void bind()
+  .then(() => gateway.connect())
+  .catch(console.error);
 
 // error handling
 process.on('uncaughtException', console.error);
@@ -75,17 +77,24 @@ process.on('unhandledRejection', console.error);
 
 // helper functions
 
-async function bind() {
+async function bind(): Promise<void> {
   await Promise.all([
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands')),
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components')),
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events')),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands')).catch((error) => {
+      console.error('Failed to load commands:', error);
+    }),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components')).catch((error) => {
+      console.error('Failed to load components:', error);
+    }),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events')).catch((error) => {
+      console.error('Failed to load events:', error);
+      throw error;
+    }),
   ]);
 
   for (const event of client.events.values()) {
     client.on(event.name, (payload: ToEventProps<Extract<GatewayDispatchPayload, { t: typeof event.name }>['d']>) => {
       event.run(payload.data, client.api).catch((error) => {
-        console.log(`An error occurred while running event ${event.name}:`, error);
+        console.error(`An error occurred while running event ${event.name}:`, error);
       });
     });
   }

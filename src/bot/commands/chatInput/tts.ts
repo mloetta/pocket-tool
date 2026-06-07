@@ -236,7 +236,7 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('wrong')} I don't have enough permissions to text-to-speech. I need the following permissions in this guild: ${highlight('Connect, Speak', HighlightStyle.Bold)}`,
+              content: `${emoji('wrong')} I don't have enough permissions to text-to-speech - I need the following permissions in this guild: ${highlight('Connect, Speak', HighlightStyle.Bold)}`,
             },
             {
               type: ComponentType.Separator,

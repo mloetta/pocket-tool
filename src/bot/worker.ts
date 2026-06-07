@@ -17,7 +17,12 @@ void bootstrapper.bootstrap({
     });
 
     // tracks shard information
+
     shard.on(WebSocketShardEvents.Ready, () => {
+      parentPort?.postMessage({ type: 'shardInfo', shardId: shard.id, data: { uptime: new Date().getTime() } });
+    });
+
+    shard.on(WebSocketShardEvents.Resumed, () => {
       parentPort?.postMessage({ type: 'shardInfo', shardId: shard.id, data: { uptime: new Date().getTime() } });
     });
 

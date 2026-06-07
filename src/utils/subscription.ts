@@ -20,6 +20,7 @@ export class TTS {
   public readonly voiceConnection: VoiceConnection;
   public readonly audioPlayer: AudioPlayer;
   public queue: TTSTrack[] = [];
+  public currentTrack: TTSTrack | null = null;
   public queueLock = false;
   public readyLock = false;
   public timeout: NodeJS.Timeout | null = null;
@@ -63,6 +64,8 @@ export class TTS {
 
     this.audioPlayer.on('stateChange', (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
+        this.currentTrack?.onFinish?.();
+        this.currentTrack = null;
         void this.processQueue();
       }
     });
@@ -99,15 +102,12 @@ export class TTS {
     const nextTrack = this.queue.shift()!;
 
     try {
+      this.currentTrack = nextTrack;
       const resource = createAudioResource(Readable.from(nextTrack.buffer), {
         inputType: StreamType.OggOpus,
       });
       this.audioPlayer.play(resource);
       this.queueLock = false;
-      nextTrack.onFinish &&
-        this.audioPlayer.once('stateChange', (_, newState) => {
-          if (newState.status === AudioPlayerStatus.Idle) nextTrack.onFinish?.();
-        });
     } catch (error) {
       nextTrack.onError?.(error as Error);
       this.queueLock = false;

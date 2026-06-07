@@ -206,7 +206,7 @@ createApplicationCommand({
             },
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${timestamp(new Date(res.createdAt).getTime(), TimestampStyle.FullDateShortTime)}`,
+              content: `-# ${timestamp(new Date(res.createdAt).getTime(), TimestampStyle.FullDateShortTime)} (${timestamp(new Date(res.createdAt).getTime(), TimestampStyle.RelativeTime)})`,
             },
             {
               type: ComponentType.Section,
