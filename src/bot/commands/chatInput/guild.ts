@@ -6,7 +6,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 import { cdn, codeblock, emoji, timestamp } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';

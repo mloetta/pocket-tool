@@ -5,7 +5,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { MessageContextMenuCommand, RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
+import { RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import { emoji } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';

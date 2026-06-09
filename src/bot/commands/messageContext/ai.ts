@@ -6,7 +6,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { MessageContextMenuCommand, RateLimitType } from '../../../types/types.js';
+import { RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { msToApproxTime } from '../../../utils/utils.js';
 import OpenAI from 'openai';

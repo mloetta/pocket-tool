@@ -8,8 +8,8 @@ import {
   MessageFlags,
   SeparatorSpacingSize,
 } from '@discordjs/core';
-import { ChatInputCommand, HighlightStyle, RateLimitType } from '../../../types/types.js';
-import { emoji, highlight, maskedLink } from '../../../utils/markdown.js';
+import { HighlightStyle, RateLimitType } from '../../../types/types.js';
+import { emoji, highlight, hyperlink } from '../../../utils/markdown.js';
 import { toEmojiObject } from '../../../utils/utils.js';
 import createApplicationCommand from '../../../helpers/command.js';
 
@@ -66,7 +66,7 @@ createApplicationCommand({
             },
             {
               type: ComponentType.TextDisplay,
-              content: `-# ${emoji('exclamation')} You can visit **${maskedLink('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
+              content: `-# ${emoji('exclamation')} You can visit **${hyperlink('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands`,
             },
             {
               type: ComponentType.Separator,

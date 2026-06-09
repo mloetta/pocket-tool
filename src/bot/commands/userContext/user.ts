@@ -6,7 +6,7 @@ import {
   MessageFlags,
   UserFlags,
 } from '@discordjs/core';
-import { RateLimitType, TimestampStyle, UserContextMenuCommand } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';

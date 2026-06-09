@@ -8,9 +8,8 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { TimestampStyle } from '../../../types/types.js';
-import { maskedLink, timestamp } from '../../../utils/markdown.js';
+import { hyperlink, timestamp } from '../../../utils/markdown.js';
 import { getShardIdFromGuildId, getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
-import os from 'os';
 import createApplicationCommand from '../../../helpers/command.js';
 import { client } from '../../index.js';
 
@@ -30,8 +29,8 @@ createApplicationCommand({
     const latency = shardInfo.latency!.toLocaleString('en-US');
     const uptime = timestamp(Math.floor(shardInfo.uptime!), TimestampStyle.RelativeTime);
     const memory = process.memoryUsage();
-    const usedMemory = memory.rss;
-    const totalMemory = os.totalmem();
+    const usedMemory = memory.heapUsed;
+    const totalMemory = memory.rss;
     const memoryUsage = `${Number((usedMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB (${Number((totalMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB)`;
     const app = await api.applications.getCurrent();
     const guilds = app.approximate_guild_count;
@@ -44,7 +43,7 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${maskedLink('https://discord.gg/CAr2YgdtAv', 'Keystone')}**, designed by **${maskedLink('https://merpix.de/', 'Merpix')}**, most emojis are from **${maskedLink('https://discord.gg/icons-859387663093727263', 'Icons')}**`,
+              content: `## Pocket Tool, your lightweight, fast, and versatile Discord bot\n-# Developed by **${hyperlink('https://discord.gg/CAr2YgdtAv', 'Keystone')}**, designed by **${hyperlink('https://merpix.de/', 'Merpix')}**, most emojis are from **${hyperlink('https://discord.gg/icons-859387663093727263', 'Icons')}**`,
             },
             {
               type: ComponentType.Separator,

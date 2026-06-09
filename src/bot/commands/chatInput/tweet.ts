@@ -9,10 +9,10 @@ import {
   Locale,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import env from '../../../utils/env.js';
-import { emoji, maskedLink, timestamp } from '../../../utils/markdown.js';
+import { emoji, hyperlink, timestamp } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
 
 createApplicationCommand({
@@ -154,7 +154,7 @@ createApplicationCommand({
       const escaped = hashtag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const pattern = new RegExp(`#${escaped}(?![\\p{L}\\p{N}_])`, 'gu');
 
-      content = content?.replace(pattern, maskedLink(`https://x.com/hashtag/${hashtag}`, `#${hashtag}`));
+      content = content?.replace(pattern, hyperlink(`https://x.com/hashtag/${hashtag}`, `#${hashtag}`));
     }
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -163,14 +163,14 @@ createApplicationCommand({
           ? ([
               {
                 type: ComponentType.TextDisplay,
-                content: `-# *Quoting ${maskedLink(`https://x.com/${res.quotedPost?.author.username}/status/${res.quotedPost?.id}`, 'this tweet')}, posted by ${maskedLink(`https://x.com/${res.quotedPost?.author.username}`, `@${res.quotedPost?.author.username}`)}*`,
+                content: `-# *Quoting ${hyperlink(`https://x.com/${res.quotedPost?.author.username}/status/${res.quotedPost?.id}`, 'this tweet')}, posted by ${hyperlink(`https://x.com/${res.quotedPost?.author.username}`, `@${res.quotedPost?.author.username}`)}*`,
               },
             ] satisfies APIMessageTopLevelComponent[])
           : res.parentPost
             ? ([
                 {
                   type: ComponentType.TextDisplay,
-                  content: `-# *In reply to ${maskedLink(`https://x.com/${res.parentPost?.author.username}/status/${res.parentPost?.id}`, 'this tweet')}, posted by ${maskedLink(`https://x.com/${res.parentPost?.author.username}`, `@${res.parentPost?.author.username}`)}*`,
+                  content: `-# *In reply to ${hyperlink(`https://x.com/${res.parentPost?.author.username}/status/${res.parentPost?.id}`, 'this tweet')}, posted by ${hyperlink(`https://x.com/${res.parentPost?.author.username}`, `@${res.parentPost?.author.username}`)}*`,
                 },
               ] satisfies APIMessageTopLevelComponent[])
             : []),
@@ -179,7 +179,7 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `-# Posted by ${res.author.isVerified ? `${emoji('verified')} ` : ''}**${res.author.name} (${maskedLink(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
+              content: `-# Posted by ${res.author.isVerified ? `${emoji('verified')} ` : ''}**${res.author.name} (${hyperlink(`https://x.com/${res.author.username}`, `@${res.author.username}`)})**${content ? `\n\n${content}` : ''}`,
             },
             ...(res.media.length > 0
               ? ([

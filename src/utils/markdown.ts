@@ -1,12 +1,12 @@
 import { Emoji } from '../types/emojis.js';
 import { HighlightStyle, TimestampStyle } from '../types/types.js';
 
-const CDN = 'https://cdn.discordapp.com';
-
 /** Escapes backticks in a string to avoid breaking markdown */
 function _sanitize(content: unknown): string {
   return String(content ?? '').replace(/`/g, 'ˋ');
 }
+
+const CDN = 'https://cdn.discordapp.com';
 
 export function cdn(route: string, size: number = 4096, format: string = 'webp', animated: boolean = false): string {
   return `${CDN}${route}.${format}?size=${size}&animated=${animated}`;
@@ -45,7 +45,7 @@ export function highlight(content: unknown, style: HighlightStyle = HighlightSty
   }
 }
 
-export function maskedLink(url: string, masked: string, tooltip: string = '', embed: boolean = false): string {
+export function hyperlink(url: string, masked: string, tooltip: string = '', embed: boolean = false): string {
   if (tooltip.length) {
     tooltip = ` '${tooltip}'`;
   }

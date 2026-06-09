@@ -71,8 +71,7 @@ export class TTS {
     });
 
     this.audioPlayer.on('error', (error) => {
-      const track = this.queue[0];
-      track?.onError?.(error);
+      this.currentTrack?.onError?.(error);
     });
 
     voiceConnection.subscribe(this.audioPlayer);

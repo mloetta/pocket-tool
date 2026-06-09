@@ -5,7 +5,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { HighlightStyle, MessageContextMenuCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
 import { supabase } from '../../../utils/supabase.js';
