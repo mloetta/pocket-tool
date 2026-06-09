@@ -79,16 +79,9 @@ process.on('unhandledRejection', console.error);
 
 async function bind(): Promise<void> {
   await Promise.all([
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands')).catch((error) => {
-      console.error('Failed to load commands:', error);
-    }),
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components')).catch((error) => {
-      console.error('Failed to load components:', error);
-    }),
-    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events')).catch((error) => {
-      console.error('Failed to load events:', error);
-      throw error;
-    }),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'commands')),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'components')),
+    readDirectory(path.join(process.cwd(), 'dist', 'bot', 'events')),
   ]);
 
   for (const event of client.events.values()) {
@@ -253,7 +246,7 @@ export function parseComponentArgs<Args extends readonly string[]>(
   return result;
 }
 
-export function findCommandOption(
+export function getChatInputOption(
   options: APIApplicationCommandInteractionDataOption[],
   name: string,
 ): APIApplicationCommandInteractionDataOption | undefined {
@@ -270,10 +263,28 @@ export function findCommandOption(
       option.type === ApplicationCommandOptionType.Subcommand ||
       option.type === ApplicationCommandOptionType.SubcommandGroup
     ) {
-      const found = findCommandOption(option.options ?? [], name);
+      const found = getChatInputOption(option.options ?? [], name);
       if (found) {
         return found;
       }
+    }
+  }
+}
+
+export function getChatInputFocusedOption(
+  options: APIApplicationCommandInteractionDataOption[],
+): (APIApplicationCommandInteractionDataOption & { value: any }) | undefined {
+  for (const option of options) {
+    if (
+      option.type === ApplicationCommandOptionType.Subcommand ||
+      option.type === ApplicationCommandOptionType.SubcommandGroup
+    ) {
+      const found = getChatInputFocusedOption(option.options ?? []);
+      if (found) return found;
+    }
+
+    if ('focused' in option && option.focused) {
+      return option;
     }
   }
 }

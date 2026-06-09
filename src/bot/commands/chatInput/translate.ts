@@ -11,6 +11,7 @@ import { RateLimitType, RequestMethod, ResponseType } from '../../../types/types
 import { makeRequest } from '../../../utils/request.js';
 import { emoji } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
+import { getChatInputFocusedOption } from '../../index.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -46,12 +47,11 @@ createApplicationCommand({
   },
   acknowledge: true,
   async autocomplete(interaction, api) {
-    const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
+    const focused = getChatInputFocusedOption(interaction.data.options);
+    const value = String(focused?.value).toLowerCase() ?? '';
 
-    switch (option?.name) {
+    switch (focused?.name) {
       case 'from': {
-        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
-
         const choices = [
           {
             name: 'Auto',
@@ -62,21 +62,19 @@ createApplicationCommand({
             value,
           })),
         ]
-          .filter((c) => c.name.toLowerCase().includes(focused))
+          .filter((c) => c.name.toLowerCase().includes(value))
           .slice(0, 25);
 
         await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
         break;
       }
       case 'to': {
-        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
-
         const choices = Object.entries(Locale)
           .map(([key, value]) => ({
             name: key,
             value,
           }))
-          .filter((c) => c.name.toLowerCase().includes(focused))
+          .filter((c) => c.name.toLowerCase().includes(value))
           .slice(0, 25);
 
         await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });

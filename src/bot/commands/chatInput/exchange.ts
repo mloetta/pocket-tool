@@ -10,6 +10,7 @@ import { RequestMethod, ResponseType, TimestampStyle } from '../../../types/type
 import { makeRequest } from '../../../utils/request.js';
 import { emoji, timestamp } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
+import { getChatInputFocusedOption } from '../../index.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -42,23 +43,22 @@ createApplicationCommand({
   ],
   acknowledge: true,
   async autocomplete(interaction, api) {
-    const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
+    const focused = getChatInputFocusedOption(interaction.data.options);
+    const value = String(focused?.value).toLowerCase() ?? '';
 
-    switch (option?.name) {
+    switch (focused?.name) {
       case 'from': {
         const res = await makeRequest('https://api.frankfurter.dev/v2/currencies', {
           method: RequestMethod.GET,
           response: ResponseType.JSON,
         });
 
-        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
-
         const choices = res
           .map((c: any) => ({
             name: `${c.name} (${c.iso_code})`,
             value: c.iso_code,
           }))
-          .filter((c: any) => c.name.toLowerCase().includes(focused))
+          .filter((c: any) => c.name.toLowerCase().includes(value))
           .slice(0, 25);
 
         await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
@@ -70,14 +70,12 @@ createApplicationCommand({
           response: ResponseType.JSON,
         });
 
-        const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
-
         const choices = res
           .map((c: any) => ({
             name: `${c.name} (${c.iso_code})`,
             value: c.iso_code,
           }))
-          .filter((c: any) => c.name.toLowerCase().includes(focused))
+          .filter((c: any) => c.name.toLowerCase().includes(value))
           .slice(0, 25);
 
         await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });

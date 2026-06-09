@@ -10,7 +10,6 @@ import {
   APIUserApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  Client,
   ComponentType,
   GatewayDispatchEvents,
   InteractionType,
@@ -20,10 +19,7 @@ import {
   ApplicationCommand,
   ButtonComponent,
   ChatInputCommand,
-  Component,
-  GatewayEvent,
   HighlightStyle,
-  InteractableComponentType,
   MessageContextMenuCommand,
   ModalComponent,
   PrimaryEntryPointCommand,
@@ -32,7 +28,7 @@ import {
   TimestampStyle,
   UserContextMenuCommand,
 } from '../../types/types.js';
-import { client, findCommandOption, parseCommandOptions, parseComponentArgs } from '../index.js';
+import { client, getChatInputOption, parseCommandOptions, parseComponentArgs } from '../index.js';
 import env from '../../utils/env.js';
 import { checkRateLimit } from '../../utils/rateLimit.js';
 import { emoji, highlight, timestamp } from '../../utils/markdown.js';
@@ -204,7 +200,7 @@ async function handleApplicationCommand(
             }
           }
 
-          const option = findCommandOption(interaction.data.options ?? [], 'incognito');
+          const option = getChatInputOption(interaction.data.options ?? [], 'incognito');
 
           const incognito = option?.type === ApplicationCommandOptionType.Boolean ? option.value === true : false;
 

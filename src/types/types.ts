@@ -51,7 +51,7 @@ export interface ChatInputCommand<
     options: GetChatInputCommandOptions<Options>,
     api: API,
   ) => Promise<void>;
-  autocomplete?: (context: APIApplicationCommandAutocompleteInteraction, api: API) => Promise<void>;
+  autocomplete?: (interaction: APIApplicationCommandAutocompleteInteraction, api: API) => Promise<void>;
 }
 
 export type ChatInputOption =

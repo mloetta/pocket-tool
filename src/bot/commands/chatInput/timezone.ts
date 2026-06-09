@@ -10,6 +10,7 @@ import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/
 import { DateTime } from 'luxon';
 import { emoji, timestamp } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
+import { getChatInputFocusedOption } from '../../index.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -32,15 +33,15 @@ createApplicationCommand({
   },
   acknowledge: true,
   async autocomplete(interaction, api) {
-    const option = interaction.data.options.find((o) => 'focused' in o && o.focused);
-    const focused = option && 'value' in option ? option.value.toString().toLowerCase() : '';
+    const focused = getChatInputFocusedOption(interaction.data.options);
+    const value = String(focused?.value).toLowerCase() ?? '';
 
     const choices = Object.values(Intl.supportedValuesOf('timeZone'))
       .map((z) => ({
         name: z,
         value: z,
       }))
-      .filter((c) => c.name.toLowerCase().includes(focused))
+      .filter((c) => c.name.toLowerCase().includes(value))
       .slice(0, 25);
 
     await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
