@@ -144,7 +144,10 @@ createApplicationCommand({
         return;
       }
 
+      const id = crypto.randomUUID();
+
       const { error: insertError } = await supabase.from('tags').insert({
+        id,
         user_id: interaction.user?.id ?? interaction.member?.user.id,
         name,
         content,

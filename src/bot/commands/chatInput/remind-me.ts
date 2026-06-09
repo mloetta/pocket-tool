@@ -64,12 +64,16 @@ createApplicationCommand({
 
     const id = crypto.randomUUID();
 
-    await supabase.from('reminder').insert({
+    const { error } = await supabase.from('reminder').insert({
       id,
       user_id: interaction.user?.id ?? interaction.member?.user.id,
       time: date,
       reason,
     });
+
+    if (error) {
+      throw error;
+    }
 
     if (time <= LOOKAHEAD_MS) {
       scheduleReminder(

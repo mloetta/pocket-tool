@@ -44,16 +44,24 @@ createApplicationCommand({
     }
 
     if (data && reason) {
-      await supabase
+      const { error } = await supabase
         .from('afk')
         .update({ reason })
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id);
+
+      if (error) {
+        throw error;
+      }
     } else if (!data) {
-      await supabase.from('afk').insert({
+      const { error } = await supabase.from('afk').insert({
         user_id: interaction.user?.id ?? interaction.member?.user.id,
         reason: reason ?? null,
         went_away: new Date(),
       });
+
+      if (error) {
+        throw error;
+      }
     }
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {
