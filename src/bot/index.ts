@@ -126,6 +126,39 @@ client.api.interactions.followUp = (async (applicationId, interactionToken, body
   return followUp(applicationId, interactionToken, body, options);
 }) as typeof client.api.interactions.followUp;
 
+const createMessage = client.api.channels.createMessage.bind(client.api.channels);
+
+client.api.channels.createMessage = (async (channelId, body, options) => {
+  if ((body.content || !!((body.flags ?? 0) & MessageFlags.IsComponentsV2)) && !body.allowed_mentions) {
+    body.allowed_mentions = { parse: [] };
+  }
+
+  return createMessage(channelId, body, options);
+}) as typeof client.api.channels.createMessage;
+
+const editMessage = client.api.channels.editMessage.bind(client.api.channels);
+
+client.api.channels.editMessage = (async (channelId, messageId, body, options) => {
+  if ((body.content || !!((body.flags ?? 0) & MessageFlags.IsComponentsV2)) && !body.allowed_mentions) {
+    body.allowed_mentions = { parse: [] };
+  }
+
+  return editMessage(channelId, messageId, body, options);
+}) as typeof client.api.channels.editMessage;
+
+const createForumThread = client.api.channels.createForumThread.bind(client.api.channels);
+
+client.api.channels.createForumThread = (async (channelId, body, options) => {
+  if (
+    (body.message.content || !!((body.message.flags ?? 0) & MessageFlags.IsComponentsV2)) &&
+    !body.message.allowed_mentions
+  ) {
+    body.message.allowed_mentions = { parse: [] };
+  }
+
+  return createForumThread(channelId, body, options);
+}) as typeof client.api.channels.createForumThread;
+
 function resolveLocalization(loc: Localization) {
   if (typeof loc === 'string') {
     return { value: loc, localizations: undefined };

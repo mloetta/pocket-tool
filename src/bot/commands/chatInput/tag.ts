@@ -306,22 +306,30 @@ createApplicationCommand({
         return;
       }
 
-      await api.channels.createMessage(interaction.channel.id, {
-        content: `${data.content}\n-# Tag ${data.name} requested by ${interaction.user?.username ?? interaction.member?.user.username}`,
-      });
+      const guild = interaction.guild_id ? await api.guilds.get(interaction.guild_id).catch(() => null) : null;
 
-      await api.interactions.editReply(interaction.application_id, interaction.token, {
-        components: [
-          {
-            type: ComponentType.TextDisplay,
-            content: `${emoji('correct')} Tag sent successfully`,
-          },
-          {
-            type: ComponentType.Separator,
-          },
-        ],
-        flags: MessageFlags.IsComponentsV2,
-      });
+      if (guild) {
+        await api.channels.createMessage(interaction.channel.id, {
+          content: `${data.content.replace(/\\n/g, '\n')}\n-# Tag ${highlight(data.name, HighlightStyle.Compact)} requested by ${interaction.user?.username ?? interaction.member?.user.username}`,
+        });
+
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `${emoji('correct')} Tag sent successfully`,
+            },
+            {
+              type: ComponentType.Separator,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
+      } else {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          content: data.content.replace(/\\n/g, '\n'),
+        });
+      }
     }
   },
 });
