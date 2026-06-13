@@ -9,28 +9,28 @@ createComponent({
   async run(interaction, args, api) {
     const components = interaction.data?.components;
 
-    const bugCategory =
+    const category =
       components?.[0].type === ComponentType.Label
         ? components?.[0].component?.type === ComponentType.StringSelect
           ? components?.[0].component.values[0]
           : undefined
         : undefined;
 
-    const bugPriority =
+    const priority =
       components?.[1].type === ComponentType.Label
         ? components?.[1].component?.type === ComponentType.RadioGroup
           ? components?.[1].component.value
           : undefined
         : undefined;
 
-    const bugCurrentBehavior =
+    const currentBehavior =
       components?.[2].type === ComponentType.Label
         ? components?.[2].component?.type === ComponentType.TextInput
           ? components?.[2].component.value
           : undefined
         : undefined;
 
-    const bugExpectedBehavior =
+    const expectedBehavior =
       components?.[3].type === ComponentType.Label
         ? components?.[3].component?.type === ComponentType.TextInput
           ? components?.[3].component.value
@@ -44,11 +44,11 @@ createComponent({
           : undefined
         : undefined;
 
-    const bugAttachments = attachmentIds?.map((id) => interaction.data.resolved?.attachments?.[id]) ?? undefined;
+    const attachments = attachmentIds?.map((id) => interaction.data.resolved?.attachments?.[id]) ?? undefined;
 
     if (
-      bugAttachments &&
-      bugAttachments.some(
+      attachments &&
+      attachments.some(
         (attachment) =>
           !attachment?.content_type?.startsWith('image/') && attachment?.content_type?.startsWith('video/'),
       )
@@ -69,13 +69,13 @@ createComponent({
       return;
     }
 
-    const attachmentUrls = bugAttachments?.map((attachment) => attachment?.url) ?? [];
+    const attachmentUrls = attachments?.map((a) => a?.url) ?? [];
 
     const bugReportId = crypto.randomUUID();
 
     let categoryId;
 
-    switch (bugCategory) {
+    switch (category) {
       case 'interaction-failure': {
         categoryId = '1494848698700791961';
         break;
@@ -96,7 +96,7 @@ createComponent({
 
     let priorityId;
 
-    switch (bugPriority) {
+    switch (priority) {
       case 'low': {
         priorityId = '1467551077837832325';
         break;
@@ -123,14 +123,14 @@ createComponent({
             components: [
               {
                 type: ComponentType.TextDisplay,
-                content: `### Current Behavior\n${bugCurrentBehavior || 'No current behavior provided.'}`,
+                content: `### Current Behavior\n${currentBehavior || 'No current behavior provided.'}`,
               },
               {
                 type: ComponentType.Separator,
               },
               {
                 type: ComponentType.TextDisplay,
-                content: `### Expected Behavior\n${bugExpectedBehavior || 'No expected behavior provided.'}`,
+                content: `### Expected Behavior\n${expectedBehavior || 'No expected behavior provided.'}`,
               },
               ...(attachmentUrls.length > 0
                 ? ([
@@ -147,7 +147,7 @@ createComponent({
                         .filter((url): url is string => url !== undefined)
                         .map((url: string) => ({
                           media: {
-                            type: bugAttachments?.find((a) => a?.url === url)?.content_type ?? 'image',
+                            type: attachments?.find((a) => a?.url === url)?.content_type ?? 'image',
                             url: url,
                           },
                         })),

@@ -9,7 +9,7 @@ import {
 } from '@discordjs/core';
 import { TimestampStyle } from '../../../types/types.js';
 import { hyperlink, timestamp } from '../../../utils/markdown.js';
-import { getShardIdFromGuildId, getShardInfoFromGuild, toEmojiObject } from '../../../utils/utils.js';
+import { getShardIdFromGuildId, getShardInfoFromGuild, toEmoji } from '../../../utils/utils.js';
 import createApplicationCommand from '../../../helpers/command.js';
 import { client } from '../../index.js';
 
@@ -61,14 +61,14 @@ createApplicationCommand({
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('link') as APIMessageComponentEmoji,
+                  emoji: toEmoji('link') as APIMessageComponentEmoji,
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('discord') as APIMessageComponentEmoji,
+                  emoji: toEmoji('discord') as APIMessageComponentEmoji,
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

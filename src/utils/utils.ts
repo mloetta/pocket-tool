@@ -164,7 +164,7 @@ export function readableTimeToMs(time: string): number | null {
   return matched ? ms : null;
 }
 
-export function toEmojiObject(name: keyof typeof Emoji): APIEmoji | APIMessageComponentEmoji {
+export function toEmoji(name: keyof typeof Emoji): APIEmoji | APIMessageComponentEmoji {
   const emoji = Emoji[name];
 
   if (!emoji) {
@@ -176,4 +176,14 @@ export function toEmojiObject(name: keyof typeof Emoji): APIEmoji | APIMessageCo
     name: 'e',
     animated: emoji.startsWith('<a:'),
   };
+}
+
+export function toReactionEmoji(name: keyof typeof Emoji): string {
+  const emoji = Emoji[name];
+
+  if (!emoji) {
+    throw new Error(`Emoji "${name}" not found`);
+  }
+
+  return emoji.replace(/<a?:(.+):(\d+)>/, '$1:$2');
 }

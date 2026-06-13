@@ -10,7 +10,7 @@ import {
 } from '@discordjs/core';
 import { HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { emoji, highlight, hyperlink } from '../../../utils/markdown.js';
-import { toEmojiObject } from '../../../utils/utils.js';
+import { toEmoji } from '../../../utils/utils.js';
 import createApplicationCommand from '../../../helpers/command.js';
 
 createApplicationCommand({
@@ -57,7 +57,7 @@ createApplicationCommand({
                 type: ComponentType.Button,
                 custom_id: 'report-bugs',
                 label: 'Report Bugs',
-                emoji: toEmojiObject('discord_bug_hunter') as APIMessageComponentEmoji,
+                emoji: toEmoji('discord_bug_hunter') as APIMessageComponentEmoji,
                 style: ButtonStyle.Secondary,
               },
             },
@@ -79,14 +79,14 @@ createApplicationCommand({
                 {
                   type: ComponentType.Button,
                   label: 'Invite Me!',
-                  emoji: toEmojiObject('link') as APIMessageComponentEmoji,
+                  emoji: toEmoji('link') as APIMessageComponentEmoji,
                   url: `https://discord.com/oauth2/authorize?client_id=${interaction.application_id}`,
                   style: ButtonStyle.Link,
                 },
                 {
                   type: ComponentType.Button,
                   label: 'Support Server',
-                  emoji: toEmojiObject('discord') as APIMessageComponentEmoji,
+                  emoji: toEmoji('discord') as APIMessageComponentEmoji,
                   url: 'https://discord.gg/EEAchFSWpr',
                   style: ButtonStyle.Link,
                 },

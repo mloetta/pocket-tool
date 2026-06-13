@@ -6,8 +6,10 @@ import {
   MessageFlags,
 } from '@discordjs/core';
 import { supabase } from '../../utils/supabase.js';
-import { msToReadableTime } from '../../utils/utils.js';
+import { msToReadableTime, toReactionEmoji } from '../../utils/utils.js';
 import createGatewayEvent from '../../helpers/event.js';
+import { emoji, highlight } from '../../utils/markdown.js';
+import { HighlightStyle } from '../../types/types.js';
 
 type Handler = (message: GatewayMessageCreateDispatchData, api: API) => Promise<void>;
 
@@ -80,5 +82,97 @@ const handlers: Handler[] = [
       ],
       flags: MessageFlags.IsComponentsV2,
     });
+  },
+  async (message, api) => {
+    const botId = (await api.applications.getCurrent()).id;
+
+    if (message.content !== `<@${botId}>`) {
+      return;
+    }
+
+    await api.channels.createMessage(message.channel_id, {
+      content: `Hello! I'm **Pocket Tool**!\nYou can view all the available slash commands by typing ${highlight('/', HighlightStyle.Bold)}\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user`,
+      message_reference: {
+        message_id: message.id,
+      },
+    });
+  },
+  async (message, api) => {
+    if (message.author.bot) {
+      return;
+    }
+
+    const isNumber = /^\d+$/.test(message.content.trim());
+
+    if (!isNumber) {
+      return;
+    }
+
+    const { data, error } = await supabase.from('counting').select('*').eq('guild_id', message.guild_id).maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return;
+    }
+
+    if (message.channel_id !== data.channel_id) {
+      return;
+    }
+
+    if (!data.extras?.includes('consecutive_counts') && data.last_user === message.author.id) {
+      await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('exclamation'));
+
+      return;
+    }
+
+    const number = parseInt(message.content.trim(), 10);
+    const expected = data.current_count + 1;
+    const isCorrect = number === expected;
+
+    if (!isCorrect) {
+      switch (data.action) {
+        case 'restarts': {
+          await supabase
+            .from('counting')
+            .update({ current_count: 0, last_user: null })
+            .eq('guild_id', message.guild_id);
+
+          await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('wrong'));
+          break;
+        }
+        case 'do_nothing': {
+          await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('wrong'));
+          break;
+        }
+      }
+
+      if (data.extras?.includes('notify')) {
+        await api.channels.createMessage(message.channel_id, {
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `${emoji('wrong')} Incorrect number provided: ${highlight(number, HighlightStyle.Bold)}, expected: ${highlight(expected, HighlightStyle.Bold)}`,
+            },
+            {
+              type: ComponentType.Separator,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+          message_reference: {
+            message_id: message.id,
+          },
+        });
+      }
+    } else {
+      await supabase
+        .from('counting')
+        .update({ current_count: number, last_user: message.author.id })
+        .eq('guild_id', message.guild_id);
+
+      await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('correct'));
+    }
   },
 ];

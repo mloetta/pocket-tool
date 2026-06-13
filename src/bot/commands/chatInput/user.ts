@@ -10,7 +10,7 @@ import {
   UserFlags,
 } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
-import { getTimestampFromSnowflake, toEmojiObject } from '../../../utils/utils.js';
+import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { Emoji } from '../../../types/emojis.js';
 import createApplicationCommand from '../../../helpers/command.js';
@@ -161,7 +161,7 @@ createApplicationCommand({
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmojiObject('person') as APIMessageComponentEmoji,
+                    emoji: toEmoji('person') as APIMessageComponentEmoji,
                     style: ButtonStyle.Link,
                   },
                 ],
@@ -213,7 +213,7 @@ createApplicationCommand({
                     type: ComponentType.Button,
                     url: `discord://-/users/${user.id}`,
                     label: 'View User',
-                    emoji: toEmojiObject('person') as APIMessageComponentEmoji,
+                    emoji: toEmoji('person') as APIMessageComponentEmoji,
                     style: ButtonStyle.Link,
                   },
                 ],
