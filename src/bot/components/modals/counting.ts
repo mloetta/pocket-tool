@@ -38,23 +38,6 @@ createComponent({
           : undefined
         : undefined;
 
-    if (!channel) {
-      await api.interactions.reply(interaction.id, interaction.token, {
-        components: [
-          {
-            type: ComponentType.TextDisplay,
-            content: `${emoji('exclamation')} Please select a valid channel for the counting minigame`,
-          },
-          {
-            type: ComponentType.Separator,
-          },
-        ],
-        flags: MessageFlags.IsComponentsV2,
-      });
-
-      return;
-    }
-
     if (del) {
       const { data, error } = await supabase
         .from('counting')
@@ -97,6 +80,23 @@ createComponent({
         ],
         flags: MessageFlags.IsComponentsV2,
       });
+    }
+
+    if (!channel) {
+      await api.interactions.reply(interaction.id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${emoji('exclamation')} Please select a valid channel for the counting minigame`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
     }
 
     const { error } = await supabase.from('counting').upsert({
