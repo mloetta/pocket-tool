@@ -80,6 +80,8 @@ createComponent({
         ],
         flags: MessageFlags.IsComponentsV2,
       });
+
+      return;
     }
 
     if (!channel) {
