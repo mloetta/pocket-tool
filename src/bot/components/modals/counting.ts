@@ -25,9 +25,9 @@ createComponent({
         : undefined;
 
     const extras =
-      components?.[3].type === ComponentType.Label
-        ? components?.[3].component?.type === ComponentType.CheckboxGroup
-          ? components?.[3].component.values
+      components?.[2].type === ComponentType.Label
+        ? components?.[2].component?.type === ComponentType.CheckboxGroup
+          ? components?.[2].component.values
           : undefined
         : undefined;
 
