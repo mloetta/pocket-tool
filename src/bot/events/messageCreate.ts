@@ -154,7 +154,7 @@ const handlers: Handler[] = [
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('wrong')} Incorrect number provided: ${highlight(number, HighlightStyle.Bold)}, expected: ${highlight(expected, HighlightStyle.Bold)}`,
+              content: `${emoji('wrong')} Incorrect number provided, the expected number was: ${highlight(expected, HighlightStyle.Bold)}${data.action === 'restarts' ? `- starting over!` : ''}`,
             },
             {
               type: ComponentType.Separator,

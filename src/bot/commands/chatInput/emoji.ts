@@ -75,9 +75,9 @@ createApplicationCommand({
             },
             {
               type: ComponentType.MediaGallery,
-              items: emojis.map((emoji) => ({
+              items: emojis.map((e) => ({
                 media: {
-                  url: cdn(`/emojis/${emoji.id}`, 1024, emoji.animated ? 'gif' : 'webp', true),
+                  url: cdn(`/emojis/${e.id}`, 1024, e.animated ? 'gif' : 'webp', true),
                 },
               })),
             },

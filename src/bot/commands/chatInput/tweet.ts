@@ -186,9 +186,9 @@ createApplicationCommand({
               ? ([
                   {
                     type: ComponentType.MediaGallery,
-                    items: res.media.slice(0, 10).map((media: any) => ({
+                    items: res.media.slice(0, 10).map((m: any) => ({
                       media: {
-                        url: media.url,
+                        url: m.url,
                       },
                     })),
                   },

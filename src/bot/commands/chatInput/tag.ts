@@ -106,7 +106,7 @@ createApplicationCommand({
       throw error;
     }
 
-    const choices = data?.map((tag) => ({ name: tag.name, value: tag.name })) ?? [];
+    const choices = data?.map((t) => ({ name: t.name, value: t.name })) ?? [];
 
     await api.interactions.createAutocompleteResponse(interaction.id, interaction.token, { choices });
   },

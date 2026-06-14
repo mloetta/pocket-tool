@@ -129,8 +129,8 @@ createApplicationCommand({
       failedBans.push(...bulkFailedUserIds);
 
       const unbanResults = await Promise.allSettled(
-        bulkSuccesfullUserIds.map((userId) =>
-          api.guilds.unbanUser(interaction.guild!.id, userId, {
+        bulkSuccesfullUserIds.map((id) =>
+          api.guilds.unbanUser(interaction.guild!.id, id, {
             reason: `Softban command ran by ${interaction.member?.user.username}`,
           }),
         ),
@@ -156,7 +156,7 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${hasSuccess ? `${emoji('correct')} Successfully softbanned ${successfulBans.map((userId) => `<@${userId}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n-# ${emoji('wrong')} Failed to softban: ${failedBans.map((userId) => `<@${userId}>`).join(', ')}` : ''}${!hasSuccess && hasFailures ? `${emoji('wrong')} Failed to softban: ${failedBans.map((userId) => `<@${userId}>`).join(', ')}` : ''}${!hasSuccess && !hasFailures ? `${emoji('exclamation')} No users were softbanned` : ''}`,
+              content: `${hasSuccess ? `${emoji('correct')} Successfully softbanned ${successfulBans.map((id) => `<@${id}>`).join(', ')}!` : ''}${hasSuccess && hasFailures ? `\n-# ${emoji('wrong')} Failed to softban: ${failedBans.map((id) => `<@${id}>`).join(', ')}` : ''}${!hasSuccess && hasFailures ? `${emoji('wrong')} Failed to softban: ${failedBans.map((id) => `<@${id}>`).join(', ')}` : ''}${!hasSuccess && !hasFailures ? `${emoji('exclamation')} No users were softbanned` : ''}`,
             },
           ],
         },

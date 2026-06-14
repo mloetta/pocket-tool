@@ -12,8 +12,8 @@ createComponent({
     const features = guild.features;
     const allFeatures = Object.values(GuildFeature);
 
-    const featureList = allFeatures.map((feature) => {
-      const hasFeature = features.includes(feature);
+    const featureList = allFeatures.map((f) => {
+      const hasFeature = features.includes(f);
 
       return `${highlight(feature)} ${hasFeature ? emoji('correct') : emoji('wrong')}`;
     });

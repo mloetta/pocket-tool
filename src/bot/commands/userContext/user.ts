@@ -138,7 +138,7 @@ createApplicationCommand({
                       member.roles.length > 0
                         ? `\n\n${emoji('roles')} **Roles:**\n${member.roles
                             .slice(0, 5)
-                            .map((role) => `<@&${role}>`)
+                            .map((id) => `<@&${id}>`)
                             .join(', ')}`
                         : ''
                     }${member.roles.length > 5 ? ` ${highlight(`+${(member.roles.length - 5).toLocaleString('en-US')}`)}` : ``}`

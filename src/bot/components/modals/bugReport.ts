@@ -144,11 +144,11 @@ createComponent({
                     {
                       type: ComponentType.MediaGallery,
                       items: attachmentUrls
-                        .filter((url): url is string => url !== undefined)
-                        .map((url: string) => ({
+                        .filter((u): u is string => u !== undefined)
+                        .map((u: string) => ({
                           media: {
-                            type: attachments?.find((a) => a?.url === url)?.content_type ?? 'image',
-                            url: url,
+                            type: attachments?.find((a) => a?.url === u)?.content_type ?? 'image',
+                            url: u,
                           },
                         })),
                     },
