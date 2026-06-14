@@ -86,10 +86,13 @@ createApplicationCommand({
   async run(interaction, options, api) {
     const { amount, from, to } = options;
 
-    const res = await makeRequest(`https://api.frankfurter.dev/v2/rate/${from}/${to}`, {
-      method: RequestMethod.GET,
-      response: ResponseType.JSON,
-    });
+    const res = await makeRequest(
+      `https://api.frankfurter.dev/v2/rate/${encodeURIComponent(from)}/${encodeURIComponent(to)}`,
+      {
+        method: RequestMethod.GET,
+        response: ResponseType.JSON,
+      },
+    );
 
     const converted = (amount * res.rate).toLocaleString('en-US', {
       style: 'currency',

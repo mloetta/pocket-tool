@@ -19,6 +19,7 @@ export enum Emoji {
   clock = '<:icons_clock:1507125972892127292>',
   channel = '<:icons_channel:1507125982983618700>',
   calendar = '<:icons_calendar:1508998267176747008>',
+  music = '<:icons_music:1515846692950380584>',
   // Twitter
   bookmark = '<:twitter_bookmark:1504947779548479669>',
   like = '<:twitter_like:1504947769717162076>',

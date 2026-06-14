@@ -25,13 +25,13 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionType.User,
       name: 'user',
-      description: 'the user to view information about',
+      description: 'The user to view information about',
       required: false,
     },
     {
       type: ApplicationCommandOptionType.String,
       name: 'scope',
-      description: 'the scope of the information to view',
+      description: 'The scope of the information to view',
       choices: [
         {
           name: 'Global',
