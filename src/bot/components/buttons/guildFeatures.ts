@@ -15,7 +15,7 @@ createComponent({
     const featureList = allFeatures.map((f) => {
       const hasFeature = features.includes(f);
 
-      return `${highlight(feature)} ${hasFeature ? emoji('correct') : emoji('wrong')}`;
+      return `${highlight(f)} ${hasFeature ? emoji('correct') : emoji('wrong')}`;
     });
 
     await api.interactions.createModal(interaction.id, interaction.token, {
