@@ -17,8 +17,30 @@ Pocket Tool is a **lightweight, fast, and versatile Discord bot** designed to be
 - [Node.js](https://nodejs.org/) (v22+ recommended)
 - A Discord bot token (set as `token` environment variable)
 
+1. Clone the repository:
+
+```bash
+git clone https://github.com/pocket-tool
+cd pocket-tool
+```
+
+2. Install dependencies:
+
 ```bash
 npm install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+4. Edit the `.env` file to add your bot token and other configuration options.
+
+5. Build and run the bot:
+
+```bash
 npm run build
 npm run start
 ```

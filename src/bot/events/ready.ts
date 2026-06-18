@@ -16,6 +16,7 @@ createGatewayEvent({
   name: GatewayDispatchEvents.Ready,
   async run(payload, api) {
     const shardId = payload.shard![0];
+
     console.log(`Shard #${shardId} is ready!`);
 
     void startReminderCron(api);
@@ -38,6 +39,7 @@ createGatewayEvent({
         if (command.type !== ApplicationCommandType.ChatInput) {
           continue;
         }
+
         command.options ??= [];
 
         const incognito = {
