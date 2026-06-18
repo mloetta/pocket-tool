@@ -2,22 +2,22 @@ import { REST } from '@discordjs/rest';
 import env from '../utils/env.js';
 import { CompressionMethod, WebSocketManager, WorkerShardingStrategy } from '@discordjs/ws';
 import {
-  APIApplicationCommandInteractionDataOption,
-  APIChatInputApplicationCommandInteraction,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   Client,
-  GatewayDispatchPayload,
   GatewayIntentBits,
   InteractionType,
   MessageFlags,
-  ToEventProps,
+  type APIApplicationCommandInteractionDataOption,
+  type APIChatInputApplicationCommandInteraction,
+  type GatewayDispatchPayload,
+  type ToEventProps,
 } from '@discordjs/core';
-import { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 import { readDirectory, shardInfo } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
 import path from 'path';
 import { createVoiceAdapter } from '../utils/adapter.js';
+import type { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 
 const rest = new REST().setToken(env.get('token', true).toString());
 

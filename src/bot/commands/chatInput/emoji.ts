@@ -69,7 +69,7 @@ createApplicationCommand({
               content: emojis
                 .map(
                   (e) =>
-                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(e.id), TimestampStyle.RelativeTime)})`,
+                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id!), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(e.id!), TimestampStyle.RelativeTime)})`,
                 )
                 .join('\n'),
             },

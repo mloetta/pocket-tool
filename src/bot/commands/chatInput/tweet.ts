@@ -1,5 +1,4 @@
 import {
-  APIMessageTopLevelComponent,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -8,6 +7,7 @@ import {
   InteractionContextType,
   Locale,
   MessageFlags,
+  type APIMessageTopLevelComponent,
 } from '@discordjs/core';
 import { RateLimitType, RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';

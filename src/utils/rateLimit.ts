@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
-import { RateLimit } from '../types/types.js';
-import { Snowflake } from '@discordjs/core';
+import type { Snowflake } from '@discordjs/core';
+import type { RateLimit } from '../types/types.js';
 
 const rateLimits = new Collection<string, Collection<Snowflake, Collection<string, number>>>();
 

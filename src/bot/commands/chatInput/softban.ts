@@ -99,7 +99,7 @@ createApplicationCommand({
     const failedBans: string[] = [];
 
     if (userIds.length === 1) {
-      const userId = userIds[0];
+      const userId = userIds[0]!;
       try {
         await api.guilds.banUser(
           interaction.guild!.id,

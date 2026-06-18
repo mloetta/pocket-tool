@@ -1,5 +1,4 @@
 import {
-  APIMessageComponentEmoji,
   ApplicationCommandType,
   ApplicationIntegrationType,
   ButtonStyle,
@@ -7,6 +6,7 @@ import {
   InteractionContextType,
   MessageFlags,
   SeparatorSpacingSize,
+  type APIMessageComponentEmoji,
 } from '@discordjs/core';
 import { HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { emoji, highlight, hyperlink } from '../../../utils/markdown.js';

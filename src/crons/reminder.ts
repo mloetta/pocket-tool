@@ -1,9 +1,9 @@
 import cron from 'node-cron';
 import { supabase } from '../utils/supabase.js';
 import { Collection } from '@discordjs/collection';
-import { Reminder } from '../types/types.js';
 import { API, ComponentType, MessageFlags } from '@discordjs/core';
 import { emoji } from '../utils/markdown.js';
+import type { Reminder } from '../types/types.js';
 
 export const LOOKAHEAD_MS = 5 * 60 * 1000;
 const scheduled = new Collection<string, NodeJS.Timeout>();

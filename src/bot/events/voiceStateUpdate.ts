@@ -3,7 +3,7 @@ import { getSubscription, unsubscribe } from '../../utils/subscription.js';
 import env from '../../utils/env.js';
 import createGatewayEvent from '../../helpers/event.js';
 
-const botId = atob(env.get('token').toString().split('.')[0]);
+const botId = atob(env.get('token').toString().split('.')[0]!);
 
 createGatewayEvent({
   name: GatewayDispatchEvents.VoiceStateUpdate,

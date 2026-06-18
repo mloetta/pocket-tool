@@ -38,7 +38,7 @@ createApplicationCommand({
     let result: number;
     let latex: string;
 
-    const math = create(all);
+    const math = create(all!);
 
     try {
       const node = math.parse(expression);

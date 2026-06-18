@@ -45,6 +45,10 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
+    if (!message) {
+      return;
+    }
+
     const content = message.content;
 
     if (!content) {

@@ -1,11 +1,11 @@
 import {
-  APIMessageComponentEmoji,
   ApplicationCommandType,
   ApplicationIntegrationType,
   ButtonStyle,
   ComponentType,
   InteractionContextType,
   MessageFlags,
+  type APIMessageComponentEmoji,
 } from '@discordjs/core';
 import { TimestampStyle } from '../../../types/types.js';
 import { hyperlink, timestamp } from '../../../utils/markdown.js';

@@ -76,6 +76,22 @@ createApplicationCommand({
     const end = performance.now();
     const elapsed = end - start;
 
+    if (!completion.choices || completion.choices.length === 0 || !completion.choices[0]) {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${emoji('exclamation')} No response from AI. Please try again`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+      return;
+    }
+
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {

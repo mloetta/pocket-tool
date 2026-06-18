@@ -1,5 +1,4 @@
 import {
-  APIMessageComponentEmoji,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -8,6 +7,8 @@ import {
   InteractionContextType,
   MessageFlags,
   UserFlags,
+  type APIInteractionDataResolvedGuildMember,
+  type APIMessageComponentEmoji,
 } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';
@@ -54,7 +55,10 @@ createApplicationCommand({
     let { user: target, scope } = options;
 
     if (!target) {
-      target = { user: (interaction.user ?? interaction.member?.user)!, member: interaction.member };
+      target = {
+        user: (interaction.user ?? interaction.member?.user)!,
+        member: interaction.member as APIInteractionDataResolvedGuildMember,
+      };
     }
 
     if (!scope) {

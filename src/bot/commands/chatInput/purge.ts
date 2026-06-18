@@ -5,7 +5,7 @@ import {
   ComponentType,
   InteractionContextType,
   MessageFlags,
-  Snowflake,
+  type Snowflake,
 } from '@discordjs/core';
 import { HighlightStyle, RateLimitType } from '../../../types/types.js';
 import { Permissions } from '../../../types/permissions.js';
@@ -100,7 +100,7 @@ createApplicationCommand({
     }
 
     deleteIds.length === 1
-      ? await api.channels.deleteMessage(interaction.channel.id, deleteIds[0], {
+      ? await api.channels.deleteMessage(interaction.channel.id, deleteIds[0]!, {
           reason: `Purge command ran by ${interaction.member?.user.username}`,
         })
       : await api.channels.bulkDeleteMessages(interaction.channel.id, deleteIds, {

@@ -24,6 +24,10 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
+    if (!message) {
+      return;
+    }
+
     const content = message.content;
 
     if (!content) {
@@ -66,7 +70,7 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `> ${emoji('translate')} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0])}**`,
+              content: `> ${emoji('translate')} Translated from **${languages.of(res[2])}** to **${languages.of(interaction.locale.split('-')[0]!)}**`,
             },
             {
               type: ComponentType.Separator,

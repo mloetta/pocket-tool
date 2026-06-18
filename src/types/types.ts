@@ -1,28 +1,28 @@
 import {
   API,
-  APIApplicationCommandAutocompleteInteraction,
-  APIAttachment,
-  APIChannel,
-  APIChatInputApplicationCommandInteraction,
-  APIInteractionDataResolvedGuildMember,
-  APIMessageApplicationCommandInteraction,
-  APIMessageComponentButtonInteraction,
-  APIMessageComponentSelectMenuInteraction,
-  APIModalSubmitInteraction,
-  APIPrimaryEntryPointCommandInteraction,
-  APIRole,
-  APIUser,
-  APIUserApplicationCommandInteraction,
-  ApplicationCommandOptionAllowedChannelType,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
   EntryPointCommandHandlerType,
   GatewayDispatchEvents,
-  GatewayDispatchPayload,
   InteractionContextType,
-  LocalizationMap,
-  Snowflake,
+  type APIApplicationCommandAutocompleteInteraction,
+  type APIAttachment,
+  type APIChannel,
+  type APIChatInputApplicationCommandInteraction,
+  type APIInteractionDataResolvedGuildMember,
+  type APIMessageApplicationCommandInteraction,
+  type APIMessageComponentButtonInteraction,
+  type APIMessageComponentSelectMenuInteraction,
+  type APIModalSubmitInteraction,
+  type APIPrimaryEntryPointCommandInteraction,
+  type APIRole,
+  type APIUser,
+  type APIUserApplicationCommandInteraction,
+  type ApplicationCommandOptionAllowedChannelType,
+  type GatewayDispatchPayload,
+  type LocalizationMap,
+  type Snowflake,
 } from '@discordjs/core';
 import { Permissions } from './permissions.js';
 
@@ -333,10 +333,10 @@ export interface Reminder {
   id: string;
   user_id: string;
   time: Date;
-  reason?: string;
+  reason?: string | undefined;
 }
 
-export interface TTSTrack {
+export interface Track {
   buffer: Buffer;
   onFinish?: () => void;
   onError?: (error: Error) => void;

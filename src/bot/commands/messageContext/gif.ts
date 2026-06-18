@@ -25,6 +25,10 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
+    if (!message) {
+      return;
+    }
+
     const attachment = Object.values(message.attachments)[0];
 
     if (!attachment || !attachment.content_type?.startsWith('image/')) {

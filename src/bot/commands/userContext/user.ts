@@ -1,10 +1,10 @@
 import {
-  APIMessageComponentEmoji,
   ApplicationCommandType,
   ButtonStyle,
   ComponentType,
   MessageFlags,
   UserFlags,
+  type APIMessageComponentEmoji,
 } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';

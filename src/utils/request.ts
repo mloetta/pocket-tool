@@ -1,4 +1,4 @@
-import { RequestMethod, RequestOptions, RequestResponse, ResponseType } from '../types/types.js';
+import { RequestMethod, ResponseType, type RequestOptions, type RequestResponse } from '../types/types.js';
 
 export async function makeRequest<Type extends ResponseType>(
   url: string,
@@ -20,10 +20,12 @@ export async function makeRequest<Type extends ResponseType>(
   try {
     const res = await fetch(parsedUrl.toString(), {
       method: options.method,
-      headers: options.headers,
-      body:
-        options.body !== undefined && options.method !== RequestMethod.GET ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
+      ...(options.headers !== undefined && { headers: options.headers }),
+      ...(options.body !== undefined &&
+        options.method !== RequestMethod.GET && {
+          body: JSON.stringify(options.body),
+        }),
     });
 
     if (!res.ok) {

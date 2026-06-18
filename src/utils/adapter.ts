@@ -1,14 +1,14 @@
 import { Collection } from '@discordjs/collection';
-import { Client, GatewayDispatchEvents, GatewayOpcodes, Snowflake } from '@discordjs/core';
-import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '@discordjs/voice';
+import { Client, GatewayDispatchEvents, GatewayOpcodes, type Snowflake } from '@discordjs/core';
 import { WebSocketManager, WebSocketShardEvents } from '@discordjs/ws';
 import { getShardIdFromGuildId } from './utils.js';
 import env from './env.js';
+import type { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '@discordjs/voice';
 
 const adapters = new Collection<Snowflake, DiscordGatewayAdapterLibraryMethods>();
 const trackedClients = new Set<Client>();
 
-const botId = atob(env.get('token').toString().split('.')[0]);
+const botId = atob(env.get('token').toString().split('.')[0]!);
 
 function trackClient(client: Client) {
   if (trackedClients.has(client)) {
@@ -34,6 +34,7 @@ function trackGuild(gateway: WebSocketManager, guildId: Snowflake, shardCount: n
   const shardId = getShardIdFromGuildId(guildId, shardCount);
 
   let guilds = trackedShards.get(shardId);
+
   if (!guilds) {
     guilds = new Set();
     trackedShards.set(shardId, guilds);
@@ -43,11 +44,13 @@ function trackGuild(gateway: WebSocketManager, guildId: Snowflake, shardCount: n
 
   gateway.on(WebSocketShardEvents.Closed, (_, closedShardId) => {
     const shardGuilds = trackedShards.get(closedShardId);
+
     if (shardGuilds) {
       for (const id of shardGuilds.values()) {
         adapters.get(id)?.destroy();
       }
     }
+
     trackedShards.delete(closedShardId);
   });
 }
@@ -59,6 +62,7 @@ export function createVoiceAdapter(
 ): DiscordGatewayAdapterCreator {
   return (methods) => {
     adapters.set(guildId, methods);
+
     trackClient(client);
 
     const shardCount = gateway.options.shardCount ?? 1;

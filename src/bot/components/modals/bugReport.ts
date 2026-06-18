@@ -1,7 +1,8 @@
-import { APIComponentInContainer, ComponentType, MessageFlags } from '@discordjs/core';
+import { ComponentType, MessageFlags } from '@discordjs/core';
 import { InteractableComponentType, TimestampStyle } from '../../../types/types.js';
 import { emoji, timestamp } from '../../../utils/markdown.js';
 import createComponent from '../../../helpers/component.js';
+import type { APIComponentInContainer } from '@discordjs/core';
 
 createComponent({
   type: InteractableComponentType.Modal,
@@ -10,37 +11,37 @@ createComponent({
     const components = interaction.data?.components;
 
     const category =
-      components?.[0].type === ComponentType.Label
-        ? components?.[0].component?.type === ComponentType.StringSelect
-          ? components?.[0].component.values[0]
+      components![0]!.type === ComponentType.Label
+        ? components![0]!.component?.type === ComponentType.StringSelect
+          ? components![0]!.component.values[0]
           : undefined
         : undefined;
 
     const priority =
-      components?.[1].type === ComponentType.Label
-        ? components?.[1].component?.type === ComponentType.RadioGroup
-          ? components?.[1].component.value
+      components![1]!.type === ComponentType.Label
+        ? components![1]!.component?.type === ComponentType.RadioGroup
+          ? components![1]!.component.value
           : undefined
         : undefined;
 
     const currentBehavior =
-      components?.[2].type === ComponentType.Label
-        ? components?.[2].component?.type === ComponentType.TextInput
-          ? components?.[2].component.value
+      components![2]!.type === ComponentType.Label
+        ? components![2]!.component?.type === ComponentType.TextInput
+          ? components![2]!.component.value
           : undefined
         : undefined;
 
     const expectedBehavior =
-      components?.[3].type === ComponentType.Label
-        ? components?.[3].component?.type === ComponentType.TextInput
-          ? components?.[3].component.value
+      components![3]!.type === ComponentType.Label
+        ? components![3]!.component?.type === ComponentType.TextInput
+          ? components![3]!.component.value
           : undefined
         : undefined;
 
     const attachmentIds =
-      components?.[4]?.type === ComponentType.Label
-        ? components?.[4].component?.type === ComponentType.FileUpload
-          ? components?.[4].component.values
+      components![4]!.type === ComponentType.Label
+        ? components![4]!.component?.type === ComponentType.FileUpload
+          ? components![4]!.component.values
           : undefined
         : undefined;
 

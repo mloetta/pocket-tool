@@ -11,30 +11,30 @@ createComponent({
     const components = interaction.data?.components;
 
     const channel =
-      components?.[0].type === ComponentType.Label
-        ? components?.[0].component?.type === ComponentType.ChannelSelect
-          ? components?.[0].component.values[0]
+      components![0]!.type === ComponentType.Label
+        ? components![0]!.component?.type === ComponentType.ChannelSelect
+          ? components![0]!.component.values[0]
           : undefined
         : undefined;
 
     const action =
-      components?.[1].type === ComponentType.Label
-        ? components?.[1].component?.type === ComponentType.RadioGroup
-          ? components?.[1].component.value
+      components![1]!.type === ComponentType.Label
+        ? components![1]!.component?.type === ComponentType.RadioGroup
+          ? components![1]!.component.value
           : undefined
         : undefined;
 
     const extras =
-      components?.[2].type === ComponentType.Label
-        ? components?.[2].component?.type === ComponentType.CheckboxGroup
-          ? components?.[2].component.values
+      components![2]!.type === ComponentType.Label
+        ? components![2]!.component?.type === ComponentType.CheckboxGroup
+          ? components![2]!.component.values
           : undefined
         : undefined;
 
     const del =
-      components?.[4].type === ComponentType.Label
-        ? components?.[4].component?.type === ComponentType.Checkbox
-          ? components?.[4].component.value
+      components![4]!.type === ComponentType.Label
+        ? components![4]!.component?.type === ComponentType.Checkbox
+          ? components![4]!.component.value
           : undefined
         : undefined;
 

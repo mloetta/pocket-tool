@@ -6,7 +6,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from '@discordjs/core';
-import { ChatInputCommand, RateLimitType, TimestampStyle } from '../../../types/types.js';
+import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { DateTime } from 'luxon';
 import { emoji, timestamp } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';

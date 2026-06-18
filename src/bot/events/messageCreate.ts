@@ -2,8 +2,8 @@ import {
   API,
   ComponentType,
   GatewayDispatchEvents,
-  GatewayMessageCreateDispatchData,
   MessageFlags,
+  type GatewayMessageCreateDispatchData,
 } from '@discordjs/core';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime, toReactionEmoji } from '../../utils/utils.js';

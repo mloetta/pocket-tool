@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   GatewayDispatchEvents,
   PresenceUpdateStatus,
-  Snowflake,
+  type Snowflake,
 } from '@discordjs/core';
-import { BooleanChatInputOption, GatewayEvent, NonPrimaryEntryPointCommand } from '../../types/types.js';
 import env from '../../utils/env.js';
 import { client, localizeCommand } from '../index.js';
 import { startReminderCron } from '../../crons/reminder.js';
 import createGatewayEvent from '../../helpers/event.js';
+import type { BooleanChatInputOption, NonPrimaryEntryPointCommand } from '../../types/types.js';
 
 createGatewayEvent({
   name: GatewayDispatchEvents.Ready,
@@ -39,18 +39,23 @@ createGatewayEvent({
           continue;
         }
         command.options ??= [];
+
         const incognito = {
           type: ApplicationCommandOptionType.Boolean,
           name: 'incognito',
           description: 'Whether the response should only be visible to you',
         } satisfies BooleanChatInputOption;
+
         let hasSubOrGroup = false;
+
         for (const option of command.options) {
           if (option.type === ApplicationCommandOptionType.SubcommandGroup && option.options) {
             hasSubOrGroup = true;
+
             for (const sub of option.options) {
               if (sub.type === ApplicationCommandOptionType.Subcommand) {
                 sub.options ??= [];
+
                 if (!sub.options.some((o) => o.name === 'incognito')) {
                   sub.options.push(incognito);
                 }
@@ -58,46 +63,58 @@ createGatewayEvent({
             }
           } else if (option.type === ApplicationCommandOptionType.Subcommand) {
             hasSubOrGroup = true;
+
             option.options ??= [];
+
             if (!option.options.some((o) => o.name === 'incognito')) {
               option.options.push(incognito);
             }
           }
         }
+
         if (!hasSubOrGroup) {
           if (!command.options.some((o) => o.name === 'incognito')) {
             command.options.push(incognito);
           }
         }
       }
+
       const globalCommands = Array.from(client.commands.values())
         .filter((command) => !('guild' in command))
         .map(localizeCommand);
+
       if (globalCommands.length) {
         await api.applicationCommands
           .bulkOverwriteGlobalCommands(payload.user.id, globalCommands)
           .then(() => console.log(`Registered ${globalCommands.length} global commands`))
           .catch((error) => console.error(`Failed to register global commands: ${error}`));
       }
+
       const guildCommands = Array.from(client.commands.values()).filter(
         (command) => 'guild' in command,
       ) as NonPrimaryEntryPointCommand[];
+
       if (guildCommands.length) {
         const guilds: Record<Snowflake, ReturnType<typeof localizeCommand>[]> = {};
+
         for (const command of guildCommands) {
           if (!command.guild) {
             continue;
           }
+
           if (!guilds[command.guild]) {
             guilds[command.guild] = [];
           }
-          guilds[command.guild].push(localizeCommand(command));
+
+          guilds[command.guild]!.push(localizeCommand(command));
         }
+
         for (const [guildId, cmds] of Object.entries(guilds)) {
           await api.applicationCommands
             .bulkOverwriteGuildCommands(payload.user.id, guildId, cmds)
             .then(() => console.log(`Registered ${cmds.length} guild commands for guild ${guildId}`))
             .catch((error) => console.error(`Failed to register guild commands for guild ${guildId}: ${error}`));
+
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }

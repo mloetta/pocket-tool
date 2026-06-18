@@ -1,5 +1,4 @@
 import {
-  APIAttachment,
   ApplicationCommandType,
   ApplicationIntegrationType,
   ComponentType,
@@ -10,9 +9,10 @@ import { RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { msToApproxTime } from '../../../utils/utils.js';
 import OpenAI from 'openai';
-import { ChatCompletionContentPart } from 'openai/resources';
 import { emoji, truncate } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
+import type { APIAttachment } from '@discordjs/core';
+import type { ChatCompletionContentPart } from 'openai/resources/index.mjs';
 
 createApplicationCommand({
   type: ApplicationCommandType.Message,
@@ -46,6 +46,10 @@ createApplicationCommand({
 
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
+
+    if (!message) {
+      return;
+    }
 
     let prompt: string = '';
     let attachment: APIAttachment | undefined;
@@ -120,6 +124,22 @@ createApplicationCommand({
 
     const end = performance.now();
     const elapsed = end - start;
+
+    if (!completion.choices || completion.choices.length === 0 || !completion.choices[0]) {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${emoji('exclamation')} No response from AI. Please try again`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+      return;
+    }
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [

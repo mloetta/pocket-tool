@@ -1,5 +1,5 @@
 import { client } from '../bot/index.js';
-import { Component } from '../types/types.js';
+import type { Component } from '../types/types.js';
 
 export default function createComponent<Args extends readonly string[] = readonly string[]>(
   component: Component<Args>,

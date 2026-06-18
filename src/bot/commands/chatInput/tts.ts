@@ -14,7 +14,7 @@ import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import { AudioPlayerStatus, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
 import { getPermissionsFor, hasPermission } from '../../../utils/utils.js';
 import { Permissions } from '../../../types/permissions.js';
-import { getSubscription, subscribe, TTS, unsubscribe } from '../../../utils/subscription.js';
+import { getSubscription, subscribe, Subscription, unsubscribe } from '../../../utils/subscription.js';
 import { supabase } from '../../../utils/supabase.js';
 import { Locale } from '@discordjs/core';
 import createApplicationCommand from '../../../helpers/command.js';
@@ -282,7 +282,7 @@ createApplicationCommand({
           adapterCreator: client.voiceAdapterCreator(interaction.guild_id),
         });
 
-        subscription = new TTS(connection);
+        subscription = new Subscription(connection);
         subscribe(interaction.guild_id, subscription);
 
         connection.on('stateChange', (_, newState) => {
@@ -296,7 +296,7 @@ createApplicationCommand({
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
         text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username}: ${text}`,
-        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0] : language.split('-')[0],
+        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0]! : language.split('-')[0]!,
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'opus_48000_192',
       });
@@ -411,7 +411,7 @@ createApplicationCommand({
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
         text,
-        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0] : language.split('-')[0],
+        languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0]! : language.split('-')[0]!,
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'opus_48000_192',
       });

@@ -32,12 +32,12 @@
     "node-cron": "^4.2.1",
     "openai": "^6.38.0",
     "redis": "^6.0.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.1",
     "zlib-sync": "^0.1.10"
   },
   "allowScripts": {
     "bufferutil@4.1.0": true,
-    "sharp@0.34.5": true,
+    "sharp@0.35.1": true,
     "@discordjs/opus@0.10.0": true,
     "zlib-sync@0.1.10": true
   }

@@ -1,7 +1,11 @@
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs/promises';
-import {
+import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
+import { Emoji } from '../types/emojis.js';
+import { Collection } from '@discordjs/collection';
+import type { ShardInformation } from '../types/types.js';
+import type {
   APIEmoji,
   APIGuildChannel,
   APIGuildMember,
@@ -9,10 +13,6 @@ import {
   APIRole,
   Snowflake,
 } from '@discordjs/core';
-import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
-import { Emoji } from '../types/emojis.js';
-import { Collection } from '@discordjs/collection';
-import { ShardInformation } from '../types/types.js';
 
 export const shardInfo = new Collection<number, ShardInformation>();
 
@@ -153,11 +153,15 @@ export function msToReadableTime(ms: number): string {
 
 export function readableTimeToMs(time: string): number | null {
   const matches = time.matchAll(/(\d+)(y|d|h|m|s)/g);
+
   let ms = 0;
+
   let matched = false;
 
   for (const [, value, unit] of matches) {
-    ms += parseInt(value) * TIME_UNITS[unit as keyof typeof TIME_UNITS];
+    if (!value || !unit) continue;
+
+    ms += parseInt(value, 10) * TIME_UNITS[unit as keyof typeof TIME_UNITS];
     matched = true;
   }
 

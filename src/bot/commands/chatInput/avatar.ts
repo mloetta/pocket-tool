@@ -1,5 +1,4 @@
 import {
-  APIComponentInMessageActionRow,
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -7,6 +6,8 @@ import {
   ComponentType,
   InteractionContextType,
   MessageFlags,
+  type APIComponentInMessageActionRow,
+  type APIInteractionDataResolvedGuildMember,
 } from '@discordjs/core';
 import { RateLimitType } from '../../../types/types.js';
 import { cdn, emoji } from '../../../utils/markdown.js';
@@ -51,7 +52,10 @@ createApplicationCommand({
     let { user: target, scope } = options;
 
     if (!target) {
-      target = { user: (interaction.user ?? interaction.member?.user)!, member: interaction.member };
+      target = {
+        user: (interaction.user ?? interaction.member?.user)!,
+        member: interaction.member as APIInteractionDataResolvedGuildMember,
+      };
     }
 
     if (!scope) {

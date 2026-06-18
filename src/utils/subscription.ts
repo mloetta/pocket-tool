@@ -12,15 +12,15 @@ import {
 import { Readable } from 'stream';
 import { promisify } from 'node:util';
 import { Collection } from '@discordjs/collection';
-import { TTSTrack } from '../types/types.js';
+import type { Track } from '../types/types.js';
 
 const wait = promisify(setTimeout);
 
-export class TTS {
+export class Subscription {
   public readonly voiceConnection: VoiceConnection;
   public readonly audioPlayer: AudioPlayer;
-  public queue: TTSTrack[] = [];
-  public currentTrack: TTSTrack | null = null;
+  public queue: Track[] = [];
+  public currentTrack: Track | null = null;
   public queueLock = false;
   public readyLock = false;
   public timeout: NodeJS.Timeout | null = null;
@@ -39,6 +39,7 @@ export class TTS {
           }
         } else if (this.voiceConnection.rejoinAttempts < 5) {
           await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
+
           this.voiceConnection.rejoin();
         } else {
           this.voiceConnection.destroy();
@@ -66,6 +67,7 @@ export class TTS {
       if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
         this.currentTrack?.onFinish?.();
         this.currentTrack = null;
+
         void this.processQueue();
       }
     });
@@ -77,15 +79,18 @@ export class TTS {
     voiceConnection.subscribe(this.audioPlayer);
   }
 
-  public enqueue(track: TTSTrack) {
+  public enqueue(track: Track) {
     this.queue.push(track);
+
     void this.processQueue();
   }
 
   public stop() {
     this.queueLock = true;
     this.queue = [];
+
     this.audioPlayer.stop(true);
+
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
@@ -102,26 +107,31 @@ export class TTS {
 
     try {
       this.currentTrack = nextTrack;
+
       const resource = createAudioResource(Readable.from(nextTrack.buffer), {
         inputType: StreamType.OggOpus,
       });
+
       this.audioPlayer.play(resource);
+
       this.queueLock = false;
     } catch (error) {
       nextTrack.onError?.(error as Error);
+
       this.queueLock = false;
+
       return this.processQueue();
     }
   }
 }
 
-const subscriptions = new Collection<string, TTS>();
+const subscriptions = new Collection<string, Subscription>();
 
-export function getSubscription(guildId: string): TTS | undefined {
+export function getSubscription(guildId: string): Subscription | undefined {
   return subscriptions.get(guildId);
 }
 
-export function subscribe(guildId: string, subscription: TTS): void {
+export function subscribe(guildId: string, subscription: Subscription): void {
   subscriptions.set(guildId, subscription);
 }
 
