@@ -11,6 +11,8 @@ import env from '../../../utils/env.js';
 import { supabase } from '../../../utils/supabase.js';
 import { emoji, highlight, timestamp, truncate } from '../../../utils/markdown.js';
 import createApplicationCommand from '../../../helpers/command.js';
+import { hasPermission } from '../../../utils/utils.js';
+import { Permissions } from '../../../types/permissions.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.Message,
@@ -31,6 +33,26 @@ createApplicationCommand({
           {
             type: ComponentType.TextDisplay,
             content: `${emoji('exclamation')} Eleven Labs API key not set`,
+          },
+          {
+            type: ComponentType.Separator,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
+
+    if (
+      !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SEND_VOICE_MESSAGES)) ||
+      !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.ATTACH_FILES))
+    ) {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
+        components: [
+          {
+            type: ComponentType.TextDisplay,
+            content: `${emoji('wrong')} I don't have enough permissions to send TTS files - I need either the ${highlight('Send Voice Messages', HighlightStyle.Bold)} or ${highlight('Attach Files', HighlightStyle.Bold)} permission in this channel`,
           },
           {
             type: ComponentType.Separator,
@@ -125,23 +147,34 @@ createApplicationCommand({
 
     const buffer = Buffer.from(audio.audioBase64, 'base64');
 
-    await api.interactions.editReply(interaction.application_id, interaction.token, {
-      attachments: [
-        {
-          id: 0,
-          filename: 'tts.opus',
-          waveform: 'AAAAAA==', // anything that starts w a base64 works
-          duration_secs: 1, // discord automatically sets this
-        },
-      ],
-      files: [
-        {
-          name: 'tts.opus',
-          data: buffer,
-        },
-      ],
-      flags: MessageFlags.IsVoiceMessage,
-    });
+    if (hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SEND_VOICE_MESSAGES))) {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
+        attachments: [
+          {
+            id: 0,
+            filename: 'tts.opus',
+            waveform: 'AAAAAA==',
+            duration_secs: 1,
+          },
+        ],
+        files: [
+          {
+            name: 'tts.opus',
+            data: buffer,
+          },
+        ],
+        flags: MessageFlags.IsVoiceMessage,
+      });
+    } else {
+      await api.interactions.editReply(interaction.application_id, interaction.token, {
+        files: [
+          {
+            name: 'tts.opus',
+            data: buffer,
+          },
+        ],
+      });
+    }
 
     await supabase.from('tts').upsert({
       user_id: interaction.user?.id ?? interaction.member?.user.id,

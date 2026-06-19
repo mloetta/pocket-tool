@@ -141,47 +141,6 @@ createApplicationCommand({
         return;
       }
 
-      const { data, error } = await supabase
-        .from('tts')
-        .select('*')
-        .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
-        .maybeSingle();
-
-      if (error) {
-        throw error;
-      }
-
-      const now = new Date().getTime();
-      const msIn24h = 24 * 60 * 60 * 1000;
-
-      let useAmount = data?.use_amount ?? 0;
-
-      const lastReset = data?.last_used ? new Date(data.last_used).getTime() : null;
-      const within24h = lastReset !== null && now - lastReset < msIn24h;
-
-      if (!within24h) {
-        useAmount = 0;
-      }
-
-      if (useAmount >= 50) {
-        const resetTime = (lastReset ?? now) + msIn24h;
-
-        await api.interactions.editReply(interaction.application_id, interaction.token, {
-          components: [
-            {
-              type: ComponentType.TextDisplay,
-              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests - please try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
-            },
-            {
-              type: ComponentType.Separator,
-            },
-          ],
-          flags: MessageFlags.IsComponentsV2,
-        });
-
-        return;
-      }
-
       if (!interaction.guild_id || !interaction.member?.user.id) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
@@ -220,21 +179,56 @@ createApplicationCommand({
         return;
       }
 
-      const bot = await api.guilds.getMember(interaction.guild_id, interaction.application_id);
-      const channel = await api.channels.get(userVoiceState.channel_id);
-
-      if (channel.type !== ChannelType.GuildVoice) return;
-
-      const guildRoles = await api.guilds.getRoles(interaction.guild_id);
-      const roles = guildRoles.filter((role) => bot.roles.includes(role.id));
-      const perms = getPermissionsFor(bot, channel, roles);
-
-      if (!hasPermission(perms, BigInt(Permissions.CONNECT)) || !hasPermission(perms, BigInt(Permissions.SPEAK))) {
+      if (
+        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.CONNECT)) ||
+        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SPEAK))
+      ) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('wrong')} I don't have enough permissions to text-to-speech - I need the following permissions in this guild: ${highlight('Connect, Speak', HighlightStyle.Bold)}`,
+              content: `${emoji('wrong')} I don't have enough permissions to play TTS audios - I need the following permission in this channel: ${highlight('Connect', HighlightStyle.Bold)} and ${highlight('Speak', HighlightStyle.Bold)}`,
+            },
+            {
+              type: ComponentType.Separator,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
+
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('tts')
+        .select('*')
+        .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      const now = new Date().getTime();
+      const msIn24h = 24 * 60 * 60 * 1000;
+
+      let useAmount = data?.use_amount ?? 0;
+
+      const lastReset = data?.last_used ? new Date(data.last_used).getTime() : null;
+      const within24h = lastReset !== null && now - lastReset < msIn24h;
+
+      if (!within24h) {
+        useAmount = 0;
+      }
+
+      if (useAmount >= 50) {
+        const resetTime = (lastReset ?? now) + msIn24h;
+
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `${emoji('exclamation')} You have used your daily limit of ${highlight(50, HighlightStyle.Bold)} TTS requests - please try again ${timestamp(Math.floor(resetTime / 1000), TimestampStyle.RelativeTime)}`,
             },
             {
               type: ComponentType.Separator,
@@ -360,6 +354,26 @@ createApplicationCommand({
         return;
       }
 
+      if (
+        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SEND_VOICE_MESSAGES)) ||
+        !hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.ATTACH_FILES))
+      ) {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `${emoji('wrong')} I don't have enough permissions to send TTS files - I need either the ${highlight('Send Voice Messages', HighlightStyle.Bold)} or ${highlight('Attach Files', HighlightStyle.Bold)} permission in this channel`,
+            },
+            {
+              type: ComponentType.Separator,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
+
+        return;
+      }
+
       const { data, error } = await supabase
         .from('tts')
         .select('*')
@@ -418,23 +432,34 @@ createApplicationCommand({
 
       const buffer = Buffer.from(audio.audioBase64, 'base64');
 
-      await api.interactions.editReply(interaction.application_id, interaction.token, {
-        attachments: [
-          {
-            id: 0,
-            filename: 'tts.opus',
-            waveform: 'AAAAAA==',
-            duration_secs: 1,
-          },
-        ],
-        files: [
-          {
-            name: 'tts.opus',
-            data: buffer,
-          },
-        ],
-        flags: MessageFlags.IsVoiceMessage,
-      });
+      if (hasPermission(BigInt(interaction.app_permissions), BigInt(Permissions.SEND_VOICE_MESSAGES))) {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          attachments: [
+            {
+              id: 0,
+              filename: 'tts.opus',
+              waveform: 'AAAAAA==',
+              duration_secs: 1,
+            },
+          ],
+          files: [
+            {
+              name: 'tts.opus',
+              data: buffer,
+            },
+          ],
+          flags: MessageFlags.IsVoiceMessage,
+        });
+      } else {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          files: [
+            {
+              name: 'tts.opus',
+              data: buffer,
+            },
+          ],
+        });
+      }
 
       await supabase.from('tts').upsert({
         user_id: interaction.user?.id ?? interaction.member?.user.id,

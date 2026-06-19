@@ -46,7 +46,7 @@ createApplicationCommand({
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('wrong')} I don't have enough permissions to softban users - I need the following permissions in this guild: ${highlight('Ban Members', HighlightStyle.Bold)}`,
+            content: `${emoji('wrong')} I don't have enough permissions to softban users - I need the following permission in this guild: ${highlight('Ban Members', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
@@ -68,7 +68,7 @@ createApplicationCommand({
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('wrong')} You don't have enough permissions to softban multiple users - You need the following permissions in this guild: ${highlight('Manage Guild', HighlightStyle.Bold)}`,
+            content: `${emoji('wrong')} You don't have enough permissions to softban multiple users - You need the following permission in this guild: ${highlight('Manage Guild', HighlightStyle.Bold)}`,
           },
           {
             type: ComponentType.Separator,
