@@ -60,14 +60,14 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: `${emoji('sticker')} **${sticker.name}**\n-# ${sticker.id}\n*${sticker.description}*\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.RelativeTime)})\n\n`,
+              content: `${emoji('sticker')} **${sticker.name}**\n-# ${sticker.id}\n${sticker.description ? `*${sticker.description}*` : ''}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.RelativeTime)})\n\n`,
             },
             {
               type: ComponentType.MediaGallery,
               items: [
                 {
                   media: {
-                    url: cdn(`/stickers/${sticker.id}`, 1024, 'webp', true),
+                    url: `https://media.discordapp.net/stickers/${sticker.id}.webp`, // looks like discord uses a different endpoint for stickers (?)
                   },
                 },
               ],
