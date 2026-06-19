@@ -28,7 +28,7 @@ createComponent({
                       components: [
                         {
                           type: ComponentType.TextDisplay,
-                          content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:** ${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
+                          content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
                         },
                       ],
                       accessory: {
@@ -42,7 +42,7 @@ createComponent({
                 : ([
                     {
                       type: ComponentType.TextDisplay,
-                      content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:** ${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
+                      content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
                     },
                   ] satisfies APIMessageTopLevelComponent[])),
               {
@@ -84,7 +84,7 @@ createComponent({
                       components: [
                         {
                           type: ComponentType.TextDisplay,
-                          content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:** ${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
+                          content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
                         },
                       ],
                       accessory: {
@@ -98,7 +98,7 @@ createComponent({
                 : ([
                     {
                       type: ComponentType.TextDisplay,
-                      content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:** ${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
+                      content: `${emoji('role')} **${role.name}**\n-# ${role.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(role.id), TimestampStyle.RelativeTime)})`,
                     },
                   ] satisfies APIMessageTopLevelComponent[])),
               {
