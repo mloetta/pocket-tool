@@ -95,9 +95,6 @@ createComponent({
               ],
             },
             {
-              type: ComponentType.Separator,
-            },
-            {
               type: ComponentType.ActionRow,
               components: [
                 {
