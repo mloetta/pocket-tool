@@ -60,7 +60,7 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `view-perms_${role.id}_${pointer}`,
+                    custom_id: `view-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${pointer}`,
                     label: 'View Permissions',
                     style: ButtonStyle.Secondary,
                   },
@@ -116,7 +116,7 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `view-perms_${role.id}_${pointer}`,
+                    custom_id: `view-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${pointer}`,
                     label: 'View Permissions',
                     style: ButtonStyle.Secondary,
                   },

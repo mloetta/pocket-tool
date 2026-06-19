@@ -81,7 +81,7 @@ createApplicationCommand({
               components: [
                 {
                   type: ComponentType.Button,
-                  custom_id: `view-perms_${role.id}`,
+                  custom_id: `view-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}`,
                   label: 'View Permissions',
                   style: ButtonStyle.Secondary,
                 },

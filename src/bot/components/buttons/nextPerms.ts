@@ -83,13 +83,13 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `prev-perms_${role.id}_${list.pointer}`,
+                    custom_id: `prev-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     emoji: toEmoji('left') as APIMessageComponentEmoji,
                     style: ButtonStyle.Secondary,
                   },
                   {
                     type: ComponentType.Button,
-                    custom_id: `next-perms_${role.id}_${list.pointer}`,
+                    custom_id: `next-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     emoji: toEmoji('right') as APIMessageComponentEmoji,
                     style: ButtonStyle.Secondary,
                   },
@@ -100,7 +100,7 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `hide-perms_${role.id}_${list.pointer}`,
+                    custom_id: `hide-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     label: 'Hide Permissions',
                     style: ButtonStyle.Secondary,
                   },
@@ -165,13 +165,13 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `prev-perms_${role.id}_${list.pointer}`,
+                    custom_id: `prev-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     emoji: toEmoji('left') as APIMessageComponentEmoji,
                     style: ButtonStyle.Secondary,
                   },
                   {
                     type: ComponentType.Button,
-                    custom_id: `next-perms_${role.id}_${list.pointer}`,
+                    custom_id: `next-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     emoji: toEmoji('right') as APIMessageComponentEmoji,
                     style: ButtonStyle.Secondary,
                   },
@@ -182,7 +182,7 @@ createComponent({
                 components: [
                   {
                     type: ComponentType.Button,
-                    custom_id: `hide-perms_${role.id}_${list.pointer}`,
+                    custom_id: `hide-perms_${interaction.user?.id ?? interaction.member?.user.id}_${role.id}_${list.pointer}`,
                     label: 'Hide Permissions',
                     style: ButtonStyle.Secondary,
                   },
