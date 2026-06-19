@@ -67,7 +67,7 @@ createApplicationCommand({
               items: [
                 {
                   media: {
-                    url: cdn(`/emojis/${sticker.id}`, 1024, 'webp', true),
+                    url: cdn(`/stickers/${sticker.id}`, 1024, 'webp', true),
                   },
                 },
               ],
