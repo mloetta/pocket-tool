@@ -20,6 +20,10 @@ export enum Emoji {
   channel = '<:icons_channel:1507125982983618700>',
   calendar = '<:icons_calendar:1508998267176747008>',
   music = '<:icons_music:1515846692950380584>',
+  role = '<:icons_role:1517533900744687799>',
+  // pagination
+  left = '<:icons_left:1517549666323923005>',
+  right = '<:icons_right:1517549715107877016>',
   // Twitter
   bookmark = '<:twitter_bookmark:1504947779548479669>',
   like = '<:twitter_like:1504947769717162076>',

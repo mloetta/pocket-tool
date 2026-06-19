@@ -5,6 +5,7 @@ import {
   ComponentType,
   InteractionContextType,
   MessageFlags,
+  StickerFormatType,
 } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
@@ -13,15 +14,15 @@ import createApplicationCommand from '../../../helpers/command.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
-  name: 'emoji',
-  description: 'Views information about an emoji',
+  name: 'sticker',
+  description: 'Views information about a sticker',
   integration_types: [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall],
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   options: [
     {
       type: ApplicationCommandOptionType.String,
-      name: 'emoji',
-      description: 'The emoji to view information about',
+      name: 'sticker',
+      description: 'The sticker to view',
       required: true,
     },
   ],
@@ -31,17 +32,16 @@ createApplicationCommand({
   },
   acknowledge: true,
   async run(interaction, options, api) {
-    const { emoji: rawEmoji } = options;
+    const { sticker: rawSticker } = options;
 
-    const regex = /<(a?):(\w+):(\d+)>/g;
-    const matches = [...rawEmoji.matchAll(regex)];
+    const sticker = await api.stickers.get(rawSticker);
 
-    if (matches.length === 0 || matches.length > 4) {
+    if (!sticker) {
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('exclamation')} Please provide between 1 and 4 valid emojis`,
+            content: `${emoji('exclamation')} Please provide a valid sticker`,
           },
           {
             type: ComponentType.Separator,
@@ -53,12 +53,6 @@ createApplicationCommand({
       return;
     }
 
-    const emojis = matches.map((m) => ({
-      animated: !!m[1],
-      name: m[2],
-      id: m[3],
-    }));
-
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
         {
@@ -66,20 +60,17 @@ createApplicationCommand({
           components: [
             {
               type: ComponentType.TextDisplay,
-              content: emojis
-                .map(
-                  (e) =>
-                    `${emoji('sticker')} **${e.name}**\n-# ${e.id}\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(e.id!), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(e.id!), TimestampStyle.RelativeTime)})`,
-                )
-                .join('\n'),
+              content: `${emoji('sticker')} **${sticker.name}**\n-# ${sticker.id}\n*${sticker.description}*\n\n${emoji('calendar')} **Created At:**\n${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.LongDate)} (${timestamp(getTimestampFromSnowflake(sticker.id!), TimestampStyle.RelativeTime)})\n\n`,
             },
             {
               type: ComponentType.MediaGallery,
-              items: emojis.map((e) => ({
-                media: {
-                  url: cdn(`/emojis/${e.id}`, 1024, 'webp', true),
+              items: [
+                {
+                  media: {
+                    url: cdn(`/emojis/${sticker.id}`, 1024, 'webp', true),
+                  },
                 },
-              })),
+              ],
             },
           ],
         },

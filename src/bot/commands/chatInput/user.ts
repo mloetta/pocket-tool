@@ -26,7 +26,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionType.User,
       name: 'user',
-      description: 'The user to view information about',
+      description: 'The user to view',
       required: false,
     },
     {

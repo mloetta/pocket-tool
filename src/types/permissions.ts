@@ -48,6 +48,7 @@ export enum Permissions {
   CREATE_EVENTS = 0x0000100000000000,
   USE_EXTERNAL_SOUNDS = 0x0000200000000000,
   SEND_VOICE_MESSAGES = 0x0000400000000000,
+  SET_VOICE_CHANNEL_STATUS = 0x0001000000000000,
   SEND_POLLS = 0x0002000000000000,
   USE_EXTERNAL_APPS = 0x0004000000000000,
   PIN_MESSAGES = 0x0008000000000000,
@@ -57,3 +58,74 @@ export enum Permissions {
 export const ALL_PERMISSIONS = Object.values(Permissions)
   .filter((v): v is number => typeof v === 'number')
   .reduce((acc, v) => acc | BigInt(v), 0n);
+
+export const PermissionCategories = {
+  'General Server Permissions': {
+    'View Channel': Permissions.VIEW_CHANNEL,
+    'Manage Channels': Permissions.MANAGE_CHANNELS,
+    'Manage Roles': Permissions.MANAGE_ROLES,
+    'Create Expressions': Permissions.CREATE_GUILD_EXPRESSIONS,
+    'Manage Expressions': Permissions.MANAGE_GUILD_EXPRESSIONS,
+    'View Audit Log': Permissions.VIEW_AUDIT_LOG,
+    'View Server Insights': Permissions.VIEW_GUILD_INSIGHTS,
+    'View Server Subscription Insights': Permissions.VIEW_CREATOR_MONETIZATION_ANALYTICS,
+    'Manage Webhooks': Permissions.MANAGE_WEBHOOKS,
+    'Manage Server': Permissions.MANAGE_GUILD,
+  },
+  'Membership Permissions': {
+    'Create Invite': Permissions.CREATE_INSTANT_INVITE,
+    'Change Nickname': Permissions.CHANGE_NICKNAME,
+    'Manage Nicknames': Permissions.MANAGE_NICKNAMES,
+    'Kick, Approve, and Reject Members': Permissions.KICK_MEMBERS,
+    'Ban Members': Permissions.BAN_MEMBERS,
+    'Timeout Members': Permissions.MODERATE_MEMBERS,
+  },
+  'Text Channel Permissions': {
+    'Send Messages and Create Posts': Permissions.SEND_MESSAGES,
+    'Send Messages in Threads and Posts': Permissions.SEND_MESSAGES_IN_THREADS,
+    'Create Public Threads': Permissions.CREATE_PUBLIC_THREADS,
+    'Create Private Threads': Permissions.CREATE_PRIVATE_THREADS,
+    'Embed Links': Permissions.EMBED_LINKS,
+    'Attach Files': Permissions.ATTACH_FILES,
+    'Add Reactions': Permissions.ADD_REACTIONS,
+    'Use External Emojis': Permissions.USE_EXTERNAL_EMOJIS,
+    'Use External Stickers': Permissions.USE_EXTERNAL_STICKERS,
+    'Mention Everyone Here and All Roles': Permissions.MENTION_EVERYONE,
+    'Manage Messages': Permissions.MANAGE_MESSAGES,
+    'Pin Messages': Permissions.PIN_MESSAGES,
+    'Bypass Slowmode': Permissions.BYPASS_SLOWMODE,
+    'Manage Threads and Posts': Permissions.MANAGE_THREADS,
+    'Read Message History': Permissions.READ_MESSAGE_HISTORY,
+    'Send Text-to-Speech Messages': Permissions.SEND_TTS_MESSAGES,
+    'Send Voice Messages': Permissions.SEND_VOICE_MESSAGES,
+    'Create Polls': Permissions.SEND_POLLS,
+  },
+  'Voice Channel Permissions': {
+    Connect: Permissions.CONNECT,
+    Speak: Permissions.SPEAK,
+    Video: Permissions.STREAM,
+    'Use Soundboard': Permissions.USE_SOUNDBOARD,
+    'Use External Sounds': Permissions.USE_EXTERNAL_SOUNDS,
+    'Use Voice Activity': Permissions.USE_VAD,
+    'Priority Speaker': Permissions.PRIORITY_SPEAKER,
+    'Mute Members': Permissions.MUTE_MEMBERS,
+    'Deafen Members': Permissions.DEAFEN_MEMBERS,
+    'Move Members': Permissions.MOVE_MEMBERS,
+    'Set Voice Channel Status': Permissions.SET_VOICE_CHANNEL_STATUS,
+  },
+  'Apps Permissions': {
+    'Use Application Commands': Permissions.USE_APPLICATION_COMMANDS,
+    'Use Activities': Permissions.USE_EMBEDDED_ACTIVITIES,
+    'Use External Apps': Permissions.USE_EXTERNAL_APPS,
+  },
+  'Stage Channel Permissions': {
+    'Request to Speak': Permissions.REQUEST_TO_SPEAK,
+  },
+  'Events Permissions': {
+    'Create Events': Permissions.CREATE_EVENTS,
+    'Manage Events': Permissions.MANAGE_EVENTS,
+  },
+  'Advanced Permissions': {
+    Administrator: Permissions.ADMINISTRATOR,
+  },
+};
