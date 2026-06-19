@@ -55,7 +55,7 @@ createApplicationCommand({
                     accessory: {
                       type: ComponentType.Thumbnail,
                       media: {
-                        url: cdn(`/icons/${interaction.guild_id}/${role.icon}`, 4096, 'webp'),
+                        url: cdn(`/role-icons/${role.id}/${role.icon}`, 4096, 'webp'),
                       },
                     },
                   },
