@@ -4,9 +4,7 @@ import createGatewayEvent from '../../helpers/event.js';
 createGatewayEvent({
   name: GatewayDispatchEvents.ThreadCreate,
   async run(thread, api) {
-    if (!thread.newly_created) {
-      return;
-    }
+    if (!thread.newly_created) return;
 
     const parent = await api.channels.get(thread.parent_id!);
 

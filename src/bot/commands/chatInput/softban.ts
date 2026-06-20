@@ -60,10 +60,7 @@ createApplicationCommand({
 
     const userIds = (users.match(/<@!?(\d+)>|\b\d{15,25}\b/g) || []).map((u) => u.replace(/[<@!>]/g, ''));
 
-    if (
-      userIds.length > 1 &&
-      !hasPermission(BigInt(interaction.member?.permissions ?? 0), BigInt(Permissions.MANAGE_GUILD))
-    ) {
+    if (userIds.length > 1 && !hasPermission(BigInt(interaction.member?.permissions ?? 0), BigInt(Permissions.MANAGE_GUILD))) {
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {

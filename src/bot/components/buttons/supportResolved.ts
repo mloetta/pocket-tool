@@ -10,16 +10,9 @@ createComponent({
   async run(interaction, args, api) {
     const channel = await api.channels.get(interaction.channel.id);
 
-    if (channel.type !== ChannelType.PublicThread) {
-      return;
-    }
+    if (channel.type !== ChannelType.PublicThread) return;
 
-    if (
-      interaction.member?.user.id !== channel.owner_id &&
-      !interaction.member?.roles.includes('1457033473742340211')
-    ) {
-      return;
-    }
+    if (interaction.member?.user.id !== channel.owner_id && !interaction.member?.roles.includes('1457033473742340211')) return;
 
     const currentTags = channel.applied_tags ?? [];
 

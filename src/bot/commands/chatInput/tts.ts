@@ -2,7 +2,6 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
-  ChannelType,
   ComponentType,
   InteractionContextType,
   MessageFlags,
@@ -11,14 +10,13 @@ import { HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/ty
 import env from '../../../utils/env.js';
 import { emoji, highlight, timestamp } from '../../../utils/markdown.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { AudioPlayerStatus, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
-import { getPermissionsFor, hasPermission } from '../../../utils/utils.js';
+import { hasPermission } from '../../../utils/utils.js';
 import { Permissions } from '../../../types/permissions.js';
-import { getSubscription, subscribe, Subscription, unsubscribe } from '../../../utils/subscription.js';
 import { supabase } from '../../../utils/supabase.js';
 import { Locale } from '@discordjs/core';
 import createApplicationCommand from '../../../helpers/command.js';
-import { client, getChatInputFocusedOption } from '../../index.js';
+import { getChatInputFocusedOption, linkdave } from '../../index.js';
+import { EventName } from 'linkdave';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -158,9 +156,7 @@ createApplicationCommand({
         return;
       }
 
-      const userVoiceState = await api.voice
-        .getUserVoiceState(interaction.guild_id, interaction.member.user.id)
-        .catch(() => null);
+      const userVoiceState = await api.voice.getUserVoiceState(interaction.guild_id, interaction.member.user.id).catch(() => null);
 
       if (!userVoiceState || !userVoiceState.channel_id) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -205,9 +201,7 @@ createApplicationCommand({
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       const now = new Date().getTime();
       const msIn24h = 24 * 60 * 60 * 1000;
@@ -240,50 +234,27 @@ createApplicationCommand({
         return;
       }
 
-      let subscription = getSubscription(interaction.guild_id);
+      const player = linkdave.getPlayer(interaction.guild_id);
 
-      if (subscription) {
-        const botChannelId = subscription.voiceConnection.joinConfig.channelId;
+      if (player.connected && player.voiceChannelId !== userVoiceState.channel_id && player.playing) {
+        await api.interactions.editReply(interaction.application_id, interaction.token, {
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `${emoji('exclamation')} I'm currently speaking in another channel`,
+            },
+            {
+              type: ComponentType.Separator,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
 
-        if (botChannelId !== userVoiceState.channel_id) {
-          if (subscription.audioPlayer.state.status !== AudioPlayerStatus.Idle) {
-            await api.interactions.editReply(interaction.application_id, interaction.token, {
-              components: [
-                {
-                  type: ComponentType.TextDisplay,
-                  content: `${emoji('exclamation')} I'm currently speaking in another channel`,
-                },
-                {
-                  type: ComponentType.Separator,
-                },
-              ],
-              flags: MessageFlags.IsComponentsV2,
-            });
-
-            return;
-          }
-
-          unsubscribe(interaction.guild_id);
-          subscription.voiceConnection.destroy();
-          subscription = undefined;
-        }
+        return;
       }
 
-      if (!subscription) {
-        const connection = joinVoiceChannel({
-          channelId: userVoiceState.channel_id,
-          guildId: interaction.guild_id,
-          adapterCreator: client.voiceAdapterCreator(interaction.guild_id),
-        });
-
-        subscription = new Subscription(connection);
-        subscribe(interaction.guild_id, subscription);
-
-        connection.on('stateChange', (_, newState) => {
-          if (newState.status === VoiceConnectionStatus.Destroyed) {
-            unsubscribe(interaction.guild_id!);
-          }
-        });
+      if (!player.connected || player.voiceChannelId !== userVoiceState.channel_id) {
+        await player.connect(userVoiceState.channel_id);
       }
 
       const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
@@ -292,33 +263,40 @@ createApplicationCommand({
         text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username}: ${text}`,
         languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0]! : language.split('-')[0]!,
         modelId: 'eleven_flash_v2_5',
-        outputFormat: 'opus_48000_192',
+        outputFormat: 'mp3_44100_128',
       });
 
       const buffer = Buffer.from(audio.audioBase64, 'base64');
 
-      subscription.enqueue({
-        buffer,
-        onFinish: () => {
-          if (subscription!.queue.length === 0) {
-            subscription!.timeout = setTimeout(
-              () => {
-                if (subscription!.queue.length === 0) {
-                  subscription!.voiceConnection.destroy();
-                }
-                subscription!.timeout = null;
-              },
-              5 * 60 * 1000,
-            );
-          }
-        },
-      });
+      const fileName = `${interaction.id}-${Date.now()}.mp3`;
+
+      const { error: uploadError } = await supabase.storage.from('tts').upload(fileName, buffer, { contentType: 'audio/mpeg' });
+
+      if (uploadError) throw uploadError;
+
+      const { data: cache } = supabase.storage.from('tts').getPublicUrl(fileName);
+
+      const onTrackEnd = (payload: any) => {
+        if (payload.guild_id !== interaction.guild_id) return;
+
+        linkdave.off(EventName.TrackEnd, onTrackEnd);
+
+        void supabase.storage.from('tts').remove([fileName]);
+      };
+
+      linkdave.on(EventName.TrackEnd, onTrackEnd);
+
+      player.queue.add(cache.publicUrl);
+
+      if (!player.playing) {
+        await player.queue.start();
+      }
 
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
           {
             type: ComponentType.TextDisplay,
-            content: `${emoji('correct')} text-to-speech request added to queue`,
+            content: `${emoji('correct')} Text-to-Speech request added to queue`,
           },
           {
             type: ComponentType.Separator,
@@ -380,9 +358,7 @@ createApplicationCommand({
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       const now = new Date().getTime();
       const msIn24h = 24 * 60 * 60 * 1000;

@@ -7,7 +7,7 @@ import {
   type Snowflake,
 } from '@discordjs/core';
 import env from '../../utils/env.js';
-import { client, localizeCommand } from '../index.js';
+import { client, linkdave, localizeCommand } from '../index.js';
 import { startReminderCron } from '../../crons/reminder.js';
 import createGatewayEvent from '../../helpers/event.js';
 import type { BooleanChatInputOption, NonPrimaryEntryPointCommand } from '../../types/types.js';
@@ -19,7 +19,9 @@ createGatewayEvent({
 
     console.log(`Shard #${shardId} is ready!`);
 
-    void startReminderCron(api);
+    await linkdave.connectAll().then(() => console.log('Linkdave is ready!'));
+
+    startReminderCron(api);
 
     await client.updatePresence(shardId, {
       since: null,
@@ -92,9 +94,7 @@ createGatewayEvent({
           .catch((error) => console.error(`Failed to register global commands: ${error}`));
       }
 
-      const guildCommands = Array.from(client.commands.values()).filter(
-        (command) => 'guild' in command,
-      ) as NonPrimaryEntryPointCommand[];
+      const guildCommands = Array.from(client.commands.values()).filter((command) => 'guild' in command) as NonPrimaryEntryPointCommand[];
 
       if (guildCommands.length) {
         const guilds: Record<Snowflake, ReturnType<typeof localizeCommand>[]> = {};

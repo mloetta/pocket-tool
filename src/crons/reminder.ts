@@ -26,23 +26,26 @@ async function remind(reminder: Reminder, api: API): Promise<void> {
       }),
     )
     .catch(() => null)
-    .finally(async () => await supabase.from('reminder').delete().eq('id', reminder.id));
+    .finally(async () => {
+      const { error } = await supabase.from('reminder').delete().eq('id', reminder.id);
+
+      if (error) throw error;
+    });
 }
 
 export function scheduleReminder(reminder: Reminder, api: API): void {
-  if (scheduled.has(reminder.id)) {
-    return;
-  }
+  if (scheduled.has(reminder.id)) return;
 
   const ms = new Date(reminder.time).getTime() - new Date().getTime();
 
   if (ms <= 0) {
-    remind(reminder, api);
+    void remind(reminder, api);
+
     return;
   }
 
   const timeout = setTimeout(() => {
-    remind(reminder, api);
+    void remind(reminder, api);
     scheduled.delete(reminder.id);
   }, ms);
 
@@ -53,13 +56,11 @@ async function loadReminders(api: API): Promise<void> {
   const now = new Date();
   const soon = new Date(new Date().getTime() + LOOKAHEAD_MS);
 
-  const { data, error } = await supabase
-    .from('reminder')
-    .select('*')
-    .gte('time', now.toISOString())
-    .lte('time', soon.toISOString());
+  const { data, error } = await supabase.from('reminder').select('*').gte('time', now.toISOString()).lte('time', soon.toISOString());
 
-  if (error || !data) return;
+  if (error) throw error;
+
+  if (!data) return;
 
   for (const reminder of data) {
     scheduleReminder(reminder, api);
@@ -67,7 +68,8 @@ async function loadReminders(api: API): Promise<void> {
 }
 
 export function startReminderCron(api: API): void {
-  loadReminders(api);
-  cron.schedule('* * * * *', () => loadReminders(api));
+  void loadReminders(api);
+  cron.schedule('* * * * *', () => void loadReminders(api));
+
   console.log('Reminder cron started');
 }

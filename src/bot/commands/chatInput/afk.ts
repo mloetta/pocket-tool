@@ -39,9 +39,7 @@ createApplicationCommand({
       .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
       .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (data && reason) {
       const { error } = await supabase
@@ -49,9 +47,7 @@ createApplicationCommand({
         .update({ reason })
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
     } else if (!data) {
       const { error } = await supabase.from('afk').insert({
         user_id: interaction.user?.id ?? interaction.member?.user.id,
@@ -59,9 +55,7 @@ createApplicationCommand({
         went_away: new Date(),
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
     }
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {

@@ -1,15 +1,10 @@
 import { RequestMethod, ResponseType, type RequestOptions, type RequestResponse } from '../types/types.js';
 
-export async function makeRequest<Type extends ResponseType>(
-  url: string,
-  options: RequestOptions<Type>,
-): Promise<RequestResponse[Type]> {
+export async function makeRequest<Type extends ResponseType>(url: string, options: RequestOptions<Type>): Promise<RequestResponse[Type]> {
   const parsedUrl = new URL(url);
 
   if (options.params) {
-    parsedUrl.search = new URLSearchParams(
-      Object.entries(options.params).map(([key, value]) => [key, String(value)]),
-    ).toString();
+    parsedUrl.search = new URLSearchParams(Object.entries(options.params).map(([key, value]) => [key, String(value)])).toString();
   }
 
   const controller = new AbortController();
@@ -46,9 +41,7 @@ export async function makeRequest<Type extends ResponseType>(
       }
     }
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Request timed out');
-    }
+    if (error instanceof DOMException && error.name === 'AbortError') throw new Error('Request timed out');
 
     throw error;
   } finally {

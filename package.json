@@ -18,15 +18,14 @@
   "dependencies": {
     "@discordjs/collection": "^2.1.1",
     "@discordjs/core": "^2.4.0",
-    "@discordjs/opus": "^0.10.0",
     "@discordjs/rest": "^2.6.1",
-    "@discordjs/voice": "^0.19.2",
     "@discordjs/ws": "^2.0.4",
     "@elevenlabs/elevenlabs-js": "^2.45.0",
     "@supabase/supabase-js": "^2.104.1",
     "bufferutil": "^4.1.0",
     "i18next": "^26.3.1",
     "i18next-fs-backend": "^2.6.6",
+    "linkdave": "^0.2.3",
     "luxon": "^3.7.2",
     "mathjs": "^15.2.0",
     "node-cron": "^4.2.1",
@@ -38,7 +37,6 @@
   "allowScripts": {
     "bufferutil@4.1.0": true,
     "sharp@0.35.1": true,
-    "@discordjs/opus@0.10.0": true,
     "zlib-sync@0.1.10": true
   }
 }

@@ -24,9 +24,7 @@ export function checkRateLimit(id: Snowflake, commandName: string, rateLimit: Ra
   const existing = cooldowns.get(commandName);
 
   if (existing) {
-    if (now < existing) {
-      return { executable: false, remaining: existing };
-    }
+    if (now < existing) return { executable: false, remaining: existing };
 
     cooldowns.delete(commandName);
   }

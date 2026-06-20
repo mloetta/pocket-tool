@@ -47,13 +47,7 @@ createComponent({
 
     const attachments = attachmentIds?.map((id) => interaction.data.resolved?.attachments?.[id]) ?? undefined;
 
-    if (
-      attachments &&
-      attachments.some(
-        (attachment) =>
-          !attachment?.content_type?.startsWith('image/') && attachment?.content_type?.startsWith('video/'),
-      )
-    ) {
+    if (attachments && attachments.some((attachment) => !attachment?.content_type?.startsWith('image/') && attachment?.content_type?.startsWith('video/'))) {
       await api.interactions.reply(interaction.id, interaction.token, {
         components: [
           {

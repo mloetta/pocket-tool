@@ -13,21 +13,17 @@ import {
   type GatewayDispatchPayload,
   type ToEventProps,
 } from '@discordjs/core';
-import { readDirectory, shardInfo } from '../utils/utils.js';
+import { getShardIdFromGuildId, readDirectory, shardInfo } from '../utils/utils.js';
 import { Collection } from '@discordjs/collection';
 import path from 'path';
-import { createVoiceAdapter } from '../utils/adapter.js';
+import { EventName, LinkDaveClient } from 'linkdave';
 import type { ApplicationCommand, ChatInputOption, Component, GatewayEvent, Localization } from '../types/types.js';
 
 const rest = new REST().setToken(env.get('token', true).toString());
 
 const gateway = new WebSocketManager({
   token: env.get('token', true).toString(),
-  intents:
-    GatewayIntentBits.Guilds |
-    GatewayIntentBits.GuildMessages |
-    GatewayIntentBits.MessageContent |
-    GatewayIntentBits.GuildVoiceStates,
+  intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent | GatewayIntentBits.GuildVoiceStates,
   shardCount: null,
   rest,
   compression: CompressionMethod.ZlibSync,
@@ -38,6 +34,8 @@ const gateway = new WebSocketManager({
       unknownPayloadHandler(payload) {
         switch (payload.type) {
           case 'dispatch': {
+            linkdave.handleRaw(payload.payload);
+
             client.emit(payload.payload.t, {
               data: payload.payload.d,
               api: client.api,
@@ -61,13 +59,81 @@ const gateway = new WebSocketManager({
 
 export const client = new Client({ rest, gateway });
 
+export const linkdave = new LinkDaveClient({
+  token: env.get('token', true).toString(),
+  nodes: [
+    {
+      name: 'main',
+      url: 'ws://93.115.101.147:15495',
+      password: env.get('linkdave_password').toString(),
+    },
+  ],
+  sendToShard: async (guildId, payload) => {
+    const shardId = getShardIdFromGuildId(guildId, await client.gateway.getShardCount());
+
+    client.gateway.send(shardId, payload);
+  },
+});
+
+const idle = new Collection<string, NodeJS.Timeout>();
+
+linkdave.on(EventName.Ready, (d) => console.log(`LinkDave session: ${d.session_id}`));
+linkdave.on(EventName.PlayerUpdate, (d) => console.log(`Update: ${d.state}`));
+linkdave.on(EventName.TrackStart, (d) => {
+  console.log(`Playing: ${d.track.url}`);
+
+  const timer = idle.get(d.guild_id);
+
+  if (timer) {
+    clearTimeout(timer);
+    idle.delete(d.guild_id);
+  }
+});
+linkdave.on(EventName.TrackEnd, (d) => {
+  const player = linkdave.getPlayer(d.guild_id);
+
+  if (player.queue.size > 0) return;
+
+  const existing = idle.get(d.guild_id);
+
+  if (existing) {
+    clearTimeout(existing);
+  }
+
+  const timer = setTimeout(
+    () => {
+      const currentPlayer = linkdave.getPlayer(d.guild_id);
+
+      if (!currentPlayer.connected) {
+        idle.delete(d.guild_id);
+
+        return;
+      }
+
+      if (currentPlayer.playing || currentPlayer.queue.size > 0) return;
+
+      currentPlayer.disconnect();
+
+      idle.delete(d.guild_id);
+    },
+    60 * 1000,
+    // 10 * 60 * 1000,
+  );
+
+  idle.set(d.guild_id, timer);
+});
+linkdave.on(EventName.TrackError, (d) => console.error(`Error: ${d.error}`));
+linkdave.on(EventName.VoiceConnect, (d) => console.log(`Voice connected: ${d.channel_id}`));
+linkdave.on(EventName.VoiceDisconnect, (d) => console.log(`Voice connected: ${d.guild_id} reason: ${d.reason}`));
+linkdave.on(EventName.Close, (d) => console.log(`Connection closed: ${d.code} ${d.reason}`));
+linkdave.on(EventName.Error, console.error);
+
 // custom properties for the client
 client.commands = new Collection<string, ApplicationCommand>();
 client.components = new Collection<string, Component>();
 client.events = new Collection<string, GatewayEvent>();
-client.voiceAdapterCreator = (guildId: string) => createVoiceAdapter(client, gateway, guildId);
 
-void bind()
+bind()
   .then(() => gateway.connect())
   .catch(console.error);
 
@@ -106,10 +172,7 @@ client.api.interactions.reply = (async (interactionId, interactionToken, body, o
 const editReply = client.api.interactions.editReply.bind(client.api.interactions);
 
 client.api.interactions.editReply = (async (applicationId, interactionToken, callbackData, messageId, options) => {
-  if (
-    (callbackData.content || !!((callbackData.flags ?? 0) & MessageFlags.IsComponentsV2)) &&
-    !callbackData.allowed_mentions
-  ) {
+  if ((callbackData.content || !!((callbackData.flags ?? 0) & MessageFlags.IsComponentsV2)) && !callbackData.allowed_mentions) {
     callbackData.allowed_mentions = { parse: [] };
   }
 
@@ -149,10 +212,7 @@ client.api.channels.editMessage = (async (channelId, messageId, body, options) =
 const createForumThread = client.api.channels.createForumThread.bind(client.api.channels);
 
 client.api.channels.createForumThread = (async (channelId, body, options) => {
-  if (
-    (body.message.content || !!((body.message.flags ?? 0) & MessageFlags.IsComponentsV2)) &&
-    !body.message.allowed_mentions
-  ) {
+  if ((body.message.content || !!((body.message.flags ?? 0) & MessageFlags.IsComponentsV2)) && !body.message.allowed_mentions) {
     body.message.allowed_mentions = { parse: [] };
   }
 
@@ -160,9 +220,7 @@ client.api.channels.createForumThread = (async (channelId, body, options) => {
 }) as typeof client.api.channels.createForumThread;
 
 function resolveLocalization(loc: Localization) {
-  if (typeof loc === 'string') {
-    return { value: loc, localizations: undefined };
-  }
+  if (typeof loc === 'string') return { value: loc, localizations: undefined };
 
   const { global, ...rest } = loc;
 
@@ -209,9 +267,7 @@ export function parseCommandOptions(
   interaction: APIChatInputApplicationCommandInteraction,
   options?: APIApplicationCommandInteractionDataOption<InteractionType.ApplicationCommand>[],
 ): Record<string, unknown> {
-  if (!interaction.data) {
-    return {};
-  }
+  if (!interaction.data) return {};
 
   if (!options) {
     options = interaction.data.options ?? [];
@@ -254,16 +310,11 @@ export function parseCommandOptions(
   return args;
 }
 
-export function parseComponentArgs<Args extends readonly string[]>(
-  component: Component<any>,
-  args: string[],
-): Record<Args[number], string> {
+export function parseComponentArgs<Args extends readonly string[]>(component: Component<any>, args: string[]): Record<Args[number], string> {
   const result = {} as Record<Args[number], string>;
 
   const keys = component.args;
-  if (!keys) {
-    return result;
-  }
+  if (!keys) return result;
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
@@ -283,23 +334,15 @@ export function getChatInputOption(
   options: APIApplicationCommandInteractionDataOption[],
   name: string,
 ): APIApplicationCommandInteractionDataOption | undefined {
-  if (!options.length) {
-    return undefined;
-  }
+  if (!options.length) return undefined;
 
   for (const option of options) {
-    if (option.name === name) {
-      return option;
-    }
+    if (option.name === name) return option;
 
-    if (
-      option.type === ApplicationCommandOptionType.Subcommand ||
-      option.type === ApplicationCommandOptionType.SubcommandGroup
-    ) {
+    if (option.type === ApplicationCommandOptionType.Subcommand || option.type === ApplicationCommandOptionType.SubcommandGroup) {
       const found = getChatInputOption(option.options ?? [], name);
-      if (found) {
-        return found;
-      }
+
+      if (found) return found;
     }
   }
 }
@@ -308,16 +351,12 @@ export function getChatInputFocusedOption(
   options: APIApplicationCommandInteractionDataOption[],
 ): (APIApplicationCommandInteractionDataOption & { value: any }) | undefined {
   for (const option of options) {
-    if (
-      option.type === ApplicationCommandOptionType.Subcommand ||
-      option.type === ApplicationCommandOptionType.SubcommandGroup
-    ) {
+    if (option.type === ApplicationCommandOptionType.Subcommand || option.type === ApplicationCommandOptionType.SubcommandGroup) {
       const found = getChatInputFocusedOption(option.options ?? []);
+
       if (found) return found;
     }
 
-    if ('focused' in option && option.focused) {
-      return option;
-    }
+    if ('focused' in option && option.focused) return option;
   }
 }

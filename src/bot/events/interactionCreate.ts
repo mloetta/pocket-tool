@@ -84,13 +84,8 @@ createGatewayEvent({
   },
 });
 
-async function handleApplicationCommand(
-  interaction: APIApplicationCommandInteraction | APIApplicationCommandAutocompleteInteraction,
-  api: API,
-) {
-  if (!interaction.data) {
-    return;
-  }
+async function handleApplicationCommand(interaction: APIApplicationCommandInteraction | APIApplicationCommandAutocompleteInteraction, api: API) {
+  if (!interaction.data) return;
 
   const command = client.commands.get(interaction.data.name) as ApplicationCommand;
 
@@ -111,16 +106,9 @@ async function handleApplicationCommand(
     return;
   }
 
-  if (
-    'dev' in command &&
-    command.dev &&
-    !env
-      .get('dev_ids')
-      .toArray()
-      .includes(interaction.user?.id ?? interaction.member?.user.id)
-  ) {
-    return;
-  }
+  const devIds = env.get('dev_ids').toArray();
+
+  if ((command as any).dev && !devIds.includes(interaction.user?.id ?? interaction.member?.user.id)) return;
 
   try {
     if (interaction.type === InteractionType.ApplicationCommand) {
@@ -173,11 +161,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.User: {
-                const result = checkRateLimit(
-                  (interaction.user?.id ?? interaction.member?.user.id)!,
-                  interaction.data.name,
-                  chatInput.rate_limit,
-                );
+                const result = checkRateLimit((interaction.user?.id ?? interaction.member?.user.id)!, interaction.data.name, chatInput.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -223,11 +207,7 @@ async function handleApplicationCommand(
           if (messageContextMenu.rate_limit) {
             switch (messageContextMenu.rate_limit.type) {
               case RateLimitType.Channel: {
-                const result = checkRateLimit(
-                  interaction.channel.id,
-                  interaction.data.name,
-                  messageContextMenu.rate_limit,
-                );
+                const result = checkRateLimit(interaction.channel.id, interaction.data.name, messageContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -248,11 +228,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.Guild: {
-                const result = checkRateLimit(
-                  interaction.guild!.id,
-                  interaction.data.name,
-                  messageContextMenu.rate_limit,
-                );
+                const result = checkRateLimit(interaction.guild!.id, interaction.data.name, messageContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -273,11 +249,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.User: {
-                const result = checkRateLimit(
-                  (interaction.user?.id ?? interaction.member?.user.id)!,
-                  interaction.data.name,
-                  messageContextMenu.rate_limit,
-                );
+                const result = checkRateLimit((interaction.user?.id ?? interaction.member?.user.id)!, interaction.data.name, messageContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -315,11 +287,7 @@ async function handleApplicationCommand(
           if (userContextMenu.rate_limit) {
             switch (userContextMenu.rate_limit.type) {
               case RateLimitType.Channel: {
-                const result = checkRateLimit(
-                  interaction.channel.id,
-                  interaction.data.name,
-                  userContextMenu.rate_limit,
-                );
+                const result = checkRateLimit(interaction.channel.id, interaction.data.name, userContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {
@@ -361,11 +329,7 @@ async function handleApplicationCommand(
                 break;
               }
               case RateLimitType.User: {
-                const result = checkRateLimit(
-                  (interaction.user?.id ?? interaction.member?.user.id)!,
-                  interaction.data.name,
-                  userContextMenu.rate_limit,
-                );
+                const result = checkRateLimit((interaction.user?.id ?? interaction.member?.user.id)!, interaction.data.name, userContextMenu.rate_limit);
 
                 if (!result.executable) {
                   await api.interactions.reply(interaction.id, interaction.token, {

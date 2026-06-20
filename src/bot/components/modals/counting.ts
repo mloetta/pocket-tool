@@ -39,15 +39,9 @@ createComponent({
         : undefined;
 
     if (del) {
-      const { data, error } = await supabase
-        .from('counting')
-        .select('*')
-        .eq('guild_id', interaction.guild_id)
-        .maybeSingle();
+      const { data, error } = await supabase.from('counting').select('*').eq('guild_id', interaction.guild_id).maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data) {
         await api.interactions.reply(interaction.id, interaction.token, {
@@ -108,9 +102,7 @@ createComponent({
       extras,
     });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     await api.interactions.reply(interaction.id, interaction.token, {
       components: [

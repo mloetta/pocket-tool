@@ -5,14 +5,7 @@ import { ALL_PERMISSIONS, Permissions } from '../types/permissions.js';
 import { Emoji } from '../types/emojis.js';
 import { Collection } from '@discordjs/collection';
 import type { ShardInformation } from '../types/types.js';
-import type {
-  APIEmoji,
-  APIGuildChannel,
-  APIGuildMember,
-  APIMessageComponentEmoji,
-  APIRole,
-  Snowflake,
-} from '@discordjs/core';
+import type { APIEmoji, APIGuildChannel, APIGuildMember, APIMessageComponentEmoji, APIRole, Snowflake } from '@discordjs/core';
 
 export const shardInfo = new Collection<number, ShardInformation>();
 
@@ -24,9 +17,7 @@ export async function readDirectory(folder: string): Promise<void> {
 
     const fullPath = join(folder, filename);
 
-    await import(pathToFileURL(fullPath).href).catch((e) =>
-      console.log(`Cannot import file (${fullPath}) for reason:`, e),
-    );
+    await import(pathToFileURL(fullPath).href).catch((e) => console.log(`Cannot import file (${fullPath}) for reason:`, e));
   }
 }
 
@@ -45,9 +36,7 @@ export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChann
   }
 
   // Apply channel permission overwrites for everyone
-  const everyoneOverwrite = channel.permission_overwrites?.find(
-    (overwrite) => overwrite.id === channel.guild_id && overwrite.type === 0,
-  );
+  const everyoneOverwrite = channel.permission_overwrites?.find((overwrite) => overwrite.id === channel.guild_id && overwrite.type === 0);
 
   if (everyoneOverwrite) {
     permissions &= ~BigInt(everyoneOverwrite.deny);
@@ -70,9 +59,7 @@ export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChann
 
   // Apply member role permission overwrites
   for (const roleId of member.roles) {
-    const overwrite = channel.permission_overwrites?.find(
-      (overwrite) => overwrite.id === roleId && overwrite.type === 0,
-    );
+    const overwrite = channel.permission_overwrites?.find((overwrite) => overwrite.id === roleId && overwrite.type === 0);
 
     if (!overwrite) continue;
 
@@ -81,9 +68,7 @@ export function getPermissionsFor(member: APIGuildMember, channel: APIGuildChann
   }
 
   // Apply member permission overwrites
-  const memberOverwrite = channel.permission_overwrites?.find(
-    (overwrite) => overwrite.id === member.user.id && overwrite.type === 1,
-  );
+  const memberOverwrite = channel.permission_overwrites?.find((overwrite) => overwrite.id === member.user.id && overwrite.type === 1);
 
   if (memberOverwrite) {
     permissions &= ~BigInt(memberOverwrite.deny);
@@ -97,10 +82,7 @@ export function getShardIdFromGuildId(guildId: string, totalShards: number): num
   return Number((BigInt(guildId) >> 22n) % BigInt(totalShards));
 }
 
-export async function getShardInfoFromGuild(
-  guildId: Snowflake | undefined,
-  totalShards: number,
-): Promise<ShardInformation & { shardId: number }> {
+export async function getShardInfoFromGuild(guildId: Snowflake | undefined, totalShards: number): Promise<ShardInformation & { shardId: number }> {
   const shardId = guildId ? getShardIdFromGuildId(guildId, totalShards) : 0;
   const info = shardInfo.get(shardId);
 
@@ -171,9 +153,7 @@ export function readableTimeToMs(time: string): number | null {
 export function toEmoji(name: keyof typeof Emoji): APIEmoji | APIMessageComponentEmoji {
   const emoji = Emoji[name];
 
-  if (!emoji) {
-    throw new Error(`Emoji "${name}" not found`);
-  }
+  if (!emoji) throw new Error(`Emoji "${name}" not found`);
 
   return {
     id: emoji.replace(/<a?:[a-z0-9_]*:([0-9]*)>/g, '$1'),
@@ -185,9 +165,7 @@ export function toEmoji(name: keyof typeof Emoji): APIEmoji | APIMessageComponen
 export function toReactionEmoji(name: keyof typeof Emoji): string {
   const emoji = Emoji[name];
 
-  if (!emoji) {
-    throw new Error(`Emoji "${name}" not found`);
-  }
+  if (!emoji) throw new Error(`Emoji "${name}" not found`);
 
   return emoji.replace(/<a?:(.+):(\d+)>/, '$1:$2');
 }

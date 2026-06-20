@@ -1,10 +1,4 @@
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  ComponentType,
-  InteractionContextType,
-  MessageFlags,
-} from '@discordjs/core';
+import { ApplicationCommandType, ApplicationIntegrationType, ComponentType, InteractionContextType, MessageFlags } from '@discordjs/core';
 import { RateLimitType } from '../../../types/types.js';
 import env from '../../../utils/env.js';
 import { msToApproxTime } from '../../../utils/utils.js';
@@ -47,9 +41,7 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
-    if (!message) {
-      return;
-    }
+    if (!message) return;
 
     let prompt: string = '';
     let attachment: APIAttachment | undefined;
@@ -57,17 +49,14 @@ createApplicationCommand({
     let referenced;
 
     if (message.message_reference?.message_id) {
-      referenced = await api.channels
-        .getMessage(message.message_reference.channel_id, message.message_reference.message_id)
-        .catch(() => undefined);
+      referenced = await api.channels.getMessage(message.message_reference.channel_id, message.message_reference.message_id).catch(() => undefined);
     }
 
     const messageAttachments = Object.values(message.attachments ?? {});
     const referencedAttachments = Object.values(referenced?.attachments ?? {});
 
     attachment =
-      messageAttachments.find((a) => a.content_type?.startsWith('image/')) ??
-      referencedAttachments.find((a) => a.content_type?.startsWith('image/'));
+      messageAttachments.find((a) => a.content_type?.startsWith('image/')) ?? referencedAttachments.find((a) => a.content_type?.startsWith('image/'));
 
     if (!message.content && !referenced?.content && !attachment) {
       await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -138,6 +127,7 @@ createApplicationCommand({
         ],
         flags: MessageFlags.IsComponentsV2,
       });
+
       return;
     }
 

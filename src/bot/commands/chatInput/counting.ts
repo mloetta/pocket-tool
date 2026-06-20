@@ -1,10 +1,4 @@
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  ChannelType,
-  ComponentType,
-  InteractionContextType,
-} from '@discordjs/core';
+import { ApplicationCommandType, ApplicationIntegrationType, ChannelType, ComponentType, InteractionContextType } from '@discordjs/core';
 import createApplicationCommand from '../../../helpers/command.js';
 import { Permissions } from '../../../types/permissions.js';
 import { RateLimitType } from '../../../types/types.js';

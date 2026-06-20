@@ -102,9 +102,7 @@ createApplicationCommand({
       .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
       .ilike('name', `%${value}%`);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     const choices = data?.map((t) => ({ name: t.name, value: t.name })) ?? [];
 
@@ -123,9 +121,7 @@ createApplicationCommand({
         .eq('name', name)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -153,9 +149,7 @@ createApplicationCommand({
         content,
       });
 
-      if (insertError) {
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -179,9 +173,7 @@ createApplicationCommand({
         .eq('name', name)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -206,9 +198,7 @@ createApplicationCommand({
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
         .eq('name', name);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -232,9 +222,7 @@ createApplicationCommand({
         .eq('name', name)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -259,9 +247,7 @@ createApplicationCommand({
         .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
         .eq('name', name);
 
-      if (deleteError) {
-        throw deleteError;
-      }
+      if (deleteError) throw deleteError;
 
       await api.interactions.editReply(interaction.application_id, interaction.token, {
         components: [
@@ -285,9 +271,7 @@ createApplicationCommand({
         .eq('name', name)
         .maybeSingle();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data) {
         await api.interactions.editReply(interaction.application_id, interaction.token, {

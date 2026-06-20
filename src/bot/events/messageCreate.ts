@@ -1,10 +1,4 @@
-import {
-  API,
-  ComponentType,
-  GatewayDispatchEvents,
-  MessageFlags,
-  type GatewayMessageCreateDispatchData,
-} from '@discordjs/core';
+import { API, ComponentType, GatewayDispatchEvents, MessageFlags, type GatewayMessageCreateDispatchData } from '@discordjs/core';
 import { supabase } from '../../utils/supabase.js';
 import { msToReadableTime, toReactionEmoji } from '../../utils/utils.js';
 import createGatewayEvent from '../../helpers/event.js';
@@ -24,9 +18,7 @@ const handlers: Handler[] = [
   async (message, api) => {
     const { data, error } = await supabase.from('afk').select('*').eq('user_id', message.author.id).maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (data) {
       await supabase.from('afk').delete().eq('user_id', message.author.id);
@@ -54,27 +46,19 @@ const handlers: Handler[] = [
       ),
     ];
 
-    if (!mentions.length) {
-      return;
-    }
+    if (!mentions.length) return;
 
     const { data: mentionData, error: mentionError } = await supabase.from('afk').select('*').in('user_id', mentions);
 
-    if (mentionError) {
-      throw mentionError;
-    }
+    if (mentionError) throw mentionError;
 
-    if (!mentionData?.length) {
-      return;
-    }
+    if (!mentionData?.length) return;
 
     await api.channels.createMessage(message.channel_id, {
       components: [
         {
           type: ComponentType.TextDisplay,
-          content: mentionData
-            .map((u) => `<@${u.user_id}> is currently afk${u.reason ? `\n-# ${u.reason}` : ''}`)
-            .join('\n'),
+          content: mentionData.map((u) => `<@${u.user_id}> is currently afk${u.reason ? `\n-# ${u.reason}` : ''}`).join('\n'),
         },
         {
           type: ComponentType.Separator,
@@ -86,9 +70,7 @@ const handlers: Handler[] = [
   async (message, api) => {
     const botId = (await api.applications.getCurrent()).id;
 
-    if (message.content !== `<@${botId}>`) {
-      return;
-    }
+    if (message.content !== `<@${botId}>`) return;
 
     await api.channels.createMessage(message.channel_id, {
       content: `Hello! I'm **Pocket Tool**!\nYou can view all the available slash commands by typing ${highlight('/', HighlightStyle.Bold)}\n-# Additionally, you can view context menu commands by right-clicking or long-pressing a message or user`,
@@ -98,29 +80,19 @@ const handlers: Handler[] = [
     });
   },
   async (message, api) => {
-    if (message.author.bot) {
-      return;
-    }
+    if (message.author.bot) return;
 
     const isNumber = /^\d+$/.test(message.content.trim());
 
-    if (!isNumber) {
-      return;
-    }
+    if (!isNumber) return;
 
     const { data, error } = await supabase.from('counting').select('*').eq('guild_id', message.guild_id).maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    if (!data) {
-      return;
-    }
+    if (!data) return;
 
-    if (message.channel_id !== data.channel_id) {
-      return;
-    }
+    if (message.channel_id !== data.channel_id) return;
 
     if (!data.extras?.includes('consecutive_counts') && data.last_user === message.author.id) {
       await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('exclamation'));
@@ -135,10 +107,7 @@ const handlers: Handler[] = [
     if (!isCorrect) {
       switch (data.action) {
         case 'restarts': {
-          await supabase
-            .from('counting')
-            .update({ current_count: 0, last_user: null })
-            .eq('guild_id', message.guild_id);
+          await supabase.from('counting').update({ current_count: 0, last_user: null }).eq('guild_id', message.guild_id);
 
           await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('wrong'));
           break;
@@ -167,10 +136,7 @@ const handlers: Handler[] = [
         });
       }
     } else {
-      await supabase
-        .from('counting')
-        .update({ current_count: number, last_user: message.author.id })
-        .eq('guild_id', message.guild_id);
+      await supabase.from('counting').update({ current_count: number, last_user: message.author.id }).eq('guild_id', message.guild_id);
 
       await api.channels.addMessageReaction(message.channel_id, message.id, toReactionEmoji('correct'));
     }

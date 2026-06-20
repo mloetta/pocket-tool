@@ -46,11 +46,7 @@ export interface ChatInputCommand<
 > extends BaseNonPrimaryEntryPointCommand<ApplicationCommandType.ChatInput> {
   description: Localization;
   options?: Options;
-  run: (
-    interaction: APIChatInputApplicationCommandInteraction,
-    options: GetChatInputCommandOptions<Options>,
-    api: API,
-  ) => Promise<void>;
+  run: (interaction: APIChatInputApplicationCommandInteraction, options: GetChatInputCommandOptions<Options>, api: API) => Promise<void>;
   autocomplete?: (interaction: APIApplicationCommandAutocompleteInteraction, api: API) => Promise<void>;
 }
 
@@ -119,11 +115,7 @@ export type SubcommandGroupChatInputOption = BaseChatInputOption<ApplicationComm
 
 export type ChatInputOptionChoice<Type extends ApplicationCommandOptionType> = {
   name: Localization;
-  value: Type extends ApplicationCommandOptionType.String
-    ? string
-    : Type extends ApplicationCommandOptionType.Number
-      ? number
-      : never;
+  value: Type extends ApplicationCommandOptionType.String ? string : Type extends ApplicationCommandOptionType.Number ? number : never;
 };
 
 export interface InteractionResolvedUser {
@@ -143,9 +135,7 @@ export interface TypeToResolvedMap {
   [ApplicationCommandOptionType.Attachment]: APIAttachment;
 }
 
-export type SubCommandApplicationCommand =
-  | ApplicationCommandOptionType.Subcommand
-  | ApplicationCommandOptionType.SubcommandGroup;
+export type SubCommandApplicationCommand = ApplicationCommandOptionType.Subcommand | ApplicationCommandOptionType.SubcommandGroup;
 
 export type ConvertTypeToResolved<Type extends keyof TypeToResolvedMap> = TypeToResolvedMap[Type];
 
@@ -197,9 +187,7 @@ export type NonPrimaryEntryPointCommand<Options extends ChatInputOption[] = Chat
   | UserContextMenuCommand
   | MessageContextMenuCommand;
 
-export type ApplicationCommand<Options extends ChatInputOption[] = ChatInputOption[]> =
-  | NonPrimaryEntryPointCommand<Options>
-  | PrimaryEntryPointCommand;
+export type ApplicationCommand<Options extends ChatInputOption[] = ChatInputOption[]> = NonPrimaryEntryPointCommand<Options> | PrimaryEntryPointCommand;
 
 export interface GatewayEvent<Event extends GatewayDispatchEvents = GatewayDispatchEvents> {
   name: Event;
@@ -212,50 +200,27 @@ export enum InteractableComponentType {
   Modal = 'modal',
 }
 
-export interface BaseComponent<
-  Type extends InteractableComponentType = InteractableComponentType,
-  Args extends readonly string[] = readonly string[],
-> {
+export interface BaseComponent<Type extends InteractableComponentType = InteractableComponentType, Args extends readonly string[] = readonly string[]> {
   type: Type;
   custom_id: Snowflake;
   args?: Args;
 }
 
-export interface ButtonComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
-  InteractableComponentType.Button,
-  Args
-> {
+export interface ButtonComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<InteractableComponentType.Button, Args> {
   acknowledge?: boolean;
-  run: (
-    interaction: APIMessageComponentButtonInteraction,
-    args: Record<Args[number], string>,
-    api: API,
-  ) => Promise<void>;
+  run: (interaction: APIMessageComponentButtonInteraction, args: Record<Args[number], string>, api: API) => Promise<void>;
 }
 
-export interface SelectMenuComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
-  InteractableComponentType.SelectMenu,
-  Args
-> {
+export interface SelectMenuComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<InteractableComponentType.SelectMenu, Args> {
   acknowledge?: boolean;
-  run: (
-    interaction: APIMessageComponentSelectMenuInteraction,
-    args: Record<Args[number], string>,
-    api: API,
-  ) => Promise<void>;
+  run: (interaction: APIMessageComponentSelectMenuInteraction, args: Record<Args[number], string>, api: API) => Promise<void>;
 }
 
-export interface ModalComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<
-  InteractableComponentType.Modal,
-  Args
-> {
+export interface ModalComponent<Args extends readonly string[] = readonly string[]> extends BaseComponent<InteractableComponentType.Modal, Args> {
   run: (interaction: APIModalSubmitInteraction, args: Record<Args[number], string>, api: API) => Promise<void>;
 }
 
-export type Component<Args extends readonly string[] = readonly string[]> =
-  | ButtonComponent<Args>
-  | SelectMenuComponent<Args>
-  | ModalComponent<Args>;
+export type Component<Args extends readonly string[] = readonly string[]> = ButtonComponent<Args> | SelectMenuComponent<Args> | ModalComponent<Args>;
 
 export enum TimestampStyle {
   /**	16:20 */

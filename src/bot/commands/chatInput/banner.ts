@@ -83,8 +83,7 @@ createApplicationCommand({
 
     const u = await api.users.get(user.id);
 
-    const guild =
-      scope === 'guild' && interaction.guild_id ? await api.guilds.get(interaction.guild_id).catch(() => null) : null;
+    const guild = scope === 'guild' && interaction.guild_id ? await api.guilds.get(interaction.guild_id).catch(() => null) : null;
 
     if (scope === 'guild' && member && guild) {
       const m = await api.guilds.getMember(guild.id, user.id);
@@ -116,12 +115,7 @@ createApplicationCommand({
                 items: [
                   {
                     media: {
-                      url: cdn(
-                        `guilds/${interaction.guild_id}/users/${user.id}/banners/${m.banner}`,
-                        4096,
-                        'webp',
-                        true,
-                      ),
+                      url: cdn(`guilds/${interaction.guild_id}/users/${user.id}/banners/${m.banner}`, 4096, 'webp', true),
                     },
                   },
                 ],

@@ -1,10 +1,4 @@
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  ComponentType,
-  InteractionContextType,
-  MessageFlags,
-} from '@discordjs/core';
+import { ApplicationCommandType, ApplicationIntegrationType, ComponentType, InteractionContextType, MessageFlags } from '@discordjs/core';
 import { RateLimitType, RequestMethod, ResponseType } from '../../../types/types.js';
 import { makeRequest } from '../../../utils/request.js';
 import sharp from 'sharp';
@@ -25,9 +19,7 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
-    if (!message) {
-      return;
-    }
+    if (!message) return;
 
     const attachment = Object.values(message.attachments)[0];
 

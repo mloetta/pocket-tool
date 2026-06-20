@@ -71,15 +71,10 @@ createApplicationCommand({
       reason,
     });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (time <= LOOKAHEAD_MS) {
-      scheduleReminder(
-        { id, user_id: (interaction.user?.id ?? interaction.member?.user.id)!, time: date, reason },
-        api,
-      );
+      scheduleReminder({ id, user_id: (interaction.user?.id ?? interaction.member?.user.id)!, time: date, reason }, api);
     }
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {

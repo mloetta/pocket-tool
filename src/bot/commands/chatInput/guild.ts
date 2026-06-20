@@ -1,10 +1,4 @@
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  ComponentType,
-  InteractionContextType,
-  MessageFlags,
-} from '@discordjs/core';
+import { ApplicationCommandType, ApplicationIntegrationType, ComponentType, InteractionContextType, MessageFlags } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake } from '../../../utils/utils.js';
 import { cdn, codeblock, emoji, timestamp } from '../../../utils/markdown.js';

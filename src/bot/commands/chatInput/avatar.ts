@@ -109,12 +109,7 @@ createApplicationCommand({
                 items: [
                   {
                     media: {
-                      url: cdn(
-                        `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
-                        4096,
-                        'webp',
-                        true,
-                      ),
+                      url: cdn(`guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`, 4096, 'webp', true),
                     },
                   },
                 ],
@@ -147,11 +142,7 @@ createApplicationCommand({
                     ? ([
                         {
                           type: ComponentType.Button,
-                          url: cdn(
-                            `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
-                            4096,
-                            'gif',
-                          ),
+                          url: cdn(`guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`, 4096, 'gif'),
                           label: 'GIF',
                           style: ButtonStyle.Link,
                         },

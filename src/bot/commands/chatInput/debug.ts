@@ -7,11 +7,13 @@ import {
   MessageFlags,
   type APIMessageComponentEmoji,
 } from '@discordjs/core';
-import { TimestampStyle } from '../../../types/types.js';
+import { RequestMethod, ResponseType, TimestampStyle } from '../../../types/types.js';
 import { hyperlink, timestamp } from '../../../utils/markdown.js';
 import { getShardIdFromGuildId, getShardInfoFromGuild, toEmoji } from '../../../utils/utils.js';
 import createApplicationCommand from '../../../helpers/command.js';
-import { client } from '../../index.js';
+import { client, linkdave } from '../../index.js';
+import { makeRequest } from '../../../utils/request.js';
+import env from '../../../utils/env.js';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -21,20 +23,21 @@ createApplicationCommand({
   contexts: [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel],
   acknowledge: true,
   async run(interaction, options, api) {
-    const shardId = interaction.guild_id
-      ? getShardIdFromGuildId(interaction.guild_id, await client.gateway.getShardCount())
-      : 0;
+    // bot stats
     const totalShards = await client.gateway.getShardCount();
+    const shardId = interaction.guild_id ? getShardIdFromGuildId(interaction.guild_id, totalShards) : 0;
     const shardInfo = await getShardInfoFromGuild(interaction.guild_id, totalShards);
-    const latency = shardInfo.latency!.toLocaleString('en-US');
-    const uptime = timestamp(Math.floor(shardInfo.uptime!), TimestampStyle.RelativeTime);
     const memory = process.memoryUsage();
-    const usedMemory = memory.heapUsed;
-    const totalMemory = memory.rss;
-    const memoryUsage = `${Number((usedMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB (${Number((totalMemory / 1024 / 1024).toFixed(2)).toLocaleString('en-US')} MB)`;
     const app = await api.applications.getCurrent();
-    const guilds = app.approximate_guild_count;
-    const installs = app.approximate_user_install_count;
+
+    // linkdave stats
+    const res = await makeRequest('http://93.115.101.147:15495/stats', {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
+      headers: {
+        Authorization: env.get('linkdave_password').toString(),
+      },
+    });
 
     await api.interactions.editReply(interaction.application_id, interaction.token, {
       components: [
@@ -50,7 +53,7 @@ createApplicationCommand({
             },
             {
               type: ComponentType.TextDisplay,
-              content: `### Shard #${shardId}\n> Shards: **${totalShards}**\n> Latency: **${latency}ms**\n> Uptime: **${uptime}**\n> Memory: **${memoryUsage}**\n> Guilds: **${guilds}**\n> Installs: **${installs}**`,
+              content: `### Shard #${shardId}\n> Shards: **${totalShards}**\n> Latency: **${shardInfo.latency!.toLocaleString('en-US')}ms**\n> Uptime: **${timestamp(Math.floor(shardInfo.uptime!), TimestampStyle.RelativeTime)}**\n> Memory: **${Number((memory.heapUsed / 1024 / 1024).toFixed(2)).toLocaleString('en-US', { style: 'unit', unit: 'megabyte' })} (${Number((memory.rss / 1024 / 1024).toFixed(2)).toLocaleString('en-US', { style: 'unit', unit: 'megabyte' })})**\n> Guilds: **${app.approximate_guild_count}**\n> Installs: **${app.approximate_user_install_count}**`,
             },
             {
               type: ComponentType.Separator,
@@ -73,6 +76,15 @@ createApplicationCommand({
                   style: ButtonStyle.Link,
                 },
               ],
+            },
+          ],
+        },
+        {
+          type: ComponentType.Container,
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+              content: `### Text-to-Speech\n> Uptime: **${timestamp(new Date().getTime() - res.uptime_ms, TimestampStyle.RelativeTime)}**\n> Memory: **${Number((res.memory / 1024 / 1024).toFixed(2)).toLocaleString('en-US', { style: 'unit', unit: 'megabyte' })}**\n> Players: **${linkdave.players.size}**`,
             },
           ],
         },

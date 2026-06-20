@@ -1,11 +1,4 @@
-import {
-  ApplicationCommandType,
-  ButtonStyle,
-  ComponentType,
-  MessageFlags,
-  UserFlags,
-  type APIMessageComponentEmoji,
-} from '@discordjs/core';
+import { ApplicationCommandType, ButtonStyle, ComponentType, MessageFlags, UserFlags, type APIMessageComponentEmoji } from '@discordjs/core';
 import { RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { getTimestampFromSnowflake, toEmoji } from '../../../utils/utils.js';
 import { cdn, emoji, highlight, timestamp } from '../../../utils/markdown.js';
@@ -79,10 +72,7 @@ createApplicationCommand({
     }
 
     const hasNitro =
-      !!user.banner ||
-      user.avatar?.startsWith('a_') ||
-      !!(user as any).display_name_styles ||
-      (member && (member.avatar?.startsWith('a_') || member.banner));
+      !!user.banner || user.avatar?.startsWith('a_') || !!(user as any).display_name_styles || (member && (member.avatar?.startsWith('a_') || member.banner));
 
     if (hasNitro) {
       badges.push('nitro');
@@ -105,12 +95,7 @@ createApplicationCommand({
                 type: ComponentType.Thumbnail,
                 media: {
                   url: member?.avatar
-                    ? cdn(
-                        `guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`,
-                        4096,
-                        'webp',
-                        true,
-                      )
+                    ? cdn(`guilds/${interaction.guild_id}/users/${user.id}/avatars/${member.avatar}`, 4096, 'webp', true)
                     : cdn(`/avatars/${user.id}/${user.avatar}`, 4096, 'webp', true),
                 },
               },

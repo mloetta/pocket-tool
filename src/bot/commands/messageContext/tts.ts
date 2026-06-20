@@ -1,10 +1,4 @@
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  ComponentType,
-  InteractionContextType,
-  MessageFlags,
-} from '@discordjs/core';
+import { ApplicationCommandType, ApplicationIntegrationType, ComponentType, InteractionContextType, MessageFlags } from '@discordjs/core';
 import { HighlightStyle, RateLimitType, TimestampStyle } from '../../../types/types.js';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import env from '../../../utils/env.js';
@@ -67,9 +61,7 @@ createApplicationCommand({
     const messageId = interaction.data.target_id;
     const message = interaction.data.resolved.messages[messageId];
 
-    if (!message) {
-      return;
-    }
+    if (!message) return;
 
     const content = message.content;
 
@@ -96,9 +88,7 @@ createApplicationCommand({
       .eq('user_id', interaction.user?.id ?? interaction.member?.user.id)
       .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     const now = new Date().getTime();
     const msIn24h = 24 * 60 * 60 * 1000;

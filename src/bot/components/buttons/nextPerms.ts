@@ -1,10 +1,4 @@
-import {
-  ButtonStyle,
-  ComponentType,
-  MessageFlags,
-  type APIMessageComponentEmoji,
-  type APIMessageTopLevelComponent,
-} from '@discordjs/core';
+import { ButtonStyle, ComponentType, MessageFlags, type APIMessageComponentEmoji, type APIMessageTopLevelComponent } from '@discordjs/core';
 import createComponent from '../../../helpers/component.js';
 import { PermissionCategories } from '../../../types/permissions.js';
 import { InteractableComponentType, TimestampStyle } from '../../../types/types.js';
@@ -72,10 +66,7 @@ createComponent({
               {
                 type: ComponentType.TextDisplay,
                 content: `### ${permissions.category}\n${Object.entries(permissions.permissions)
-                  .map(
-                    ([name, permission]) =>
-                      `${hasPermission(BigInt(role.permissions), BigInt(permission)) ? emoji('correct') : emoji('wrong')} ${name}`,
-                  )
+                  .map(([name, permission]) => `${hasPermission(BigInt(role.permissions), BigInt(permission)) ? emoji('correct') : emoji('wrong')} ${name}`)
                   .join('\n')}`,
               },
               {
@@ -154,10 +145,7 @@ createComponent({
               {
                 type: ComponentType.TextDisplay,
                 content: `### ${permissions.category}\n${Object.entries(permissions.permissions)
-                  .map(
-                    ([name, permission]) =>
-                      `${hasPermission(BigInt(role.permissions), BigInt(permission)) ? emoji('correct') : emoji('wrong')} ${name}`,
-                  )
+                  .map(([name, permission]) => `${hasPermission(BigInt(role.permissions), BigInt(permission)) ? emoji('correct') : emoji('wrong')} ${name}`)
                   .join('\n')}`,
               },
               {

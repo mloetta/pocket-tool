@@ -15,9 +15,7 @@ export function cdn(route: string, size: number = 4096, format: string = 'webp',
 export function codeblock(language: string, content: unknown): string {
   const lines = Array.isArray(content) ? content.map(String) : [String(content ?? '')];
 
-  if (!lines.length) {
-    return '```' + language + '```';
-  }
+  if (!lines.length) return '```' + language + '```';
 
   return '```' + language + '\n' + _sanitize(lines.join('\n')) + '```';
 }
@@ -25,9 +23,7 @@ export function codeblock(language: string, content: unknown): string {
 export function emoji(name: keyof typeof Emoji): string {
   const emoji = Emoji[name];
 
-  if (!emoji) {
-    throw new Error(`Emoji "${name}" not found`);
-  }
+  if (!emoji) throw new Error(`Emoji "${name}" not found`);
 
   return emoji.replace(/:[a-zA-Z0-9_]*:/, ':e:');
 }
@@ -46,17 +42,11 @@ export function highlight(content: unknown, style: HighlightStyle = HighlightSty
 }
 
 export function hyperlink(url: string, masked: string, tooltip: string = '', embed: boolean = false): string {
-  if (tooltip.length) {
-    tooltip = ` '${tooltip}'`;
-  }
+  if (tooltip.length) tooltip = ` '${tooltip}'`;
 
-  if (masked && !embed) {
-    return `[${masked}](<${url.replace(/\)/g, '\\)')}>${tooltip})`;
-  } else if (masked && embed) {
-    return `[${masked}](${url.replace(/\)/g, '\\)')}${tooltip})`;
-  }
+  url = url.replace(/\)/g, '\\)');
 
-  return url;
+  return embed ? `[${masked}](${url}${tooltip})` : `[${masked}](<${url}>${tooltip})`;
 }
 
 export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.ShortTime): string {
@@ -64,25 +54,19 @@ export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.Sh
 }
 
 export function truncate(content: string = '', length: number): string {
-  if (content.length <= length) {
-    return content;
-  }
+  if (content.length <= length) return content;
 
   let result = '';
 
   for (const word of content.split(/\s+/)) {
     const next = result ? `${result} ${word}` : word;
 
-    if (next.length + 3 > length) {
-      break;
-    }
+    if (next.length + 3 > length) break;
 
     result = next;
   }
 
-  if (!result) {
-    return content.slice(0, Math.max(length - 3, 0)) + '...';
-  }
+  if (!result) return content.slice(0, Math.max(length - 3, 0)) + '...';
 
   return `${result}...`;
 }

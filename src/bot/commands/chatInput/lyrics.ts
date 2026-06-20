@@ -39,13 +39,10 @@ createApplicationCommand({
   async run(interaction, options, api) {
     const { artist, song } = options;
 
-    const res = await makeRequest(
-      `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(song)}`,
-      {
-        method: RequestMethod.GET,
-        response: ResponseType.JSON,
-      },
-    );
+    const res = await makeRequest(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(song)}`, {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
+    });
 
     if (res.error || !res.lyrics) {
       await api.interactions.editReply(interaction.application_id, interaction.token, {

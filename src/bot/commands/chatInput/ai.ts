@@ -89,6 +89,7 @@ createApplicationCommand({
         ],
         flags: MessageFlags.IsComponentsV2,
       });
+
       return;
     }
 
