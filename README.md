@@ -14,7 +14,7 @@ Pocket Tool is a **lightweight, fast, and versatile Discord bot** designed to be
 
 ## How do I self-host Pocket Tool?
 
-- [Node.js](https://nodejs.org/) (v22+ recommended)
+- [Node.js](https://nodejs.org/) (v20+ recommended)
 - A Discord bot token (set as `token` environment variable)
 
 1. Clone the repository:
