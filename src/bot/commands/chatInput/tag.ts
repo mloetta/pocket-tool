@@ -318,7 +318,7 @@ createApplicationCommand({
         });
       } else {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
-          content: `${mention ? `-# *Tag suggestion for ${mention}:*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
+          content: `${mention ? `-# *Tag suggestion for <@${mention.user.id}>:*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
           allowed_mentions: {
             parse: [AllowedMentionsTypes.User],
           },
