@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "(if exist dist rmdir /s /q dist) & tsc",
+    "build": "(if exist dist rmdir /s /q dist) && tsc",
     "start": "node dist/bot/index.js",
     "register": "node dist/bot/register.js",
     "format": "prettier . --write"
