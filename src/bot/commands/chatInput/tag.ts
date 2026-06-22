@@ -300,7 +300,7 @@ createApplicationCommand({
 
       if (guild) {
         await api.channels.createMessage(interaction.channel.id, {
-          content: `${mention ? `-# *Tag suggestion for: ${mention}*\n` : ''}${data.content.replace(/\\n/g, '\n')}\n-# Tag ${highlight(data.name, HighlightStyle.Compact)} requested by ${interaction.user?.username ?? interaction.member?.user.username}`,
+          content: `${mention ? `-# *Tag suggestion for ${mention}:*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
         });
 
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -317,7 +317,7 @@ createApplicationCommand({
         });
       } else {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
-          content: `${mention ? `-# *Tag suggestion for: ${mention}*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
+          content: `${mention ? `-# *Tag suggestion for ${mention}:*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
         });
       }
     }
