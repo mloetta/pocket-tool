@@ -22,7 +22,7 @@ createGatewayEvent({
 
     await linkdave.connectAll().then(() => console.log('Linkdave is ready!'));
 
-    linkdave.on(EventName.Ready, (d) => console.log(`LinkDave session: ${d.session_id}`));
+    linkdave.on(EventName.Ready, (d) => console.log(`Linkdave session: ${d.session_id}`));
     linkdave.on(EventName.PlayerUpdate, (d) => console.log(`Update: ${d.state}`));
     linkdave.on(EventName.TrackStart, (d) => console.log(`Playing: ${d.track.url}`));
     linkdave.on(EventName.TrackEnd, (d) => console.log(`Track ended: ${d.reason}`));

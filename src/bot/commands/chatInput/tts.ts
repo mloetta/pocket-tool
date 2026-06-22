@@ -276,12 +276,14 @@ createApplicationCommand({
 
       const { data: cache } = supabase.storage.from('tts').getPublicUrl(fileName);
 
-      const onTrackEnd = (payload: any) => {
+      const onTrackEnd = async (payload: any) => {
         if (payload.guild_id !== interaction.guild_id) return;
 
         linkdave.off(EventName.TrackEnd, onTrackEnd);
 
-        void supabase.storage.from('tts').remove([fileName]);
+        const { error } = await supabase.storage.from('tts').remove([fileName]);
+
+        if (error) throw error;
       };
 
       linkdave.on(EventName.TrackEnd, onTrackEnd);

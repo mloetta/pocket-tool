@@ -17,7 +17,7 @@ export async function readDirectory(folder: string): Promise<void> {
 
     const fullPath = join(folder, filename);
 
-    await import(pathToFileURL(fullPath).href).catch((e) => console.log(`Cannot import file (${fullPath}) for reason:`, e));
+    await import(pathToFileURL(fullPath).href).catch((error) => console.log(`Cannot import file (${fullPath}) for reason:`, error));
   }
 }
 

@@ -100,7 +100,7 @@ linkdave.on(EventName.TrackEnd, (d) => {
   }
 
   const timer = setTimeout(
-    () => {
+    async () => {
       const currentPlayer = linkdave.getPlayer(d.guild_id);
 
       if (!currentPlayer.connected) {
@@ -111,7 +111,7 @@ linkdave.on(EventName.TrackEnd, (d) => {
 
       if (currentPlayer.playing || currentPlayer.queue.size > 0) return;
 
-      currentPlayer.disconnect();
+      await currentPlayer.destroy();
 
       idle.delete(d.guild_id);
     },
