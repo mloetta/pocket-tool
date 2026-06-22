@@ -16,7 +16,7 @@ import { supabase } from '../../../utils/supabase.js';
 import { Locale } from '@discordjs/core';
 import createApplicationCommand from '../../../helpers/command.js';
 import { getChatInputFocusedOption, linkdave } from '../../index.js';
-import { EventName } from 'linkdave';
+import { constructUri, EventName } from 'linkdave';
 
 createApplicationCommand({
   type: ApplicationCommandType.ChatInput,
@@ -260,7 +260,7 @@ createApplicationCommand({
       const elevenlabs = new ElevenLabsClient({ apiKey: elevenLabsApiKey });
 
       const audio = await elevenlabs.textToSpeech.convertWithTimestamps(voice ?? 'M563YhMmA0S8vEYwkgYa', {
-        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username}: ${text}`,
+        text: `${interaction.member.nick ?? interaction.member.user.global_name ?? interaction.member.user.username} said: ${text}`,
         languageCode: !language || language === 'auto' ? interaction.locale.split('-')[0]! : language.split('-')[0]!,
         modelId: 'eleven_flash_v2_5',
         outputFormat: 'mp3_44100_128',

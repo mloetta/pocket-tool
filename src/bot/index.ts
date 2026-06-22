@@ -77,8 +77,6 @@ export const linkdave = new LinkDaveClient({
 
 const idle = new Collection<string, NodeJS.Timeout>();
 
-linkdave.on(EventName.Ready, (d) => console.log(`LinkDave session: ${d.session_id}`));
-linkdave.on(EventName.PlayerUpdate, (d) => console.log(`Update: ${d.state}`));
 linkdave.on(EventName.TrackStart, (d) => {
   console.log(`Playing: ${d.track.url}`);
 
@@ -89,6 +87,7 @@ linkdave.on(EventName.TrackStart, (d) => {
     idle.delete(d.guild_id);
   }
 });
+
 linkdave.on(EventName.TrackEnd, (d) => {
   const player = linkdave.getPlayer(d.guild_id);
 
@@ -122,11 +121,6 @@ linkdave.on(EventName.TrackEnd, (d) => {
 
   idle.set(d.guild_id, timer);
 });
-linkdave.on(EventName.TrackError, (d) => console.error(`Error: ${d.error}`));
-linkdave.on(EventName.VoiceConnect, (d) => console.log(`Voice connected: ${d.channel_id}`));
-linkdave.on(EventName.VoiceDisconnect, (d) => console.log(`Voice connected: ${d.guild_id} reason: ${d.reason}`));
-linkdave.on(EventName.Close, (d) => console.log(`Connection closed: ${d.code} ${d.reason}`));
-linkdave.on(EventName.Error, console.error);
 
 // custom properties for the client
 client.commands = new Collection<string, ApplicationCommand>();

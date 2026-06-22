@@ -84,6 +84,12 @@ createApplicationCommand({
           required: true,
           autocomplete: true,
         },
+        {
+          type: ApplicationCommandOptionType.User,
+          name: 'mention',
+          description: 'The user to mention with the tag',
+          required: false,
+        },
       ],
     },
   ],
@@ -262,7 +268,7 @@ createApplicationCommand({
         flags: MessageFlags.IsComponentsV2,
       });
     } else if (send) {
-      const { name } = send;
+      const { name, mention } = send;
 
       const { data, error } = await supabase
         .from('tags')
@@ -294,7 +300,7 @@ createApplicationCommand({
 
       if (guild) {
         await api.channels.createMessage(interaction.channel.id, {
-          content: `${data.content.replace(/\\n/g, '\n')}\n-# Tag ${highlight(data.name, HighlightStyle.Compact)} requested by ${interaction.user?.username ?? interaction.member?.user.username}`,
+          content: `${mention ? `-# *Tag suggestion for: ${mention}*\n` : ''}${data.content.replace(/\\n/g, '\n')}\n-# Tag ${highlight(data.name, HighlightStyle.Compact)} requested by ${interaction.user?.username ?? interaction.member?.user.username}`,
         });
 
         await api.interactions.editReply(interaction.application_id, interaction.token, {
@@ -311,7 +317,7 @@ createApplicationCommand({
         });
       } else {
         await api.interactions.editReply(interaction.application_id, interaction.token, {
-          content: data.content.replace(/\\n/g, '\n'),
+          content: `${mention ? `-# *Tag suggestion for: ${mention}*\n` : ''}${data.content.replace(/\\n/g, '\n')}`,
         });
       }
     }
